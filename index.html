@@ -10,6 +10,24 @@
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Loader cybersec premium -->
     <style>
+                  /* Animación de entrada para títulos de sección (cybersec, premium, mobile-first) */
+                  .section-title {
+                    opacity: 0;
+                    transform: translateY(32px);
+                    transition: opacity 0.55s cubic-bezier(.4,1.6,.6,1), transform 0.55s cubic-bezier(.4,1.6,.6,1), box-shadow 0.32s cubic-bezier(.4,1.6,.6,1);
+                    will-change: opacity, transform, box-shadow;
+                  }
+                  .section-title.section-title-animated {
+                    opacity: 1;
+                    transform: none;
+                    box-shadow: 0 0 18px 0 #00fff055, 0 0 2px #00fff0cc;
+                    animation: section-title-pulse 0.38s cubic-bezier(.4,1.6,.6,1) 0.45s 1;
+                  }
+                  @keyframes section-title-pulse {
+                    0% { box-shadow: 0 0 0 0 #00fff000, 0 0 0 0 #00fff000; }
+                    60% { box-shadow: 0 0 18px 0 #00fff099, 0 0 2px #00fff0cc; }
+                    100% { box-shadow: 0 0 18px 0 #00fff055, 0 0 2px #00fff0cc; }
+                  }
               html {
                 box-sizing: border-box;
                 -webkit-text-size-adjust: 100%;
@@ -138,6 +156,161 @@
             }
           }
           @media (max-width: 600px) {
+                  /* --- OPTIMIZACIÓN MÓVIL AGRESIVA PARA CARDS PEQUEÑAS --- */
+                  /* Certificaciones, valores, badges, servicios, especialidades */
+                  .certifications, .values, .services, .specialties {
+                    gap: 2px 0 !important;
+                    margin-bottom: 2px;
+                    padding-bottom: 0;
+                  }
+                  /* Badges y tarjetas pequeñas */
+                  .cert-badge, .value-card {
+                    min-height: 0 !important;
+                    height: auto !important;
+                    padding: 2px 1vw !important;
+                    font-size: 0.78rem;
+                    border-radius: 5px;
+                    margin-bottom: 2px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    box-sizing: border-box;
+                    line-height: 1.1;
+                  }
+                  .cert-badge i, .value-card i {
+                    font-size: 0.65rem !important;
+                    margin-right: 4px !important;
+                    margin-bottom: 0 !important;
+                  }
+                  .cert-badge .section-title, .value-card .section-title {
+                    font-size: 0.91rem !important;
+                    font-weight: 700;
+                    margin-bottom: 0;
+                    line-height: 1.1;
+                  }
+                  /* Servicios y especialidades */
+                  .service-card, .specialty-card {
+                    min-height: 0 !important;
+                    height: auto !important;
+                    padding: 4px 1vw 4px 1vw !important;
+                    font-size: 0.79rem;
+                    border-radius: 6px;
+                    margin-bottom: 2px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    box-sizing: border-box;
+                    line-height: 1.13;
+                  }
+                  .specialty-icon, .service-card i {
+                    font-size: 0.68rem !important;
+                    margin-right: 4px !important;
+                    margin-bottom: 0 !important;
+                  }
+                  .specialty-title, .service-card .section-title {
+                    font-size: 0.93rem !important;
+                    font-weight: 700;
+                    margin-bottom: 0;
+                    line-height: 1.1;
+                  }
+                  .specialty-desc, .service-card .desc {
+                    font-size: 0.72rem !important;
+                    line-height: 1.13;
+                  }
+                  /* Ajuste de padding y densidad para todos los badges/cards pequeños */
+                  .cert-badge, .value-card, .service-card, .specialty-card {
+                    padding-top: 2px !important;
+                    padding-bottom: 2px !important;
+                    padding-left: 1vw !important;
+                    padding-right: 1vw !important;
+                  }
+                  /* Eliminar min-width heredado en móvil */
+                  .cert-badge, .value-card, .service-card, .specialty-card {
+                    min-width: 0 !important;
+                    width: 99vw !important;
+                    max-width: 99vw !important;
+                  }
+                  /* Ajuste de badges de una sola línea */
+                  .cert-badge, .value-card {
+                    flex-direction: row !important;
+                    justify-content: flex-start !important;
+                  }
+                  /* Ajuste de títulos para mejor jerarquía visual */
+                  .cert-badge, .value-card, .service-card, .specialty-card {
+                    font-weight: 500;
+                  }
+                  /* Ajuste de separación entre cards */
+                  .cert-badge:not(:last-child), .value-card:not(:last-child), .service-card:not(:last-child), .specialty-card:not(:last-child) {
+                    margin-bottom: 2px !important;
+                  }
+                  /* Ajuste de punto decorativo en value-card */
+                  .value-card:before {
+                    left: 2px;
+                    top: 4px;
+                    width: 3px;
+                    height: 3px;
+                  }
+                  /* Media queries específicas para móviles reales */
+                  @media (max-width: 430px) {
+                    .cert-badge, .value-card, .service-card, .specialty-card {
+                      font-size: 0.75rem !important;
+                      padding: 1.5px 0.5vw !important;
+                    }
+                    .cert-badge .section-title, .value-card .section-title, .specialty-title, .service-card .section-title {
+                      font-size: 0.89rem !important;
+                    }
+                    .specialty-icon, .service-card i, .cert-badge i, .value-card i {
+                      font-size: 0.61rem !important;
+                    }
+                  }
+                  @media (max-width: 414px) {
+                    .cert-badge, .value-card, .service-card, .specialty-card {
+                      font-size: 0.73rem !important;
+                      padding: 1.2px 0.4vw !important;
+                    }
+                    .cert-badge .section-title, .value-card .section-title, .specialty-title, .service-card .section-title {
+                      font-size: 0.87rem !important;
+                    }
+                    .specialty-icon, .service-card i, .cert-badge i, .value-card i {
+                      font-size: 0.59rem !important;
+                    }
+                  }
+                  @media (max-width: 390px) {
+                    .cert-badge, .value-card, .service-card, .specialty-card {
+                      font-size: 0.71rem !important;
+                      padding: 1px 0.3vw !important;
+                    }
+                    .cert-badge .section-title, .value-card .section-title, .specialty-title, .service-card .section-title {
+                      font-size: 0.85rem !important;
+                    }
+                    .specialty-icon, .service-card i, .cert-badge i, .value-card i {
+                      font-size: 0.57rem !important;
+                    }
+                  }
+                  @media (max-width: 375px) {
+                    .cert-badge, .value-card, .service-card, .specialty-card {
+                      font-size: 0.69rem !important;
+                      padding: 0.8px 0.2vw !important;
+                    }
+                    .cert-badge .section-title, .value-card .section-title, .specialty-title, .service-card .section-title {
+                      font-size: 0.83rem !important;
+                    }
+                    .specialty-icon, .service-card i, .cert-badge i, .value-card i {
+                      font-size: 0.55rem !important;
+                    }
+                  }
+                  @media (max-width: 360px) {
+                    .cert-badge, .value-card, .service-card, .specialty-card {
+                      font-size: 0.67rem !important;
+                      padding: 0.6px 0.1vw !important;
+                    }
+                    .cert-badge .section-title, .value-card .section-title, .specialty-title, .service-card .section-title {
+                      font-size: 0.81rem !important;
+                    }
+                    .specialty-icon, .service-card i, .cert-badge i, .value-card i {
+                      font-size: 0.53rem !important;
+                    }
+                  }
             .services, .values, .certifications {
               gap: 18px 0 !important;
             }
@@ -1257,6 +1430,32 @@
     </style>
   </head>
 <body>
+      <script>
+        // Animación de entrada para títulos de sección (IntersectionObserver, mobile-first)
+        document.addEventListener('DOMContentLoaded', function() {
+          const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          if (prefersReducedMotion) return;
+          const titles = document.querySelectorAll('.section-title');
+          if (!('IntersectionObserver' in window)) {
+            // Fallback: mostrar todos
+            titles.forEach(t => t.classList.add('section-title-animated'));
+            return;
+          }
+          const obs = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('section-title-animated');
+                observer.unobserve(entry.target);
+              }
+            });
+          }, {
+            threshold: 0.6
+          });
+          titles.forEach(t => {
+            obs.observe(t);
+          });
+        });
+      </script>
     <!-- Loader cybersec premium -->
     <div class="cyber-loader-bg" id="cyberLoader">
       <span class="cyber-loader-glitch">CYBERSEC</span>
