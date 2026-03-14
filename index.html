@@ -156,42 +156,42 @@
             }
           }
           @media (max-width: 600px) {
-                  /* --- MOBILE PREMIUM REDESIGN: SERVICE-CARD & VALUE-CARD --- */
+                  /* --- MOBILE PREMIUM REDESIGN: SERVICE-CARD, VALUE-CARD, CERT-BADGE --- */
                   /* Servicios profesionales: .service-card (mobile only) */
                   .service-card {
                     min-height: unset !important;
                     height: auto !important;
                     width: 96vw !important;
                     max-width: 99vw !important;
-                    margin: 0 auto 10px auto !important;
-                    padding: 13px 16px 13px 16px !important;
-                    border-radius: 15px !important;
+                    margin: 0 auto 8px auto !important;
+                    padding: 8px 10px 8px 12px !important;
+                    border-radius: 13px !important;
                     display: flex;
                     align-items: center;
-                    gap: 13px;
+                    gap: 10px;
                     background: linear-gradient(120deg, rgba(0,255,255,0.13) 0%, rgba(18,28,38,0.98) 100%);
-                    box-shadow: 0 0 0 2.5px #00fff0cc, 0 4px 32px #00fff033, 0 0 24px #00fff022 inset;
-                    border: 1.7px solid var(--cyan-title);
+                    box-shadow: 0 0 0 2px #00fff0cc, 0 2px 16px #00fff033, 0 0 12px #00fff022 inset;
+                    border: 1.5px solid var(--cyan-title);
                     position: relative;
                     overflow: hidden;
                     transition: box-shadow 0.22s, border 0.22s, background 0.22s, filter 0.22s;
                   }
                   .service-card .service-icon {
-                    font-size: 1.45rem !important;
+                    font-size: 1.18rem !important;
                     color: var(--cyan-title);
-                    filter: drop-shadow(0 0 8px #00fff0cc);
-                    margin-right: 8px;
+                    filter: drop-shadow(0 0 7px #00fff0cc);
+                    margin-right: 7px;
                     flex-shrink: 0;
                   }
                   .service-card .service-title {
-                    font-size: 1.13rem !important;
-                    font-weight: 800;
+                    font-size: 1.19rem !important;
+                    font-weight: 900;
                     color: var(--cyan-title);
                     letter-spacing: 0.03em;
                     text-shadow: 0 0 8px #00fff0cc;
                   }
                   .service-card .service-desc {
-                    font-size: 0.97rem;
+                    font-size: 1.04rem;
                     color: var(--text-main);
                     line-height: 1.22;
                     font-weight: 500;
@@ -200,25 +200,25 @@
                     content: "";
                     position: absolute;
                     inset: 0;
-                    border-radius: 15px;
+                    border-radius: 13px;
                     pointer-events: none;
-                    box-shadow: 0 0 24px 2px #00fff055 inset, 0 0 0 0 #00fff000;
+                    box-shadow: 0 0 14px 2px #00fff055 inset, 0 0 0 0 #00fff000;
                     opacity: 0.7;
                     transition: box-shadow 0.32s cubic-bezier(.4,1.6,.6,1);
                   }
                   .service-card.card-animated::after {
-                    box-shadow: 0 0 32px 6px #00fff0cc inset, 0 0 0 0 #00fff000;
+                    box-shadow: 0 0 22px 5px #00fff0cc inset, 0 0 0 0 #00fff000;
                     opacity: 1;
                     animation: service-glow-pulse 0.38s cubic-bezier(.4,1.6,.6,1) 0.12s 1;
                   }
                   @keyframes service-glow-pulse {
                     0% { box-shadow: 0 0 0 0 #00fff000 inset; }
-                    60% { box-shadow: 0 0 32px 12px #00fff0cc inset; }
-                    100% { box-shadow: 0 0 32px 6px #00fff0cc inset; }
+                    60% { box-shadow: 0 0 22px 10px #00fff0cc inset; }
+                    100% { box-shadow: 0 0 22px 5px #00fff0cc inset; }
                   }
                   .service-card:active {
                     filter: brightness(1.09) saturate(1.13);
-                    box-shadow: 0 0 32px 8px #00fff0cc, 0 0 0 2.5px #00fff0cc, 0 4px 32px #00fff033;
+                    box-shadow: 0 0 22px 7px #00fff0cc, 0 0 0 2px #00fff0cc, 0 2px 16px #00fff033;
                   }
                   /* Valores profesionales: .value-card (mobile only) */
                   .value-card {
@@ -226,35 +226,35 @@
                     height: auto !important;
                     width: 96vw !important;
                     max-width: 99vw !important;
-                    margin: 0 auto 10px auto !important;
-                    padding: 12px 15px 12px 15px !important;
-                    border-radius: 13px !important;
+                    margin: 0 auto 8px auto !important;
+                    padding: 7px 10px 7px 12px !important;
+                    border-radius: 12px !important;
                     display: flex;
                     align-items: center;
-                    gap: 11px;
+                    gap: 9px;
                     background: linear-gradient(120deg, rgba(0,255,255,0.10) 0%, rgba(18,28,38,0.98) 100%);
-                    box-shadow: 0 0 0 2.5px #00fff0bb, 0 4px 32px #00fff022, 0 0 18px #00fff022 inset;
-                    border: 1.5px solid var(--cyan-title);
+                    box-shadow: 0 0 0 2px #00fff0bb, 0 2px 12px #00fff022, 0 0 8px #00fff022 inset;
+                    border: 1.3px solid var(--cyan-title);
                     position: relative;
                     overflow: hidden;
                     transition: box-shadow 0.22s, border 0.22s, background 0.22s, filter 0.22s;
                   }
                   .value-card .value-icon {
-                    font-size: 1.28rem !important;
+                    font-size: 1.09rem !important;
                     color: var(--cyan-title);
-                    filter: drop-shadow(0 0 7px #00fff0cc);
-                    margin-right: 7px;
+                    filter: drop-shadow(0 0 6px #00fff0cc);
+                    margin-right: 6px;
                     flex-shrink: 0;
                   }
                   .value-card .value-title {
-                    font-size: 1.09rem !important;
-                    font-weight: 800;
+                    font-size: 1.13rem !important;
+                    font-weight: 900;
                     color: var(--cyan-title);
                     letter-spacing: 0.03em;
                     text-shadow: 0 0 8px #00fff0cc;
                   }
                   .value-card .value-desc {
-                    font-size: 0.95rem;
+                    font-size: 1.01rem;
                     color: var(--text-main);
                     line-height: 1.18;
                     font-weight: 500;
@@ -263,38 +263,71 @@
                     content: "";
                     position: absolute;
                     inset: 0;
-                    border-radius: 13px;
+                    border-radius: 12px;
                     pointer-events: none;
-                    box-shadow: 0 0 18px 2px #00fff055 inset, 0 0 0 0 #00fff000;
+                    box-shadow: 0 0 10px 2px #00fff055 inset, 0 0 0 0 #00fff000;
                     opacity: 0.7;
                     transition: box-shadow 0.32s cubic-bezier(.4,1.6,.6,1);
                   }
                   .value-card.card-animated::after {
-                    box-shadow: 0 0 28px 7px #00fff0cc inset, 0 0 0 0 #00fff000;
+                    box-shadow: 0 0 16px 5px #00fff0cc inset, 0 0 0 0 #00fff000;
                     opacity: 1;
                     animation: value-glow-pulse 0.38s cubic-bezier(.4,1.6,.6,1) 0.12s 1;
                   }
                   @keyframes value-glow-pulse {
                     0% { box-shadow: 0 0 0 0 #00fff000 inset; }
-                    60% { box-shadow: 0 0 28px 14px #00fff0cc inset; }
-                    100% { box-shadow: 0 0 28px 7px #00fff0cc inset; }
+                    60% { box-shadow: 0 0 16px 10px #00fff0cc inset; }
+                    100% { box-shadow: 0 0 16px 5px #00fff0cc inset; }
                   }
                   .value-card:active {
                     filter: brightness(1.09) saturate(1.13);
-                    box-shadow: 0 0 28px 10px #00fff0cc, 0 0 0 2.5px #00fff0cc, 0 4px 32px #00fff033;
+                    box-shadow: 0 0 16px 7px #00fff0cc, 0 0 0 2px #00fff0cc, 0 2px 12px #00fff033;
                   }
-                  /* Ajuste de punto decorativo en value-card */
-                  .value-card:before {
-                    content: "";
-                    position: absolute;
-                    left: 8px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    width: 7px;
-                    height: 7px;
-                    border-radius: 50%;
-                    background: var(--cyan-title);
-                    box-shadow: 0 0 12px 2px #00fff0cc;
+                  /* Certificaciones/conocimientos: .cert-badge (mobile only) */
+                  .cert-badge {
+                    min-height: unset !important;
+                    height: auto !important;
+                    width: 96vw !important;
+                    max-width: 99vw !important;
+                    margin: 0 auto 8px auto !important;
+                    padding: 7px 10px 7px 12px !important;
+                    border-radius: 12px !important;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    background: linear-gradient(120deg, rgba(0,255,255,0.08) 0%, rgba(18,28,38,0.98) 100%);
+                    box-shadow: 0 0 0 2px #00fff0bb, 0 2px 12px #00fff022, 0 0 8px #00fff022 inset;
+                    border: 1.3px solid var(--cyan-title);
+                    position: relative;
+                    overflow: hidden;
+                    transition: box-shadow 0.22s, border 0.22s, background 0.22s, filter 0.22s;
+                  }
+                  .cert-badge .cert-icon {
+                    font-size: 1.09rem !important;
+                    color: var(--cyan-title);
+                    filter: drop-shadow(0 0 6px #00fff0cc);
+                    margin-right: 6px;
+                    flex-shrink: 0;
+                  }
+                  .cert-badge .cert-title {
+                    font-size: 1.13rem !important;
+                    font-weight: 900;
+                    color: var(--cyan-title);
+                    letter-spacing: 0.03em;
+                    text-shadow: 0 0 8px #00fff0cc;
+                  }
+                  .cert-badge .cert-desc {
+                    font-size: 1.01rem;
+                    color: var(--text-main);
+                    line-height: 1.18;
+                    font-weight: 500;
+                  }
+                  .cert-badge:active {
+                    filter: brightness(1.09) saturate(1.13);
+                    box-shadow: 0 0 16px 7px #00fff0cc, 0 0 0 2px #00fff0cc, 0 2px 12px #00fff033;
+                  }
+                  .cert-badge .section-title {
+                    font-size: 1.13rem !important;
                   }
                       /* Animaciones y microinteracciones mobile-only para servicios y valores */
                       @media (max-width: 600px) {
