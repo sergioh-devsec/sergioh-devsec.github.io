@@ -1049,14 +1049,186 @@
       }
     }
     @media (max-width: 600px) {
+      /* HERO móvil compacto y sin solapamientos */
       .hero-title {
-        font-size: 2.1rem;
+        font-size: 1.01rem;
+        line-height: 1.08;
+        margin-bottom: 4px;
       }
+      .hero-subtitle {
+        font-size: 0.81rem;
+        line-height: 1.13;
+        margin-bottom: 4px;
+      }
+      .hero-desc {
+        font-size: 0.77rem;
+        line-height: 1.18;
+        margin-bottom: 10px;
+        max-width: 97vw;
+      }
+      .impact-phrase {
+        font-size: 0.81rem;
+        margin-top: 6px;
+        margin-bottom: 18px;
+        line-height: 1.13;
+        max-width: 97vw;
+        position: static !important;
+      }
+      .hero-content {
+        padding-top: 4px;
+        padding-bottom: 4px;
+      }
+      .hero-bg {
+        min-height: 70px;
+        height: 70px;
+      }
+      /* Separación real entre frase de impacto y Sobre mí */
+      .impact-phrase + * {
+        margin-top: 18px !important;
+      }
+      /* Botones hero compactos */
+      .hero-buttons {
+        gap: 4px 0 !important;
+        margin-bottom: 4px;
+      }
+      .hero-buttons button {
+        padding: 6px 0 !important;
+        font-size: 0.81rem;
+        min-width: 0;
+        width: 100%;
+        border-radius: 22px;
+      }
+      /* Títulos y secciones */
       .section-title {
-        font-size: 1.3rem;
+        font-size: 0.91rem;
+        margin-bottom: 7px;
       }
       .about, .experience, .contact-section {
-        padding: 18px 8px;
+        padding: 6px 1px;
+      }
+      .about-text {
+        font-size: 0.81rem;
+        line-height: 1.22;
+      }
+      /* Cards, badges, valores, certificaciones, servicios */
+      .specialties, .services, .certifications, .values {
+        gap: 7px 0 !important;
+        margin-bottom: 10px;
+        padding-bottom: 2px;
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+      .specialty-card, .service-card, .cert-badge, .value-card {
+        padding: 6px 2vw 6px 2vw !important;
+        font-size: 0.81rem;
+        min-width: 0;
+        max-width: 99vw;
+        width: 99vw;
+        border-radius: 7px;
+        margin-bottom: 4px;
+        gap: 4px;
+        min-height: unset !important;
+        height: auto !important;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      .value-card, .cert-badge {
+        padding: 4px 2vw 4px 2vw !important;
+        font-size: 0.79rem;
+        border-radius: 7px;
+        min-width: 0;
+        max-width: 99vw;
+        width: 99vw;
+        height: auto !important;
+      }
+      .value-card:before {
+        left: 4px;
+        top: 7px;
+        width: 4px;
+        height: 4px;
+      }
+      .cert-badge i {
+        font-size: 0.91rem;
+        margin-right: 2px;
+      }
+      .specialty-icon {
+        font-size: 0.91rem;
+        margin-bottom: 2px;
+      }
+      .specialty-title {
+        font-size: 0.81rem;
+        margin-bottom: 1px;
+      }
+      .specialty-desc {
+        font-size: 0.75rem;
+      }
+      /* Contacto y footer */
+      .contact-title {
+        font-size: 0.81rem;
+        margin-bottom: 6px;
+      }
+      .contact-form {
+        padding: 6px 2px 4px 2px;
+        max-width: 99vw;
+      }
+      .contact-form input, .contact-form textarea {
+        font-size: 0.81rem;
+        padding: 6px;
+      }
+      .contact-form button {
+        font-size: 0.81rem;
+        padding: 6px 0;
+      }
+      .contact-links {
+        gap: 7px;
+        padding-bottom: 1px;
+      }
+      .cta {
+        font-size: 0.81rem;
+        margin-top: 6px;
+      }
+      footer {
+        padding: 7px 0 4px 0;
+        font-size: 0.81rem;
+        margin-top: 4px;
+        border-radius: 7px 7px 0 0;
+      }
+      .footer-links {
+        margin-top: 3px;
+        gap: 5px;
+      }
+      .footer-link {
+        font-size: 0.81rem;
+      }
+      main {
+        padding: 4px 0;
+      }
+      section {
+        margin-bottom: 7px;
+        padding: 0 1px;
+      }
+      /* Breakpoints para móviles modernos y pequeños */
+      @media (max-width: 430px) {
+        .hero-title { font-size: 0.93rem; }
+        .hero-subtitle { font-size: 0.75rem; }
+        .hero-desc { font-size: 0.71rem; }
+        .impact-phrase { font-size: 0.75rem; }
+        .section-title { font-size: 0.81rem; }
+      }
+      @media (max-width: 390px) {
+        .hero-title { font-size: 0.89rem; }
+        .hero-subtitle { font-size: 0.71rem; }
+        .hero-desc { font-size: 0.67rem; }
+        .impact-phrase { font-size: 0.71rem; }
+        .section-title { font-size: 0.77rem; }
+      }
+      @media (max-width: 360px) {
+        .hero-title { font-size: 0.81rem; }
+        .hero-subtitle { font-size: 0.65rem; }
+        .hero-desc { font-size: 0.61rem; }
+        .impact-phrase { font-size: 0.65rem; }
+        .section-title { font-size: 0.71rem; }
       }
     }
     /* Animación de partículas (simulación simple) */
