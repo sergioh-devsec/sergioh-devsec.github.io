@@ -911,9 +911,30 @@
       font-size: 2rem;
       color: var(--cyan-title);
       margin-bottom: 18px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.04em;
-      text-shadow: 0 0 8px var(--cyan-title);
+      text-shadow: 0 0 16px #00fff055, 0 0 2px #00fff0cc;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      width: auto !important;
+      display: inline-block;
+      padding: 0;
+      position: relative;
+    }
+    /* Línea decorativa sutil debajo del título en desktop */
+    @media (min-width: 601px) {
+      .section-title:after {
+        content: "";
+        display: block;
+        margin: 8px auto 0 auto;
+        width: 44px;
+        height: 2.5px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, #00fff0 60%, #00b8c9 100%);
+        opacity: 0.45;
+        box-shadow: 0 0 8px #00fff055;
+      }
     }
     .about {
       background: var(--panel-dark);
@@ -1222,199 +1243,220 @@
       }
     }
     @media (max-width: 600px) {
-      /* HERO móvil compacto y sin solapamientos */
+      /* --- MOBILE RESPONSIVE SYSTEM REFACTORED --- */
+      /* 1. HERO */
       .hero-title {
-        font-size: 1.01rem;
-        line-height: 1.08;
-        margin-bottom: 4px;
+        font-size: 1.18rem;
+        line-height: 1.13;
+        margin-bottom: 6px;
       }
       .hero-subtitle {
-        font-size: 0.81rem;
-        line-height: 1.13;
-        margin-bottom: 4px;
+        font-size: 0.97rem;
+        line-height: 1.18;
+        margin-bottom: 6px;
       }
       .hero-desc {
-        font-size: 0.77rem;
-        line-height: 1.18;
-        margin-bottom: 10px;
-        max-width: 97vw;
+        font-size: 0.89rem;
+        line-height: 1.32;
+        margin-bottom: 14px;
+        max-width: 95vw;
       }
       .impact-phrase {
-        font-size: 0.81rem;
-        margin-top: 6px;
+        font-size: 0.99rem;
+        margin-top: 10px;
         margin-bottom: 18px;
-        line-height: 1.13;
-        max-width: 97vw;
+        line-height: 1.18;
+        max-width: 95vw;
         position: static !important;
       }
       .hero-content {
-        padding-top: 4px;
-        padding-bottom: 4px;
+        padding-top: 10px;
+        padding-bottom: 10px;
       }
       .hero-bg {
-        min-height: 70px;
-        height: 70px;
+        min-height: 120px;
+        height: 120px;
       }
-      /* Separación real entre frase de impacto y Sobre mí */
       .impact-phrase + * {
         margin-top: 18px !important;
       }
-      /* Botones hero compactos */
       .hero-buttons {
-        gap: 4px 0 !important;
-        margin-bottom: 4px;
+        gap: 8px 0 !important;
+        margin-bottom: 10px;
       }
       .hero-buttons button {
-        padding: 6px 0 !important;
-        font-size: 0.81rem;
+        padding: 10px 0 !important;
+        font-size: 0.97rem;
         min-width: 0;
         width: 100%;
-        border-radius: 22px;
+        border-radius: 28px;
       }
-      /* Títulos y secciones */
+      /* 2. SECTION TITLES */
       .section-title {
-        font-size: 0.91rem;
-        margin-bottom: 7px;
+        font-size: 1.13rem;
+        margin-bottom: 12px;
+        font-weight: 800;
+        letter-spacing: 0.03em;
       }
+      /* 3. PANEL COMPONENTS (about, experience, contact-section) */
       .about, .experience, .contact-section {
-        padding: 6px 1px;
+        padding: 14px 6px;
+        border-radius: 12px;
+        font-size: 0.97rem;
+        line-height: 1.45;
+        margin-bottom: 16px;
       }
       .about-text {
-        font-size: 0.81rem;
-        line-height: 1.22;
+        font-size: 0.97rem;
+        line-height: 1.45;
       }
-      /* Cards, badges, valores, certificaciones, servicios */
-      .specialties, .services, .certifications, .values {
-        gap: 3px 0 !important;
-        margin-bottom: 4px;
-        padding-bottom: 1px;
+      /* 4. SPECIALTY CARDS (medianas) */
+      .specialties {
+        gap: 10px 0 !important;
+        margin-bottom: 10px;
+        padding-bottom: 2px;
         flex-direction: column !important;
         align-items: stretch !important;
       }
-      .specialty-card, .service-card, .cert-badge, .value-card {
-        padding: 3px 1vw 3px 1vw !important;
-        font-size: 0.82rem;
-        min-width: 0;
-        max-width: 99vw;
-        width: 99vw;
-        border-radius: 6px;
-        margin-bottom: 2px;
-        gap: 2px;
+      .specialty-card {
+        padding: 10px 10px 10px 16px !important;
+        font-size: 0.93rem;
+        border-radius: 10px;
+        margin-bottom: 6px;
         min-height: 0 !important;
         height: auto !important;
         display: flex;
+        flex-direction: row;
         align-items: center;
-        justify-content: flex-start;
+        gap: 10px;
         box-sizing: border-box;
       }
-      .value-card, .cert-badge {
-        padding: 2px 1vw 2px 1vw !important;
-        font-size: 0.81rem;
-        border-radius: 6px;
-        min-width: 0;
-        max-width: 99vw;
-        width: 99vw;
-        height: auto !important;
-      }
-      .value-card:before {
-        left: 2px;
-        top: 4px;
-        width: 3px;
-        height: 3px;
-      }
-      .cert-badge i {
-        font-size: 0.72rem;
-        margin-right: 1px;
-      }
       .specialty-icon {
-        font-size: 0.72rem;
-        margin-bottom: 1px;
+        font-size: 1.25rem;
+        margin-bottom: 0;
+        margin-right: 8px;
       }
-      .specialty-title, .service-card .section-title, .value-card .section-title, .cert-badge .section-title {
-        font-size: 0.97rem;
+      .specialty-title {
+        font-size: 1.01rem;
         font-weight: 700;
         margin-bottom: 0;
         line-height: 1.1;
       }
-      .specialty-title, .service-card .section-title, .value-card .section-title, .cert-badge .section-title {
-        letter-spacing: 0.01em;
-      }
-      .specialty-desc, .service-card .desc, .value-card .desc, .cert-badge .desc {
-        font-size: 0.74rem;
+      .specialty-desc {
+        font-size: 0.85rem;
         line-height: 1.18;
+        margin-bottom: 0;
       }
-      /* Contacto y footer */
+      /* 5. SERVICE CARDS (compactas) */
+      .services {
+        gap: 8px 0 !important;
+        margin-bottom: 10px;
+        padding-bottom: 2px;
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+      .service-card {
+        padding: 8px 10px !important;
+        font-size: 0.91rem;
+        border-radius: 8px;
+        margin-bottom: 4px;
+        min-height: 0 !important;
+        height: auto !important;
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+      }
+      /* 6. BADGES & VALUE CARDS (chips compactos) */
+      .certifications, .values {
+        gap: 6px 0 !important;
+        margin-bottom: 8px;
+        padding-bottom: 2px;
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+      .cert-badge, .value-card {
+        min-height: 0 !important;
+        height: auto !important;
+        padding: 5px 10px !important;
+        font-size: 0.89rem;
+        border-radius: 7px;
+        margin-bottom: 3px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        box-sizing: border-box;
+        line-height: 1.13;
+      }
+      .cert-badge i, .value-card i {
+        font-size: 0.93rem !important;
+        margin-right: 4px !important;
+        margin-bottom: 0 !important;
+      }
+      .value-card:before {
+        left: 4px;
+        top: 8px;
+        width: 5px;
+        height: 5px;
+      }
+      /* 7. CONTACTO Y FOOTER */
       .contact-title {
-        font-size: 0.81rem;
-        margin-bottom: 6px;
+        font-size: 0.99rem;
+        margin-bottom: 8px;
       }
       .contact-form {
-        padding: 6px 2px 4px 2px;
+        padding: 8px 4px 6px 4px;
         max-width: 99vw;
       }
       .contact-form input, .contact-form textarea {
-        font-size: 0.81rem;
-        padding: 6px;
+        font-size: 0.97rem;
+        padding: 8px;
       }
       .contact-form button {
-        font-size: 0.81rem;
-        padding: 6px 0;
+        font-size: 0.97rem;
+        padding: 8px 0;
       }
       .contact-links {
-        gap: 7px;
-        padding-bottom: 1px;
+        gap: 10px;
+        padding-bottom: 2px;
       }
       .cta {
-        font-size: 0.81rem;
-        margin-top: 6px;
+        font-size: 0.97rem;
+        margin-top: 8px;
       }
       footer {
-        padding: 7px 0 4px 0;
-        font-size: 0.81rem;
-        margin-top: 4px;
-        border-radius: 7px 7px 0 0;
+        padding: 12px 0 6px 0;
+        font-size: 0.97rem;
+        margin-top: 8px;
+        border-radius: 10px 10px 0 0;
       }
       .footer-links {
-        margin-top: 3px;
-        gap: 5px;
+        margin-top: 6px;
+        gap: 8px;
       }
       .footer-link {
-        font-size: 0.81rem;
+        font-size: 0.97rem;
       }
       main {
-        padding: 4px 0;
+        padding: 8px 0;
       }
       section {
-        margin-bottom: 7px;
-        padding: 0 1px;
+        margin-bottom: 12px;
+        padding: 0 4px;
       }
-      /* Breakpoints para móviles modernos y pequeños */
-      @media (max-width: 430px) {
-        .hero-title { font-size: 0.93rem; }
-        .hero-subtitle { font-size: 0.75rem; }
-        .hero-desc { font-size: 0.71rem; }
-        .impact-phrase { font-size: 0.75rem; }
-        .section-title, .specialty-title, .service-card .section-title, .value-card .section-title, .cert-badge .section-title {
-          font-size: 1.01rem;
-        }
+      /* --- BREAKPOINTS --- */
+      @media (max-width: 480px) {
+        .hero-title { font-size: 1.01rem; }
+        .section-title { font-size: 1.01rem; }
+        .specialty-title { font-size: 0.93rem; }
+        .service-card { font-size: 0.87rem; }
+        .cert-badge, .value-card { font-size: 0.85rem; }
       }
       @media (max-width: 390px) {
-        .hero-title { font-size: 0.89rem; }
-        .hero-subtitle { font-size: 0.71rem; }
-        .hero-desc { font-size: 0.67rem; }
-        .impact-phrase { font-size: 0.71rem; }
-        .section-title, .specialty-title, .service-card .section-title, .value-card .section-title, .cert-badge .section-title {
-          font-size: 0.97rem;
-        }
-      }
-      @media (max-width: 360px) {
-        .hero-title { font-size: 0.81rem; }
-        .hero-subtitle { font-size: 0.65rem; }
-        .hero-desc { font-size: 0.61rem; }
-        .impact-phrase { font-size: 0.65rem; }
-        .section-title, .specialty-title, .service-card .section-title, .value-card .section-title, .cert-badge .section-title {
-          font-size: 0.91rem;
-        }
+        .hero-title { font-size: 0.93rem; }
+        .section-title { font-size: 0.93rem; }
+        .specialty-title { font-size: 0.87rem; }
+        .service-card { font-size: 0.81rem; }
+        .cert-badge, .value-card { font-size: 0.79rem; }
       }
     }
     /* Animación de partículas (simulación simple) */
