@@ -1112,56 +1112,63 @@
       }
       /* Cards, badges, valores, certificaciones, servicios */
       .specialties, .services, .certifications, .values {
-        gap: 7px 0 !important;
-        margin-bottom: 10px;
-        padding-bottom: 2px;
+        gap: 3px 0 !important;
+        margin-bottom: 4px;
+        padding-bottom: 1px;
         flex-direction: column !important;
         align-items: stretch !important;
       }
       .specialty-card, .service-card, .cert-badge, .value-card {
-        padding: 6px 2vw 6px 2vw !important;
-        font-size: 0.81rem;
+        padding: 3px 1vw 3px 1vw !important;
+        font-size: 0.82rem;
         min-width: 0;
         max-width: 99vw;
         width: 99vw;
-        border-radius: 7px;
-        margin-bottom: 4px;
-        gap: 4px;
-        min-height: unset !important;
+        border-radius: 6px;
+        margin-bottom: 2px;
+        gap: 2px;
+        min-height: 0 !important;
         height: auto !important;
         display: flex;
         align-items: center;
         justify-content: flex-start;
+        box-sizing: border-box;
       }
       .value-card, .cert-badge {
-        padding: 4px 2vw 4px 2vw !important;
-        font-size: 0.79rem;
-        border-radius: 7px;
+        padding: 2px 1vw 2px 1vw !important;
+        font-size: 0.81rem;
+        border-radius: 6px;
         min-width: 0;
         max-width: 99vw;
         width: 99vw;
         height: auto !important;
       }
       .value-card:before {
-        left: 4px;
-        top: 7px;
-        width: 4px;
-        height: 4px;
+        left: 2px;
+        top: 4px;
+        width: 3px;
+        height: 3px;
       }
       .cert-badge i {
-        font-size: 0.91rem;
-        margin-right: 2px;
+        font-size: 0.72rem;
+        margin-right: 1px;
       }
       .specialty-icon {
-        font-size: 0.91rem;
-        margin-bottom: 2px;
-      }
-      .specialty-title {
-        font-size: 0.81rem;
+        font-size: 0.72rem;
         margin-bottom: 1px;
       }
-      .specialty-desc {
-        font-size: 0.75rem;
+      .specialty-title, .service-card .section-title, .value-card .section-title, .cert-badge .section-title {
+        font-size: 0.97rem;
+        font-weight: 700;
+        margin-bottom: 0;
+        line-height: 1.1;
+      }
+      .specialty-title, .service-card .section-title, .value-card .section-title, .cert-badge .section-title {
+        letter-spacing: 0.01em;
+      }
+      .specialty-desc, .service-card .desc, .value-card .desc, .cert-badge .desc {
+        font-size: 0.74rem;
+        line-height: 1.18;
       }
       /* Contacto y footer */
       .contact-title {
@@ -1214,21 +1221,27 @@
         .hero-subtitle { font-size: 0.75rem; }
         .hero-desc { font-size: 0.71rem; }
         .impact-phrase { font-size: 0.75rem; }
-        .section-title { font-size: 0.81rem; }
+        .section-title, .specialty-title, .service-card .section-title, .value-card .section-title, .cert-badge .section-title {
+          font-size: 1.01rem;
+        }
       }
       @media (max-width: 390px) {
         .hero-title { font-size: 0.89rem; }
         .hero-subtitle { font-size: 0.71rem; }
         .hero-desc { font-size: 0.67rem; }
         .impact-phrase { font-size: 0.71rem; }
-        .section-title { font-size: 0.77rem; }
+        .section-title, .specialty-title, .service-card .section-title, .value-card .section-title, .cert-badge .section-title {
+          font-size: 0.97rem;
+        }
       }
       @media (max-width: 360px) {
         .hero-title { font-size: 0.81rem; }
         .hero-subtitle { font-size: 0.65rem; }
         .hero-desc { font-size: 0.61rem; }
         .impact-phrase { font-size: 0.65rem; }
-        .section-title { font-size: 0.71rem; }
+        .section-title, .specialty-title, .service-card .section-title, .value-card .section-title, .cert-badge .section-title {
+          font-size: 0.91rem;
+        }
       }
     }
     /* Animación de partículas (simulación simple) */
