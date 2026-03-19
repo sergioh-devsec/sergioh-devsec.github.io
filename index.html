@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+      <meta charset="UTF-8">
       <!-- Compatibilidad y estabilidad cross-browser -->
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="format-detection" content="telephone=no">
@@ -8,47 +9,347 @@
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
       <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Premium Motion Design Architecture -->
+    <style>
+      /* ========== GLOBAL MOTION VARIABLES ========== */
+      :root {
+        --ease-premium: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+        --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        --ease-glow: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+        --duration-reveal: 0.7s;
+        --duration-glow: 1.2s;
+        --duration-light: 2s;
+      }
+      
+      /* ========== SECTION TITLES - ELEGANT REVEAL ========== */
+      .section-title {
+        opacity: 0;
+        transform: translateY(28px);
+        transition: opacity var(--duration-reveal) var(--ease-premium), 
+                    transform var(--duration-reveal) var(--ease-premium),
+                    text-shadow 0.5s var(--ease-smooth);
+        will-change: opacity, transform, text-shadow;
+        position: relative;
+      }
+      .section-title::before {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #00fff0cc 0%, transparent 100%);
+        transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s;
+      }
+      .section-title.section-title-animated {
+        opacity: 1;
+        transform: translateY(0);
+        text-shadow: 0 0 16px var(--cyan-title), 0 0 2px #00fff0cc;
+        animation: title-glow-pulse 0.6s var(--ease-glow) 0.2s 1;
+      }
+      .section-title.section-title-animated::before {
+        width: 40px;
+      }
+      @keyframes title-glow-pulse {
+        0% { text-shadow: 0 0 0 var(--cyan-title), 0 0 0 #00fff0cc; }
+        50% { text-shadow: 0 0 20px var(--cyan-title), 0 0 4px #00fff0cc; }
+        100% { text-shadow: 0 0 16px var(--cyan-title), 0 0 2px #00fff0cc; }
+      }
+      
+      /* ========== CARD REVEAL SYSTEM ========== */
+      .specialty-card, .service-card, .value-card, .cert-badge {
+        opacity: 0;
+        transform: translateY(24px) scale(0.96);
+        transition: opacity 0.5s var(--ease-premium),
+                    transform 0.5s var(--ease-premium),
+                    box-shadow 0.4s var(--ease-smooth);
+        will-change: opacity, transform;
+      }
+      .specialty-card.card-revealed, 
+      .service-card.card-revealed, 
+      .value-card.card-revealed,
+      .cert-badge.card-revealed {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      
+      /* ========== LIGHT SWEEP - Premium Border Animation ========== */
+      @keyframes light-sweep-border {
+        0% { background-position: -1000px 0; }
+        100% { background-position: 1000px 0; }
+      }
+      .premium-light-border {
+        background: linear-gradient(90deg, 
+          transparent 0%, 
+          #00fff0 50%, 
+          transparent 100%);
+        background-size: 1000px 2px;
+        background-position: -1000px 0;
+        animation: light-sweep-border 3s linear 1 forwards;
+      }
+      
+      /* ========== GLOW ANIMATIONS - Refined ========== */
+      @keyframes glow-pulse-refined {
+        0%, 100% { box-shadow: 0 0 12px #00fff055, 0 2px 8px #00000033; }
+        50% { box-shadow: 0 0 24px #00fff0aa, 0 2px 16px #00000055; }
+      }
+      @keyframes glow-shimmer {
+        0% { box-shadow: 0 0 0 0 rgba(0,255,240,0), 0 2px 8px rgba(0,0,0,0.2); }
+        50% { box-shadow: 0 0 20px 8px rgba(0,255,240,0.3), 0 2px 16px rgba(0,0,0,0.3); }
+        100% { box-shadow: 0 0 0 0 rgba(0,255,240,0), 0 2px 8px rgba(0,0,0,0.2); }
+      }
+      
+      /* ========== SCAN LINE - Elegant ========== */
+      @keyframes scan-reveal {
+        0% { 
+          clip-path: inset(100% 0 0 0);
+          opacity: 0;
+        }
+        1% { 
+          opacity: 1;
+        }
+        100% { 
+          clip-path: inset(0 0 0 0);
+          opacity: 1;
+        }
+      }
+      
+      /* ========== STAGGER SYSTEM ========== */
+      .stagger-item-1 { animation-delay: 0.08s; }
+      .stagger-item-2 { animation-delay: 0.16s; }
+      .stagger-item-3 { animation-delay: 0.24s; }
+      .stagger-item-4 { animation-delay: 0.32s; }
+      .stagger-item-5 { animation-delay: 0.4s; }
+      .stagger-item-6 { animation-delay: 0.48s; }
+      
+      /* ========== HERO - Cinematic ========== */
+      .hero-title {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+        animation: hero-title-emerge 0.9s var(--ease-bounce) 0.2s forwards;
+      }
+      @keyframes hero-title-emerge {
+        0% { 
+          opacity: 0; 
+          transform: translateY(-20px) scale(0.95);
+          text-shadow: 0 0 0 var(--cyan-title);
+        }
+        100% { 
+          opacity: 1; 
+          transform: translateY(0) scale(1);
+          text-shadow: 0 0 24px var(--cyan-title), 0 0 2px #00fff0cc;
+        }
+      }
+      
+      .hero-subtitle, .hero-desc {
+        opacity: 0;
+        animation: fade-up-elegant 0.7s var(--ease-smooth) forwards;
+      }
+      .hero-subtitle { animation-delay: 0.5s; }
+      .hero-desc { animation-delay: 0.65s; }
+      @keyframes fade-up-elegant {
+        0% { opacity: 0; transform: translateY(16px); filter: blur(4px); }
+        100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+      }
+      
+      .impact-phrase {
+        opacity: 0;
+        animation: impact-glow-enter 0.8s var(--ease-premium) 0.9s forwards;
+      }
+      @keyframes impact-glow-enter {
+        0% { 
+          opacity: 0; 
+          transform: translateY(12px) scale(0.98);
+        }
+        100% { 
+          opacity: 1; 
+          transform: translateY(0) scale(1);
+        }
+      }
+      
+      /* ========== ABOUT PANEL - Premium Elegance ========== */
+      .about {
+        opacity: 0;
+        animation: panel-activate 0.75s var(--ease-premium) forwards;
+      }
+      @keyframes panel-activate {
+        0% { 
+          opacity: 0; 
+          transform: translateY(20px);
+          box-shadow: 0 0 0 2px rgba(0,255,255,0);
+        }
+        50% {
+          box-shadow: 0 0 20px 0 rgba(0,255,255,0.1);
+        }
+        100% { 
+          opacity: 1; 
+          transform: translateY(0);
+          box-shadow: 0 0 12px 0 rgba(0,255,255,0.1);
+        }
+      }
+
+      /* ========== EXPERIENCE + CERTIFICATIONS: Premium Reveal ========== */
+      .experience, .certifications {
+        opacity: 0;
+        transform: translateY(20px);
+        will-change: opacity, transform;
+      }
+      .experience.card-revealed, .certifications.card-revealed {
+        opacity: 1;
+        animation: section-surge 0.72s var(--ease-premium) forwards;
+      }
+      @keyframes section-surge {
+        0% { opacity: 0; transform: translateY(20px); }
+        60% { opacity: 0.85; transform: translateY(-6px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ========== SPECIALTY CARDS - Module Activation ========== */
+      .specialty-card {
+        animation: module-activate 0.6s var(--ease-premium) forwards;
+      }
+      @keyframes module-activate {
+        0% { 
+          opacity: 0; 
+          transform: translateY(24px) scale(0.92);
+          box-shadow: 0 0 0 1px rgba(0,255,255,0), inset 0 0 0 0 rgba(0,255,255,0);
+        }
+        100% { 
+          opacity: 1; 
+          transform: translateY(0) scale(1);
+          box-shadow: 0 2px 16px rgba(0,255,255,0.15), inset 0 1px 0 rgba(0,255,255,0.2);
+        }
+      }
+      
+      /* ========== SERVICE CARDS - Premium Presence ========== */
+      .service-card {
+        animation: service-reveal 0.7s var(--ease-premium) forwards;
+        position: relative;
+        overflow: hidden;
+      }
+      .service-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, transparent 0%, rgba(0,255,255,0.05) 50%, transparent 100%);
+        opacity: 0;
+        animation: service-shimmer 2s var(--ease-smooth) 0.5s infinite;
+      }
+      @keyframes service-reveal {
+        0% { 
+          opacity: 0; 
+          transform: translateY(28px) scale(0.94);
+          clip-path: inset(50% 0 50% 0);
+        }
+        100% { 
+          opacity: 1; 
+          transform: translateY(0) scale(1);
+          clip-path: inset(0 0 0 0);
+        }
+      }
+      @keyframes service-shimmer {
+        0% { opacity: 0; }
+        50% { opacity: 0.4; }
+        100% { opacity: 0; }
+      }
+      
+      /* ========== VALUE CARDS - Insignia Tech ========== */
+      .value-card {
+        animation: value-activate 0.5s var(--ease-premium) forwards;
+      }
+      @keyframes value-activate {
+        0% { 
+          opacity: 0; 
+          transform: translateY(16px) rotateZ(-2deg);
+        }
+        100% { 
+          opacity: 1; 
+          transform: translateY(0) rotateZ(0deg);
+        }
+      }
+      
+      /* ========== CERT BADGE - Elite Tags ========== */
+      .cert-badge {
+        animation: badge-pop 0.4s var(--ease-bounce) forwards;
+      }
+      @keyframes badge-pop {
+        0% { 
+          opacity: 0; 
+          transform: scale(0.8) translateY(12px);
+        }
+        60% { 
+          transform: scale(1.1) translateY(-2px);
+        }
+        100% { 
+          opacity: 1; 
+          transform: scale(1) translateY(0);
+        }
+      }
+      
+      /* ========== INPUT FOCUS - Premium ========== */
+      /* The premium focus glow used across our forms. */
+      @keyframes input-premium-focus {
+        0% { 
+          box-shadow: 0 0 4px 0.5px #00fff055, inset 0 0 4px #00fff022;
+          transform: scale(1);
+        }
+        50% { 
+          box-shadow: 0 0 16px 2px #00fff099, inset 0 0 12px #00fff044;
+          transform: scale(1.01);
+        }
+        100% { 
+          box-shadow: 0 0 12px 2px #00fff099, inset 0 0 8px #00fff044;
+          transform: scale(1);
+        }
+      }
+
+      /* ========== FOOTER - Elegant Closure ========== */
+      @keyframes footer-emerge {
+        0% { 
+          opacity: 0; 
+          transform: translateY(16px);
+          border-top-color: transparent;
+        }
+        100% { 
+          opacity: 1; 
+          transform: translateY(0);
+          border-top-color: var(--border-cyan);
+        }
+      }
+      
+      /* ========== PREFERS REDUCED MOTION ========== */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
     <!-- Loader cybersec premium -->
     <style>
-                  /* Animación de entrada para títulos de sección (cybersec, premium, mobile-first) */
-                  .section-title {
-                    opacity: 0;
-                    transform: translateY(32px);
-                    transition: opacity 0.55s cubic-bezier(.4,1.6,.6,1), transform 0.55s cubic-bezier(.4,1.6,.6,1), box-shadow 0.32s cubic-bezier(.4,1.6,.6,1);
-                    will-change: opacity, transform, box-shadow;
-                  }
-                  .section-title.section-title-animated {
-                    opacity: 1;
-                    transform: none;
-                    box-shadow: 0 0 18px 0 #00fff055, 0 0 2px #00fff0cc;
-                    animation: section-title-pulse 0.38s cubic-bezier(.4,1.6,.6,1) 0.45s 1;
-                  }
-                  @keyframes section-title-pulse {
-                    0% { box-shadow: 0 0 0 0 #00fff000, 0 0 0 0 #00fff000; }
-                    60% { box-shadow: 0 0 18px 0 #00fff099, 0 0 2px #00fff0cc; }
-                    100% { box-shadow: 0 0 18px 0 #00fff055, 0 0 2px #00fff0cc; }
-                  }
-              html {
-                box-sizing: border-box;
-                -webkit-text-size-adjust: 100%;
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-                scroll-behavior: smooth;
-              }
-              *, *:before, *:after {
-                box-sizing: inherit;
-              }
-              img, svg {
-                max-width: 100%;
-                height: auto;
-                display: block;
-              }
-              canvas {
-                max-width: 100vw;
-                height: 100px !important;
-                display: block;
-              }
-          /* --- Mejoras de espaciado y padding para cards, badges y botones --- */
+      /* Global reset & base rendering (cyber-intel premium) */
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        scroll-behavior: smooth;
+      }
+      img, svg {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      canvas {
+        max-width: 100vw;
+        height: 100px !important;
+        display: block;
+      }
+      /* --- Mejoras de espaciado y padding para cards, badges y botones --- */
           .services, .values, .certifications {
             display: flex;
             flex-wrap: wrap;
@@ -209,12 +510,7 @@
                   .service-card.card-animated::after {
                     box-shadow: 0 0 22px 5px #00fff0cc inset, 0 0 0 0 #00fff000;
                     opacity: 1;
-                    animation: service-glow-pulse 0.38s cubic-bezier(.4,1.6,.6,1) 0.12s 1;
-                  }
-                  @keyframes service-glow-pulse {
-                    0% { box-shadow: 0 0 0 0 #00fff000 inset; }
-                    60% { box-shadow: 0 0 22px 10px #00fff0cc inset; }
-                    100% { box-shadow: 0 0 22px 5px #00fff0cc inset; }
+                    animation: glow-pulse-refined 0.6s ease-in-out 0.12s infinite;
                   }
                   .service-card:active {
                     filter: brightness(1.09) saturate(1.13);
@@ -272,12 +568,7 @@
                   .value-card.card-animated::after {
                     box-shadow: 0 0 16px 5px #00fff0cc inset, 0 0 0 0 #00fff000;
                     opacity: 1;
-                    animation: value-glow-pulse 0.38s cubic-bezier(.4,1.6,.6,1) 0.12s 1;
-                  }
-                  @keyframes value-glow-pulse {
-                    0% { box-shadow: 0 0 0 0 #00fff000 inset; }
-                    60% { box-shadow: 0 0 16px 10px #00fff0cc inset; }
-                    100% { box-shadow: 0 0 16px 5px #00fff0cc inset; }
+                    animation: glow-pulse-refined 0.6s ease-in-out 0.12s infinite;
                   }
                   .value-card:active {
                     filter: brightness(1.09) saturate(1.13);
@@ -539,9 +830,11 @@
         transform: none;
       }
     </style>
-  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CYBERSEC | Sergio Hernández</title>
+  <meta name="description" content="Ingeniero en diseño de software y redes con especialidad en ciberseguridad; desarrollo web seguro, hardening y consultoría tecnológica para proyectos críticos.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Ingeniero en Diseño de Software y Redes | Ciberseguridad | Sergio Hernández</title>
   <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -646,6 +939,24 @@
               letter-spacing: 0.03em;
               pointer-events: auto;
             }
+            .hero-buttons button {
+              background: transparent;
+              color: var(--text-main);
+              border: 2.5px solid var(--cyan-ui);
+              padding: 16px 38px;
+              font-size: 1.13rem;
+              font-weight: 700;
+              border-radius: 36px;
+              box-shadow: 0 2px 16px #00d0d022;
+              cursor: pointer;
+              transition: background 0.4s var(--ease-smooth), 
+                          color 0.4s var(--ease-smooth), 
+                          box-shadow 0.4s var(--ease-smooth), 
+                          border 0.4s var(--ease-smooth), 
+                          transform 0.3s var(--ease-premium);
+              backdrop-filter: blur(2px);
+              letter-spacing: 0.03em;
+            }
             .hero-buttons button:first-child {
               background: var(--cyan-ui);
               color: var(--bg-main);
@@ -656,9 +967,14 @@
               background: var(--cyan-title);
               color: var(--bg-main);
               border: 2.5px solid var(--cyan-title);
-              box-shadow: 0 0 32px var(--cyan-title);
-              transform: translateY(-2px) scale(1.04);
+              box-shadow: 0 0 40px var(--cyan-title), 0 0 20px #00fff0aa;
+              transform: translateY(-4px) scale(1.05);
               outline: none;
+            }
+            @keyframes button-pulse-glow {
+              0% { box-shadow: 0 0 40px var(--cyan-title), 0 0 20px #00fff0aa; }
+              50% { box-shadow: 0 0 60px var(--cyan-title), 0 0 30px #00fff0dd; }
+              100% { box-shadow: 0 0 40px var(--cyan-title), 0 0 20px #00fff0aa; }
             }
             .impact-phrase {
               margin-top: 24px;
@@ -871,25 +1187,28 @@
         border: 1.7px solid var(--border-cyan);
         padding: 32px 28px;
         margin-bottom: 28px;
-        transition: transform 0.18s, box-shadow 0.18s, border 0.18s, background 0.18s;
+        transition: transform 0.3s var(--ease-premium), 
+                    box-shadow 0.4s var(--ease-smooth), 
+                    border 0.3s var(--ease-smooth), 
+                    background 0.3s var(--ease-smooth),
+                    filter 0.3s var(--ease-smooth);
         position: relative;
         overflow: hidden;
         backdrop-filter: blur(7px) saturate(1.2);
         -webkit-backdrop-filter: blur(7px) saturate(1.2);
       }
-      .specialty-card, .service-card, .cert-badge, .value-card {
-        opacity: 0;
-        animation: cyber-fadein 0.7s cubic-bezier(.4,1.6,.6,1) forwards;
-        animation-delay: 0.15s;
-      }
       .specialty-card:hover, .service-card:hover, .cert-badge:hover, .value-card:hover {
-        transform: translateY(-8px) scale(1.07) rotate(-1.5deg);
-        box-shadow: 0 18px 56px #00fff0cc, 0 0 0 3.5px var(--cyan-title), 0 1.5px 0 0 #00fff055 inset;
+        transform: translateY(-12px) scale(1.08);
+        box-shadow: 0 24px 68px #00fff0aa, 0 0 0 3.5px rgba(0,255,255,0.5), 0 1.5px 0 0 #00fff055 inset;
         border-color: var(--cyan-title);
-        background: rgba(18, 28, 38, 0.99);
+        background: rgba(18, 28, 38, 0.95);
         z-index: 2;
-        opacity: 1;
-        filter: brightness(1.08) saturate(1.12);
+        filter: brightness(1.12) saturate(1.15);
+        animation: card-hover-glow 0.6s var(--ease-glow) infinite;
+      }
+      @keyframes card-hover-glow {
+        0%, 100% { box-shadow: 0 24px 68px #00fff0aa, 0 0 0 3.5px rgba(0,255,255,0.5), 0 1.5px 0 0 #00fff055 inset; }
+        50% { box-shadow: 0 24px 68px #00fff0dd, 0 0 0 5px rgba(0,255,255,0.3), 0 1.5px 0 0 #00fff088 inset; }
       }
       @keyframes cyber-fadein {
         0% { opacity: 0; transform: translateY(24px) scale(0.98); }
@@ -1194,6 +1513,28 @@
       backdrop-filter: blur(7px) saturate(1.2);
       -webkit-backdrop-filter: blur(7px) saturate(1.2);
       position: relative;
+      opacity: 0;
+      transform: translateY(24px);
+      will-change: opacity, transform;
+    }
+    .contact-section.card-revealed {
+      opacity: 1;
+      animation: contact-open 0.7s var(--ease-smooth) forwards;
+    }
+    @keyframes contact-open {
+      0% { 
+        opacity: 0; 
+        transform: translateY(24px) scale(0.97);
+        box-shadow: 0 2px 12px #00d0d011;
+      }
+      50% {
+        box-shadow: 0 0 24px 2px rgba(0,217,255,0.15);
+      }
+      100% { 
+        opacity: 1; 
+        transform: translateY(0) scale(1);
+        box-shadow: 0 4px 32px #00d0d022, 0 0 16px 1px rgba(0,255,255,0.1);
+      }
     }
     .contact-title {
       font-size: 1.45rem;
@@ -1235,13 +1576,20 @@
       padding: 13px;
       font-size: 1.07rem;
       font-family: inherit;
-      transition: border 0.2s, box-shadow 0.18s;
+      transition: all 0.3s var(--ease-smooth);
       box-shadow: 0 1.5px 0 0 #00fff033 inset;
+      position: relative;
+    }
+    .contact-form input:hover, .contact-form textarea:hover {
+      border-color: var(--cyan-title);
+      box-shadow: 0 0 8px 0.5px #00fff066, inset 0 1.5px 0 0 #00fff022;
     }
     .contact-form input:focus, .contact-form textarea:focus {
       border: 1.5px solid var(--cyan-title);
       outline: none;
-      box-shadow: 0 0 8px 1.5px #00fff088;
+      box-shadow: 0 0 12px 2px #00fff099, inset 0 0 8px #00fff044;
+      animation: input-premium-focus 0.4s var(--ease-smooth) forwards;
+      transition: all 0.3s var(--ease-smooth);
     }
     .contact-form button {
       background: linear-gradient(90deg, rgba(0,255,255,0.13) 0%, rgba(0,255,255,0.04) 100%);
@@ -1252,7 +1600,7 @@
       font-weight: 800;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.18s, color 0.18s, border 0.18s, box-shadow 0.18s;
+      transition: all 0.3s var(--ease-smooth);
       box-shadow: 0 2px 12px #00fff022;
       letter-spacing: 0.03em;
     }
@@ -1291,6 +1639,10 @@
       text-shadow: 0 0 8px var(--cyan-brand);
     }
     footer {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.65s var(--ease-smooth), transform 0.65s var(--ease-smooth);
+      will-change: opacity, transform;
       background: rgba(18, 28, 38, 0.92);
       color: var(--text-main);
       padding: 32px 0 18px 0;
@@ -1301,6 +1653,11 @@
       margin-top: 32px;
       border-radius: 18px 18px 0 0;
       position: relative;
+    }
+    footer.card-revealed {
+      opacity: 1;
+      transform: translateY(0);
+      animation: footer-emerge 0.7s var(--ease-smooth) forwards;
     }
     .footer-links {
       margin-top: 16px;
@@ -1392,56 +1749,68 @@
       }
       /* 3. SERVICE CARDS (compactas) */
       .services {
-        gap: 7px 0 !important;
-        margin-bottom: 10px;
-        padding-bottom: 2px;
+        gap: 12px 0 !important;
+        margin-bottom: 16px;
+        padding-bottom: 4px;
         flex-direction: column !important;
         align-items: stretch !important;
       }
       .service-card {
-        padding: 7px 12px !important;
+        padding: 16px 14px !important;
         font-size: 0.95rem;
-        border-radius: 8px;
-        margin-bottom: 3px;
+        border-radius: 10px;
+        margin-bottom: 0;
         min-height: unset !important;
         height: auto !important;
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        align-items: flex-start;
         box-sizing: border-box;
-        background: var(--panel-dark);
+        background: linear-gradient(120deg, rgba(0,255,255,0.08) 0%, rgba(18,28,38,0.88) 100%);
+        border-left: 3px solid var(--cyan-title);
+        transition: all 0.22s cubic-bezier(.4,1.6,.6,1);
       }
-      /* 4. BADGES & VALUE CARDS (chips compactos) */
+      .service-card:active {
+        transform: scale(0.98);
+        box-shadow: 0 0 16px #00fff0cc;
+      }
+      /* 4. BADGES & VALUE CARDS (compact premium) */
       .certifications, .values {
-        gap: 5px 0 !important;
-        margin-bottom: 8px;
-        padding-bottom: 2px;
+        gap: 8px 0 !important;
+        margin-bottom: 14px;
+        padding-bottom: 4px;
         flex-direction: column !important;
         align-items: stretch !important;
       }
       .cert-badge, .value-card {
         min-height: unset !important;
         height: auto !important;
-        padding: 5px 12px !important;
-        font-size: 0.93rem;
-        border-radius: 7px;
-        margin-bottom: 2px;
+        padding: 10px 12px !important;
+        font-size: 0.91rem;
+        border-radius: 8px;
+        margin-bottom: 0;
         display: flex;
         align-items: center;
-        gap: 7px;
+        gap: 8px;
         box-sizing: border-box;
-        line-height: 1.13;
-        background: var(--panel-dark);
+        line-height: 1.25;
+        background: linear-gradient(120deg, rgba(0,255,255,0.07) 0%, rgba(18,28,38,0.85) 100%);
+        border: 1px solid rgba(0,255,255,0.4);
+        transition: all 0.22s cubic-bezier(.4,1.6,.6,1);
       }
       .cert-badge i, .value-card i {
-        font-size: 0.89rem !important;
-        margin-right: 4px !important;
+        font-size: 0.95rem !important;
+        color: var(--cyan-title);
+        margin-right: 2px !important;
         margin-bottom: 0 !important;
+        flex-shrink: 0;
       }
       .value-card:before {
-        left: 4px;
-        top: 8px;
-        width: 5px;
-        height: 5px;
+        display: none;
+      }
+      .cert-badge:active, .value-card:active {
+        box-shadow: 0 0 12px #00fff055;
+        transform: scale(0.99);
       }
       /* 5. SECTION TITLES */
       .section-title {
@@ -1518,6 +1887,10 @@
       .contact-form input, .contact-form textarea {
         font-size: 1rem;
         padding: 9px;
+        transition: all 0.25s var(--ease-smooth);
+      }
+      .contact-form input:focus, .contact-form textarea:focus {
+        animation: input-premium-focus 0.35s var(--ease-smooth) forwards;
       }
       .contact-form button {
         font-size: 1rem;
@@ -1607,6 +1980,65 @@
             transition: box-shadow 0.18s, filter 0.18s;
           }
         }
+    /* ===== MOBILE ANIMATIONS: CERT-BADGE, SERVICE-CARD, VALUE-CARD ===== */
+    @media (max-width: 600px) {
+      /* Animaciones de entrada para cert-badge - staggered reveal */
+      .cert-badge {
+        opacity: 0;
+        transform: translateY(12px);
+        animation: mobile-badge-enter 0.4s cubic-bezier(.4,1.6,.6,1) forwards;
+      }
+      .certifications .cert-badge:nth-child(2) { animation-delay: 0.06s; }
+      .certifications .cert-badge:nth-child(3) { animation-delay: 0.12s; }
+      .certifications .cert-badge:nth-child(4) { animation-delay: 0.18s; }
+      .certifications .cert-badge:nth-child(5) { animation-delay: 0.24s; }
+      .certifications .cert-badge:nth-child(6) { animation-delay: 0.3s; }
+      .certifications .cert-badge:nth-child(7) { animation-delay: 0.36s; }
+      .certifications .cert-badge:nth-child(8) { animation-delay: 0.42s; }
+      .certifications .cert-badge:nth-child(9) { animation-delay: 0.48s; }
+      .certifications .cert-badge:nth-child(10) { animation-delay: 0.54s; }
+      @keyframes mobile-badge-enter {
+        0% { opacity: 0; transform: translateY(12px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      /* Animaciones de entrada para service-card - reveal progresivo */
+      .service-card {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      .services .service-card:nth-child(2) { animation-delay: 0.08s; }
+      .services .service-card:nth-child(3) { animation-delay: 0.15s; }
+      .services .service-card:nth-child(4) { animation-delay: 0.22s; }
+      .services .service-card:nth-child(5) { animation-delay: 0.29s; }
+      .services .service-card:nth-child(6) { animation-delay: 0.36s; }
+      .services .service-card:nth-child(7) { animation-delay: 0.43s; }
+      .services .service-card {
+        animation: mobile-service-enter 0.5s cubic-bezier(.4,1.6,.6,1) forwards;
+      }
+      @keyframes mobile-service-enter {
+        0% { opacity: 0; transform: translateY(14px); box-shadow: 0 0 0 0 rgba(0,255,255,0); }
+        100% { opacity: 1; transform: translateY(0); box-shadow: 0 2px 8px rgba(0,255,255,0.15); }
+      }
+      /* Animaciones de entrada para value-card - entrada fluida */
+      .value-card {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      .values .value-card:nth-child(2) { animation-delay: 0.06s; }
+      .values .value-card:nth-child(3) { animation-delay: 0.12s; }
+      .values .value-card:nth-child(4) { animation-delay: 0.18s; }
+      .values .value-card:nth-child(5) { animation-delay: 0.24s; }
+      .values .value-card:nth-child(6) { animation-delay: 0.3s; }
+      .values .value-card:nth-child(7) { animation-delay: 0.36s; }
+      .values .value-card:nth-child(8) { animation-delay: 0.42s; }
+      .values .value-card {
+        animation: mobile-value-enter 0.4s cubic-bezier(.4,1.6,.6,1) forwards;
+      }
+      @keyframes mobile-value-enter {
+        0% { opacity: 0; transform: translateY(10px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+    }
     /* Animación de partículas (simulación simple) */
     #particles {
       position: absolute;
@@ -1617,96 +2049,779 @@
       pointer-events: none;
       z-index: 0;
     }
-    </style>
+
+    /* Senior refinement layer: visual consolidation without changing structure */
+    :root {
+      --panel-refined: linear-gradient(180deg, rgba(12, 31, 39, 0.92) 0%, rgba(8, 21, 27, 0.96) 100%);
+      --card-refined: linear-gradient(180deg, rgba(13, 35, 43, 0.9) 0%, rgba(8, 20, 27, 0.95) 100%);
+      --border-refined: rgba(0, 230, 255, 0.28);
+      --border-refined-strong: rgba(0, 255, 240, 0.56);
+      --text-muted: rgba(184, 246, 255, 0.78);
+      --surface-refined-shadow: 0 18px 44px rgba(0, 0, 0, 0.24);
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top, rgba(0, 255, 240, 0.11), transparent 26%),
+        linear-gradient(180deg, #07161b 0%, #071217 100%);
+    }
+
+    .hero-bg {
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 15% 18%, rgba(0, 255, 240, 0.12), transparent 22%),
+        radial-gradient(circle at 85% 20%, rgba(0, 184, 201, 0.15), transparent 24%),
+        linear-gradient(135deg, rgba(4, 20, 25, 0.98) 0%, rgba(9, 28, 35, 0.94) 52%, rgba(5, 14, 18, 1) 100%);
+    }
+
+    .hero-overlay {
+      background:
+        linear-gradient(180deg, rgba(5, 18, 23, 0.48) 0%, rgba(5, 17, 22, 0.78) 70%, rgba(7, 22, 27, 0.96) 100%),
+        linear-gradient(90deg, rgba(0, 255, 240, 0.04), transparent 30%, transparent 70%, rgba(0, 184, 201, 0.05));
+      border-radius: 0 0 40px 40px;
+      box-shadow: inset 0 -1px 0 rgba(0, 255, 240, 0.18), 0 20px 60px rgba(0, 0, 0, 0.28);
+    }
+
+    .hero-content {
+      padding-top: 40px;
+      padding-bottom: 28px;
+    }
+
+    .hero-title {
+      font-size: clamp(2.8rem, 5vw, 3.7rem);
+      letter-spacing: 0.14em;
+      margin-bottom: 16px;
+      text-shadow: 0 0 26px rgba(0, 255, 240, 0.24), 0 0 2px rgba(0, 255, 240, 0.9);
+    }
+
+    .hero-subtitle {
+      max-width: 920px;
+      font-size: clamp(1.08rem, 2vw, 1.34rem);
+      margin-bottom: 16px;
+      color: var(--text-support);
+    }
+
+    .hero-desc {
+      max-width: 760px;
+      margin-bottom: 34px;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    .hero-buttons {
+      gap: 16px;
+      margin-bottom: 26px;
+    }
+
+    .hero-buttons button {
+      min-width: 190px;
+      padding: 16px 30px !important;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 230, 255, 0.48);
+      background: linear-gradient(180deg, rgba(5, 28, 35, 0.82) 0%, rgba(8, 20, 27, 0.94) 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 12px 30px rgba(0, 0, 0, 0.18);
+      transition: transform 0.25s var(--ease-premium), box-shadow 0.25s var(--ease-smooth), border-color 0.25s var(--ease-smooth), background 0.25s var(--ease-smooth), color 0.25s var(--ease-smooth);
+    }
+
+    .hero-buttons button:first-child {
+      background: linear-gradient(180deg, rgba(0, 230, 255, 0.9) 0%, rgba(0, 184, 201, 0.78) 100%);
+      color: #041216;
+      border-color: rgba(0, 255, 240, 0.8);
+      box-shadow: 0 14px 36px rgba(0, 230, 255, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    }
+
+    .hero-buttons button:hover,
+    .hero-buttons button:focus-visible {
+      transform: translateY(-3px);
+      border-color: rgba(0, 255, 240, 0.72);
+      box-shadow: 0 16px 36px rgba(0, 255, 240, 0.14), 0 0 0 1px rgba(0, 255, 240, 0.18);
+      background: linear-gradient(180deg, rgba(10, 39, 48, 0.94) 0%, rgba(8, 22, 29, 0.98) 100%);
+    }
+
+    .hero-buttons button:first-child:hover,
+    .hero-buttons button:first-child:focus-visible {
+      background: linear-gradient(180deg, rgba(77, 247, 255, 0.94) 0%, rgba(0, 213, 227, 0.88) 100%);
+      color: #041216;
+    }
+
+    .impact-phrase {
+      max-width: 720px;
+      font-size: 1.04rem;
+      line-height: 1.7;
+      letter-spacing: 0.025em;
+      text-shadow: 0 0 14px rgba(0, 255, 240, 0.2);
+    }
+
+    main {
+      padding-top: 44px;
+      padding-bottom: 28px;
+    }
+
+    section {
+      margin-bottom: 42px;
+    }
+
+    .section-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      font-size: clamp(1.65rem, 3vw, 2.1rem);
+      letter-spacing: 0.05em;
+      text-shadow: 0 0 16px rgba(0, 255, 240, 0.14);
+    }
+
+    .section-title::after {
+      width: 56px !important;
+      height: 2px !important;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(0, 255, 240, 0.9) 0%, rgba(0, 184, 201, 0.24) 100%) !important;
+      opacity: 0.78;
+      box-shadow: 0 0 16px rgba(0, 255, 240, 0.16);
+    }
+
+    .about,
+    .experience,
+    .contact-section {
+      background: var(--panel-refined);
+      border: 1px solid var(--border-refined);
+      border-radius: 24px;
+      box-shadow: 0 0 0 1px rgba(0, 255, 240, 0.08), var(--surface-refined-shadow);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .about,
+    .experience {
+      padding: 34px 32px;
+    }
+
+    .about-text,
+    .experience {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.85;
+    }
+
+    .about-text strong {
+      color: var(--text-main);
+    }
+
+    .specialties,
+    .services,
+    .certifications,
+    .values {
+      align-items: stretch;
+      gap: 22px !important;
+    }
+
+    .services .section-title,
+    .certifications .section-title,
+    .values .section-title {
+      flex-basis: 100%;
+      margin-bottom: 4px;
+    }
+
+    .specialty-card,
+    .service-card,
+    .cert-badge,
+    .value-card {
+      border-radius: 22px;
+      border: 1px solid var(--border-refined);
+      background: var(--card-refined);
+      box-shadow: 0 0 0 1px rgba(0, 255, 240, 0.05), 0 18px 32px rgba(0, 0, 0, 0.16);
+      transition: transform 0.26s var(--ease-premium), border-color 0.26s var(--ease-smooth), box-shadow 0.26s var(--ease-smooth), background 0.26s var(--ease-smooth);
+    }
+
+    .specialty-card:hover,
+    .service-card:hover,
+    .cert-badge:hover,
+    .value-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--border-refined-strong);
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.24), 0 0 0 1px rgba(0, 255, 240, 0.12);
+      animation: none;
+      filter: none;
+    }
+
+    .specialty-card,
+    .service-card {
+      max-width: 360px;
+      padding: 28px 26px 24px !important;
+    }
+
+    .specialty-card {
+      text-align: left;
+    }
+
+    .specialty-card::before {
+      display: none;
+    }
+
+    .specialty-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 18px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(0, 255, 240, 0.14), rgba(0, 184, 201, 0.08));
+      color: var(--cyan-title);
+      font-size: 1.28rem;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 14px rgba(0, 255, 240, 0.12);
+    }
+
+    .specialty-title {
+      margin-bottom: 10px;
+      color: var(--text-main);
+      font-size: 1.16rem;
+      font-weight: 800;
+      line-height: 1.35;
+      letter-spacing: 0.02em;
+      text-shadow: none;
+    }
+
+    .specialty-desc {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      line-height: 1.72;
+    }
+
+    .service-card {
+      padding-top: 30px !important;
+      padding-left: 74px !important;
+      font-size: 0.98rem;
+      line-height: 1.75;
+      color: var(--text-muted);
+      border-left: 1px solid var(--border-refined);
+    }
+
+    .service-card::before {
+      content: "\2699";
+      top: 24px;
+      left: 24px;
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(0, 255, 240, 0.15), rgba(0, 184, 201, 0.06));
+      color: var(--cyan-title);
+      font-size: 1rem;
+      box-shadow: 0 0 12px rgba(0, 255, 240, 0.1);
+      filter: none;
+    }
+
+    .service-card strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-main) !important;
+      font-size: 1.08rem;
+      line-height: 1.45;
+    }
+
+    .cert-badge,
+    .value-card {
+      min-height: 74px;
+      padding: 18px 20px !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.98rem;
+      line-height: 1.45;
+      color: var(--text-main);
+    }
+
+    .cert-badge {
+      justify-content: flex-start;
+      background: linear-gradient(180deg, rgba(10, 32, 39, 0.94) 0%, rgba(8, 22, 29, 0.96) 100%);
+    }
+
+    .cert-badge i {
+      color: var(--cyan-title);
+      font-size: 1.14rem;
+      text-shadow: 0 0 10px rgba(0, 255, 240, 0.22);
+    }
+
+    .value-card {
+      justify-content: center;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(10, 29, 36, 0.9) 0%, rgba(8, 20, 27, 0.95) 100%);
+    }
+
+    .value-card::before {
+      top: auto;
+      left: auto;
+      width: 8px;
+      height: 8px;
+      position: static;
+      border-radius: 50%;
+      background: var(--cyan-title);
+      box-shadow: 0 0 14px rgba(0, 255, 240, 0.36);
+    }
+
+    .contact-section {
+      padding: 40px 32px 34px;
+    }
+
+    .contact-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+      font-size: 1.5rem;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 14px rgba(0, 255, 240, 0.16);
+    }
+
+    .contact-title::before {
+      content: "\f0e0";
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(0, 255, 240, 0.14), rgba(0, 184, 201, 0.06));
+      box-shadow: 0 0 14px rgba(0, 255, 240, 0.12);
+      filter: none;
+      margin-right: 0;
+      opacity: 1;
+    }
+
+    .contact-form {
+      max-width: 460px;
+      margin-bottom: 26px;
+      padding: 24px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 230, 255, 0.2);
+      background: linear-gradient(180deg, rgba(6, 21, 27, 0.72) 0%, rgba(8, 25, 31, 0.94) 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 18px 32px rgba(0, 0, 0, 0.16);
+      text-align: left;
+    }
+
+    .contact-form label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.83rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-support);
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      border-radius: 14px;
+      padding: 14px 15px;
+      border: 1px solid rgba(0, 230, 255, 0.24);
+      background: rgba(4, 16, 22, 0.92);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    }
+
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder {
+      color: rgba(184, 246, 255, 0.42);
+    }
+
+    .contact-form input:hover,
+    .contact-form textarea:hover {
+      border-color: rgba(0, 255, 240, 0.4);
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      background: rgba(5, 20, 26, 0.96);
+      box-shadow: 0 0 0 4px rgba(0, 255, 240, 0.1), inset 0 0 10px rgba(0, 255, 240, 0.05);
+    }
+
+    .contact-form button {
+      margin-top: 4px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(0, 255, 240, 0.54);
+      background: linear-gradient(180deg, rgba(0, 230, 255, 0.88) 0%, rgba(0, 184, 201, 0.82) 100%);
+      color: #041216;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      box-shadow: 0 16px 30px rgba(0, 230, 255, 0.14);
+    }
+
+    .contact-form button:hover,
+    .contact-form button:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 36px rgba(0, 230, 255, 0.18);
+      filter: brightness(1.04);
+    }
+
+    .contact-links {
+      gap: 14px;
+      margin-top: 4px;
+      padding: 14px 0 18px;
+      border-top: 1px solid rgba(0, 230, 255, 0.14);
+      border-bottom: 1px solid rgba(0, 230, 255, 0.14);
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      border: 1px solid rgba(0, 230, 255, 0.24);
+      background: linear-gradient(180deg, rgba(8, 29, 36, 0.9) 0%, rgba(6, 18, 24, 0.96) 100%);
+      color: var(--cyan-ui);
+      font-size: 1.28rem;
+      text-decoration: none;
+      text-shadow: none;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 24px rgba(0, 0, 0, 0.18);
+      transition: transform 0.22s var(--ease-premium), color 0.22s var(--ease-smooth), border-color 0.22s var(--ease-smooth), box-shadow 0.22s var(--ease-smooth);
+    }
+
+    .contact-link:hover,
+    .contact-link:focus-visible {
+      transform: translateY(-3px);
+      color: var(--cyan-title);
+      box-shadow: 0 18px 30px rgba(0, 0, 0, 0.24), 0 0 0 1px rgba(0, 255, 240, 0.12);
+    }
+
+    .cta {
+      max-width: 700px;
+      margin: 18px auto 0;
+      color: var(--text-support);
+      line-height: 1.8;
+      text-shadow: none;
+    }
+
+    footer {
+      margin: 34px 24px 0;
+      padding: 28px 24px 22px;
+      border-radius: 24px 24px 0 0;
+      border: 1px solid rgba(0, 230, 255, 0.22);
+      background: linear-gradient(180deg, rgba(8, 24, 30, 0.96) 0%, rgba(5, 15, 20, 0.98) 100%);
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .footer-links {
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .footer-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 230, 255, 0.14);
+      background: rgba(8, 28, 34, 0.68);
+      color: var(--text-support);
+      text-decoration: none;
+      text-shadow: none;
+    }
+
+    .footer-link:hover,
+    .footer-link:focus-visible {
+      transform: translateY(-2px);
+      color: var(--cyan-title);
+      border-color: rgba(0, 255, 240, 0.36);
+      background: rgba(9, 34, 41, 0.9);
+    }
+
+    @media (max-width: 600px) {
+      main {
+        padding: 16px 10px 18px;
+      }
+
+      section {
+        margin-bottom: 18px;
+      }
+
+      .hero-bg {
+        min-height: 300px;
+        height: 300px;
+      }
+
+      .hero-content {
+        padding-top: 18px;
+        padding-bottom: 18px;
+      }
+
+      .hero-title {
+        font-size: 1.58rem;
+        letter-spacing: 0.08em;
+        margin-bottom: 10px;
+      }
+
+      .hero-subtitle {
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 10px;
+      }
+
+      .hero-desc {
+        font-size: 0.91rem;
+        line-height: 1.55;
+        margin-bottom: 16px;
+        max-width: 95vw;
+      }
+
+      .hero-buttons {
+        gap: 10px !important;
+      }
+
+      .hero-buttons button {
+        width: 100%;
+        min-width: 0;
+        padding: 12px 18px !important;
+        font-size: 0.96rem;
+      }
+
+      .impact-phrase {
+        font-size: 0.93rem;
+        line-height: 1.5;
+        max-width: 95vw;
+      }
+
+      .section-title {
+        font-size: 1.22rem;
+        margin-bottom: 12px;
+      }
+
+      .section-title::after {
+        width: 40px !important;
+      }
+
+      .about,
+      .experience,
+      .contact-section {
+        padding: 18px 14px;
+        border-radius: 16px;
+      }
+
+      .about-text,
+      .experience {
+        font-size: 0.95rem;
+        line-height: 1.62;
+      }
+
+      .specialties,
+      .services,
+      .certifications,
+      .values {
+        flex-direction: column !important;
+        gap: 10px !important;
+      }
+
+      .specialty-card,
+      .service-card,
+      .cert-badge,
+      .value-card {
+        width: 100%;
+        min-height: 0;
+        border-radius: 16px;
+      }
+
+      .specialty-card {
+        padding: 16px 14px !important;
+      }
+
+      .specialty-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 14px;
+        font-size: 1rem;
+      }
+
+      .specialty-title {
+        font-size: 1rem;
+      }
+
+      .specialty-desc {
+        font-size: 0.9rem;
+        line-height: 1.55;
+      }
+
+      .service-card {
+        padding: 18px 14px 16px 60px !important;
+        font-size: 0.91rem;
+        line-height: 1.6;
+      }
+
+      .service-card::before {
+        top: 18px;
+        left: 16px;
+        width: 28px;
+        height: 28px;
+        border-radius: 10px;
+        font-size: 0.88rem;
+      }
+
+      .service-card strong {
+        font-size: 0.98rem;
+        margin-bottom: 6px;
+      }
+
+      .cert-badge,
+      .value-card {
+        justify-content: flex-start;
+        padding: 14px 14px !important;
+        font-size: 0.9rem;
+        line-height: 1.45;
+        text-align: left;
+      }
+
+      .contact-title {
+        font-size: 1.15rem;
+        margin-bottom: 14px;
+      }
+
+      .contact-title::before {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+      }
+
+      .contact-form {
+        padding: 16px 12px;
+        margin-bottom: 18px;
+        border-radius: 16px;
+      }
+
+      .contact-form label {
+        font-size: 0.76rem;
+      }
+
+      .contact-form input,
+      .contact-form textarea {
+        padding: 11px 12px;
+        font-size: 0.96rem;
+        border-radius: 12px;
+      }
+
+      .contact-form button {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        border-radius: 12px;
+      }
+
+      .contact-links {
+        gap: 10px;
+        padding: 12px 0 14px;
+      }
+
+      .contact-link {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        font-size: 1.14rem;
+      }
+
+      .cta {
+        font-size: 0.94rem;
+        line-height: 1.55;
+      }
+
+      footer {
+        margin: 18px 10px 0;
+        padding: 18px 12px 14px;
+        border-radius: 16px 16px 0 0;
+        font-size: 0.92rem;
+      }
+
+      .footer-links {
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .footer-link {
+        width: 100%;
+        justify-content: center;
+        font-size: 0.9rem;
+        padding: 10px 12px;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .hero-title {
+        font-size: 1.42rem;
+      }
+
+      .section-title {
+        font-size: 1.12rem;
+      }
+
+      .service-card,
+      .specialty-desc,
+      .cert-badge,
+      .value-card,
+      .contact-form input,
+      .contact-form textarea,
+      .contact-form button,
+      .cta {
+        font-size: 0.88rem;
+      }
+    }
+  </style>
   </head>
 <body>
           <script>
-            // Animaciones y microinteracciones mobile-only para servicios y valores
+            // ========== PREMIUM ANIMATION ORCHESTRATOR - MASTER CONTROLLER ==========
             document.addEventListener('DOMContentLoaded', function() {
-              const isMobile = window.matchMedia('(max-width: 600px)').matches;
               const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-              if (!isMobile || prefersReducedMotion) return;
-              // Servicios y valores
-              const cards = document.querySelectorAll('.service-card, .value-card');
-              if ('IntersectionObserver' in window) {
-                const cardObs = new IntersectionObserver((entries, observer) => {
-                  entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                      entry.target.classList.add('card-animated');
-                      observer.unobserve(entry.target);
-                    }
-                  });
-                }, { threshold: 0.18 });
-                cards.forEach(c => cardObs.observe(c));
-              } else {
-                cards.forEach(c => c.classList.add('card-animated'));
+              const hasIntersectionObserver = 'IntersectionObserver' in window;
+              
+              if (prefersReducedMotion) {
+                // Immediate reveal for accessibility
+                document.querySelectorAll('.section-title').forEach(t => t.classList.add('section-title-animated'));
+                document.querySelectorAll('.specialty-card, .service-card, .value-card, .cert-badge, .about, .contact-section, footer').forEach(c => c.classList.add('card-revealed'));
+                return;
               }
-            });
-          </script>
-        <script>
-          // Microinteracciones y animaciones solo para móvil (IntersectionObserver, prefers-reduced-motion)
-          document.addEventListener('DOMContentLoaded', function() {
-            const isMobile = window.matchMedia('(max-width: 600px)').matches;
-            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            if (!isMobile || prefersReducedMotion) return;
-            // Section titles
-            const titles = document.querySelectorAll('.section-title');
-            if ('IntersectionObserver' in window) {
-              const obs = new IntersectionObserver((entries, observer) => {
+              
+              if (!hasIntersectionObserver) {
+                // Fallback for older browsers
+                document.querySelectorAll('.section-title').forEach(t => t.classList.add('section-title-animated'));
+                document.querySelectorAll('.specialty-card, .service-card, .value-card, .cert-badge, .about, .contact-section, footer').forEach(c => c.classList.add('card-revealed'));
+                return;
+              }
+              
+              // Premium Section Titles - Elegant Light Sweep
+              const titleObs = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                   if (entry.isIntersecting) {
                     entry.target.classList.add('section-title-animated');
                     observer.unobserve(entry.target);
                   }
                 });
-              }, { threshold: 0.6 });
-              titles.forEach(t => obs.observe(t));
-            } else {
-              titles.forEach(t => t.classList.add('section-title-animated'));
-            }
-            // Cards (service, badge, value, specialty)
-            const cards = document.querySelectorAll('.service-card, .cert-badge, .value-card, .specialty-card');
-            if ('IntersectionObserver' in window) {
+              }, { threshold: 0.5, rootMargin: '50px' });
+              
+              document.querySelectorAll('.section-title').forEach(t => titleObs.observe(t));
+              
+              // Premium Card Reveals - Cinematographic Stagger
               const cardObs = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                   if (entry.isIntersecting) {
-                    entry.target.classList.add('card-animated');
+                    entry.target.classList.add('card-revealed');
                     observer.unobserve(entry.target);
                   }
                 });
-              }, { threshold: 0.2 });
-              cards.forEach(c => cardObs.observe(c));
-            } else {
-              cards.forEach(c => c.classList.add('card-animated'));
-            }
-          });
-        </script>
-      <script>
-        // Animación de entrada para títulos de sección (IntersectionObserver, mobile-first)
-        document.addEventListener('DOMContentLoaded', function() {
-          const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-          if (prefersReducedMotion) return;
-          const titles = document.querySelectorAll('.section-title');
-          if (!('IntersectionObserver' in window)) {
-            // Fallback: mostrar todos
-            titles.forEach(t => t.classList.add('section-title-animated'));
-            return;
-          }
-          const obs = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('section-title-animated');
-                observer.unobserve(entry.target);
-              }
+              }, { threshold: 0.1, rootMargin: '30px' });
+              
+              const allCards = document.querySelectorAll('.specialty-card, .service-card, .value-card, .cert-badge, .about, .experience, .certifications, .contact-section, footer');
+              allCards.forEach((card, index) => {
+                cardObs.observe(card);
+              });
             });
-          }, {
-            threshold: 0.6
-          });
-          titles.forEach(t => {
-            obs.observe(t);
-          });
-        });
-      </script>
+          </script>
     <!-- Loader cybersec premium -->
     <div class="cyber-loader-bg" id="cyberLoader">
       <span class="cyber-loader-glitch">CYBERSEC</span>
@@ -1735,12 +2850,12 @@
     </div>
     <div class="hero-content">
       <div class="hero-title cyber-fadein" id="heroTitle">CYBERSEC</div>
-      <div class="hero-subtitle cyber-fadein">Desarrollo Web | Landing Pages | Portafolios Profesionales | Automatización</div>
-      <div class="hero-desc cyber-fadein">Soy Sergio Hernández, desarrollador web especializado en crear páginas profesionales, landing pages de alto impacto, portafolios digitales y soluciones web prácticas para negocios y profesionales.</div>
+      <div class="hero-subtitle cyber-fadein">Ingeniero en Diseño de Software y Redes con especialidad en Ciberseguridad</div>
+      <div class="hero-desc cyber-fadein">Combino ingeniería de software, diseño de redes y ciberseguridad para entregar soluciones tecnológicas sólidas: desarrollo web seguro, hardening de infraestructuras y protección de datos desde el diseño.</div>
       <div class="hero-buttons cyber-fadein">
-        <button onclick="scrollToSection('about')">Ver perfil profesional</button>
-        <button onclick="scrollToSection('services')">Mis servicios</button>
-        <button onclick="scrollToSection('contact')">Contactar</button>
+        <button type="button" data-scroll-to="about">Ver perfil profesional</button>
+        <button type="button" data-scroll-to="services">Mis servicios</button>
+        <button type="button" data-scroll-to="contact">Contactar</button>
       </div>
       <div class="impact-phrase cyber-fadein">“Confianza, tecnología y seguridad: tu entorno digital protegido.”</div>
       <script>
@@ -1748,6 +2863,29 @@
         window.addEventListener('DOMContentLoaded', function() {
           const loader = document.getElementById('cyberLoader');
           const fadeEls = document.querySelectorAll('.cyber-fadein');
+
+          // Seguridad: evitar handlers inline; uso de data-scroll-to para navegación interna
+          document.querySelectorAll('.hero-buttons button[data-scroll-to]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const target = btn.dataset.scrollTo;
+              if (target) scrollToSection(target);
+            });
+          });
+
+          // Formulario de contacto (sitio estático): previene envío accidental y abre cliente de correo
+          const contactForm = document.querySelector('.contact-form');
+          if (contactForm) {
+            contactForm.addEventListener('submit', event => {
+              event.preventDefault();
+              const name = (contactForm.querySelector('input[type="text"]') || {}).value || '';
+              const email = (contactForm.querySelector('input[type="email"]') || {}).value || '';
+              const message = (contactForm.querySelector('textarea') || {}).value || '';
+              const subject = encodeURIComponent('Contacto desde sitio - ' + (name || 'Nuevo mensaje'));
+              const body = encodeURIComponent(`Nombre: ${name}\nCorreo: ${email}\n\n${message}`);
+              window.location.href = `mailto:sergioh.cybersec@hotmail.com?subject=${subject}&body=${body}`;
+            });
+          }
+
           // Bloquea scroll mientras loader
           document.body.style.overflow = 'hidden';
           setTimeout(() => {
@@ -1770,8 +2908,8 @@
     <section id="about" class="about">
       <div class="section-title">Sobre mí</div>
       <div class="about-text">
-        Desarrollador web enfocado en crear soluciones digitales prácticas, rápidas y orientadas a resultados. Mi experiencia abarca diseño y desarrollo de páginas web profesionales, landing pages con alto impacto comercial, portafolios digitales, rediseño de sitios y automatización de procesos. Destaco por mi enfoque técnico, capacidad de entrega rápida y orientación a maximizar el valor para el cliente.<br><br>
-        <strong>Habilidades:</strong> desarrollo web responsivo, landing pages optimizadas, portafolios profesionales, diseño UI/UX, rediseño web, formularios automatizados, optimización de velocidad, mejora de presencia digital.
+        Soy ingeniero en diseño de software y redes con especialidad en ciberseguridad. Mi práctica profesional une el desarrollo de software, la arquitectura de redes y la protección de sistemas para ofrecer soluciones que resistan amenazas, escalen con seguridad y respondan a objetivos de negocio claros.<br><br>
+        <strong>Habilidades:</strong> ingeniería de software, diseño de redes, desarrollo web seguro, seguridad de la información, hardening básico, análisis técnico de postura, ciberseguridad, automatización y protección digital.
       </div>
     </section>
     <section class="specialties">
@@ -1812,38 +2950,42 @@
     </section>
     <section class="certifications">
       <div class="section-title">Habilidades técnicas</div>
-      <div class="cert-badge"><i class="fas fa-code"></i> HTML5 & CSS3</div>
-      <div class="cert-badge"><i class="fas fa-code"></i> JavaScript moderno</div>
-      <div class="cert-badge"><i class="fas fa-certificate"></i> Diseño responsivo</div>
-      <div class="cert-badge"><i class="fas fa-certificate"></i> Optimización SEO</div>
-      <div class="cert-badge"><i class="fas fa-certificate"></i> Automatización web</div>
-      <div class="cert-badge"><i class="fas fa-certificate"></i> Integración de herramientas</div>
+      <div class="cert-badge"><i class="fas fa-cogs"></i> Ingeniería de software</div>
+      <div class="cert-badge"><i class="fas fa-network-wired"></i> Diseño y arquitectura de redes</div>
+      <div class="cert-badge"><i class="fas fa-shield-alt"></i> Desarrollo web seguro</div>
+      <div class="cert-badge"><i class="fas fa-search"></i> Evaluación de seguridad web</div>
+      <div class="cert-badge"><i class="fas fa-lock"></i> Hardening básico</div>
+      <div class="cert-badge"><i class="fas fa-user-shield"></i> Ciberseguridad y protección</div>
+      <div class="cert-badge"><i class="fas fa-chart-line"></i> Análisis técnico y postura</div>
+      <div class="cert-badge"><i class="fas fa-robot"></i> Automatización y DevSecOps</div>
+      <div class="cert-badge"><i class="fas fa-file-alt"></i> Seguridad de la información</div>
+      <div class="cert-badge"><i class="fas fa-check-circle"></i> Buenas prácticas y cumplimiento</div>
     </section>
     <section id="services" class="services">
       <div class="section-title">Servicios</div>
       <div class="service-card">
-        <strong style="color: var(--cyan-title);">Página Web Profesional</strong><br>
-        Sitio web completo para tu negocio o marca personal. Moderno, responsivo y optimizado para conversiones.
+        <strong style="color: var(--cyan-title);">Desarrollo Web Seguro</strong><br>
+        Proyectos web con arquitectura robusta, rendimiento y seguridad integrada desde el diseño.
       </div>
       <div class="service-card">
-        <strong style="color: var(--cyan-title);">Landing Page</strong><br>
-        Página de aterrizaje de alto impacto para captar leads, promocionar productos o campañas específicas.
+        <strong style="color: var(--cyan-title);">Landing Pages con Seguridad</strong><br>
+        Campañas web enfocadas en conversiones, construidas con controles y prácticas de ciberseguridad.
       </div>
       <div class="service-card">
-        <strong style="color: var(--cyan-title);">Portafolio Digital</strong><br>
-        Portafolio profesional para mostrar tu trabajo, proyectos y experiencia de forma impactante.
+        <strong style="color: var(--cyan-title);">Portafolio y Presencia Digital</strong><br>
+        Portafolios profesionales que muestran tu trabajo con confianza técnica y postura segura.
       </div>
       <div class="service-card">
-        <strong style="color: var(--cyan-title);">Rediseño Web</strong><br>
-        Moderniza tu sitio actual. Análisis, rediseño y actualización a estándares actuales.
+        <strong style="color: var(--cyan-title);">Evaluación de Postura y Seguridad</strong><br>
+        Revisión técnica de tu sitio y red: vulnerabilidades, postura de seguridad y recomendaciones prácticas.
       </div>
       <div class="service-card">
-        <strong style="color: var(--cyan-title);">Optimización y Mantenimiento</strong><br>
-        Mejora de velocidad, SEO, seguridad y soporte continuo para tu presencia digital.
+        <strong style="color: var(--cyan-title);">Rediseño + Hardening</strong><br>
+        Modernización de plataformas con foco en hardening, controles de acceso y resiliencia operativa.
       </div>
       <div class="service-card">
-        <strong style="color: var(--cyan-title);">Automatización Web</strong><br>
-        Formularios inteligentes, integraciones y automatización de procesos simples.
+        <strong style="color: var(--cyan-title);">Consultoría en Redes y Seguridad</strong><br>
+        Asesoría técnica en redes, seguridad digital y soluciones tecnológicas para infraestructuras críticas.
       </div>
     </section>
     <section class="values">
@@ -1859,34 +3001,43 @@
     <section id="contact" class="contact-section">
       <div class="contact-title">Contacto</div>
       <form class="contact-form">
-        <input type="text" placeholder="Nombre" required>
-        <input type="email" placeholder="Correo electrónico" required>
-        <textarea rows="4" placeholder="Mensaje" required></textarea>
+        <div>
+          <label for="contact-name">Nombre</label>
+          <input id="contact-name" name="name" type="text" placeholder="Nombre" autocomplete="name" required>
+        </div>
+        <div>
+          <label for="contact-email">Correo electrónico</label>
+          <input id="contact-email" name="email" type="email" placeholder="Correo electrónico" autocomplete="email" required>
+        </div>
+        <div>
+          <label for="contact-message">Mensaje</label>
+          <textarea id="contact-message" name="message" rows="4" placeholder="Mensaje" required></textarea>
+        </div>
         <button type="submit">Enviar mensaje</button>
       </form>
       <div class="contact-links" role="navigation" aria-label="Enlaces de contacto">
         <a href="mailto:sergioh.cybersec@hotmail.com" class="contact-link" title="Correo" aria-label="Correo electrónico">
-          <i class="fas fa-envelope" aria-hidden="true" title="Correo"></i>
+          <i class="fa-solid fa-envelope" aria-hidden="true" title="Correo"></i>
         </a>
         <a href="https://www.linkedin.com/in/jose-sergio-hernandez-hernandez-a355a3227" class="contact-link" target="_blank" rel="noopener noreferrer" title="LinkedIn" aria-label="LinkedIn">
-          <i class="fab fa-linkedin" aria-hidden="true" title="LinkedIn"></i>
+          <i class="fa-brands fa-linkedin-in" aria-hidden="true" title="LinkedIn"></i>
         </a>
-        <a href="https://github.com/sergiohernandez" class="contact-link" target="_blank" title="GitHub" aria-label="GitHub">
-          <i class="fab fa-github" aria-hidden="true" title="GitHub"></i>
+        <a href="https://github.com/sergiohernandez" class="contact-link" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub">
+          <i class="fa-brands fa-github" aria-hidden="true" title="GitHub"></i>
         </a>
       </div>
-      <div class="cta">Lleva tu negocio a internet. Hablemos de tu proyecto web.</div>
+      <div class="cta">Construyamos soluciones web y de redes seguras. Hablemos de tu proyecto tecnológico.</div>
     </section>
   </main>
   <footer role="contentinfo" aria-label="Pie de página">
-    <span style="font-weight:700;letter-spacing:0.04em;">WEB SOLUTIONS | Sergio Hernández</span><br>
-    <span style="font-size:0.98em;">Desarrollo Web | Landing Pages | Portafolios | Automatización</span>
+    <span style="font-weight:700;letter-spacing:0.04em;">CYBERSEC | Ingeniería de Software y Redes</span><br>
+    <span style="font-size:0.98em;">Ciberseguridad, desarrollo web y soluciones tecnológicas con postura segura.</span>
     <div class="footer-links" role="navigation" aria-label="Enlaces de navegación">
-      <a href="#about" class="footer-link" aria-label="Perfil">Perfil</a>
-      <a href="#services" class="footer-link" aria-label="Servicios">Servicios</a>
-      <a href="#contact" class="footer-link" aria-label="Contacto">Contacto</a>
-      <a href="https://www.linkedin.com/in/jose-sergio-hernandez-hernandez-a355a3227" class="footer-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">LinkedIn</a>
-      <a href="https://github.com/sergiohernandez" class="footer-link" target="_blank" aria-label="GitHub">GitHub</a>
+      <a href="#about" class="footer-link" aria-label="Perfil"><i class="fa-solid fa-user-shield" aria-hidden="true"></i>Perfil</a>
+      <a href="#services" class="footer-link" aria-label="Servicios"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i>Servicios</a>
+      <a href="#contact" class="footer-link" aria-label="Contacto"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i>Contacto</a>
+      <a href="https://www.linkedin.com/in/jose-sergio-hernandez-hernandez-a355a3227" class="footer-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i>LinkedIn</a>
+      <a href="https://github.com/sergiohernandez" class="footer-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github" aria-hidden="true"></i>GitHub</a>
     </div>
   </footer>
   <script>
