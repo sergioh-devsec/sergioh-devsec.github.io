@@ -2167,9 +2167,59 @@
       align-items: center;
       gap: 12px;
       margin-bottom: 18px;
+      padding: 0 0 6px;
       font-size: clamp(1.65rem, 3vw, 2.1rem);
       letter-spacing: 0.05em;
       text-shadow: 0 0 16px rgba(0, 255, 240, 0.14);
+    }
+
+    .section-title .title-text,
+    .hero-title .title-text {
+      display: inline-block;
+      min-width: 1ch;
+    }
+
+    .section-title.typing-active,
+    .hero-title.typing-active,
+    .section-title.typing-complete,
+    .hero-title.typing-complete {
+      opacity: 1 !important;
+      filter: none !important;
+      transform: none !important;
+      animation: none !important;
+    }
+
+    .section-title.typing-active .typing-caret,
+    .hero-title.typing-active .typing-caret {
+      display: inline-block;
+      width: 0.5ch;
+      margin-left: 0.16em;
+      color: var(--cyan-title);
+      text-shadow: 0 0 12px rgba(0, 255, 240, 0.28);
+      animation: terminal-caret-blink 0.9s steps(1) infinite;
+    }
+
+    .section-title.typing-complete .typing-caret,
+    .hero-title.typing-complete .typing-caret {
+      display: none;
+    }
+
+    @keyframes terminal-caret-blink {
+      0%, 46% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    .typing-section.typing-pending > :not(.section-title) {
+      opacity: 0;
+      transform: translateY(16px);
+      filter: blur(5px);
+      transition: opacity 0.55s var(--ease-premium), transform 0.55s var(--ease-premium), filter 0.55s var(--ease-smooth);
+    }
+
+    .typing-section.content-ready > :not(.section-title) {
+      opacity: 1;
+      transform: none;
+      filter: none;
     }
 
     .section-title::after {
@@ -2179,6 +2229,16 @@
       background: linear-gradient(90deg, rgba(0, 255, 240, 0.9) 0%, rgba(0, 184, 201, 0.24) 100%) !important;
       opacity: 0.78;
       box-shadow: 0 0 16px rgba(0, 255, 240, 0.16);
+    }
+
+    .section-title::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 255, 240, 0.98) 0%, rgba(0, 184, 201, 0.52) 72%, transparent 100%);
+      box-shadow: 0 0 14px rgba(0, 255, 240, 0.26);
+      flex: 0 0 auto;
     }
 
     .about,
@@ -2234,6 +2294,20 @@
       transition: transform 0.26s var(--ease-premium), border-color 0.26s var(--ease-smooth), box-shadow 0.26s var(--ease-smooth), background 0.26s var(--ease-smooth);
     }
 
+    .specialty-card::after,
+    .service-card::after,
+    .cert-badge::after,
+    .value-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, transparent 0%, rgba(0, 255, 240, 0.08) 50%, transparent 100%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s var(--ease-smooth);
+    }
+
     .specialty-card:hover,
     .service-card:hover,
     .cert-badge:hover,
@@ -2243,6 +2317,13 @@
       box-shadow: 0 24px 48px rgba(0, 0, 0, 0.24), 0 0 0 1px rgba(0, 255, 240, 0.12);
       animation: none;
       filter: none;
+    }
+
+    .specialty-card:hover::after,
+    .service-card:hover::after,
+    .cert-badge:hover::after,
+    .value-card:hover::after {
+      opacity: 1;
     }
 
     .specialty-card,
@@ -2296,10 +2377,20 @@
       line-height: 1.75;
       color: var(--text-muted);
       border-left: 1px solid var(--border-refined);
+      cursor: pointer;
+      background:
+        linear-gradient(180deg, rgba(11, 34, 42, 0.96) 0%, rgba(8, 20, 27, 0.96) 100%),
+        repeating-linear-gradient(90deg, rgba(0, 255, 240, 0.04) 0 1px, transparent 1px 14px);
+      box-shadow:
+        0 0 0 1px rgba(0, 255, 240, 0.06),
+        0 18px 32px rgba(0, 0, 0, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
 
     .service-card::before {
-      content: "\2699";
+      content: "\f3ed";
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
       top: 24px;
       left: 24px;
       width: 34px;
@@ -2308,11 +2399,99 @@
       align-items: center;
       justify-content: center;
       border-radius: 12px;
-      background: linear-gradient(180deg, rgba(0, 255, 240, 0.15), rgba(0, 184, 201, 0.06));
+      background: linear-gradient(180deg, rgba(0, 255, 240, 0.18), rgba(0, 184, 201, 0.08));
       color: var(--cyan-title);
-      font-size: 1rem;
-      box-shadow: 0 0 12px rgba(0, 255, 240, 0.1);
+      font-size: 0.94rem;
+      box-shadow: 0 0 14px rgba(0, 255, 240, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.06);
       filter: none;
+    }
+
+    .service-card::after {
+      content: "";
+      position: absolute;
+      top: -30%;
+      left: -32%;
+      width: 48%;
+      height: 170%;
+      background: linear-gradient(120deg, transparent 0%, rgba(110, 255, 248, 0.04) 35%, rgba(255, 255, 255, 0.16) 50%, rgba(110, 255, 248, 0.04) 65%, transparent 100%);
+      opacity: 0;
+      transform: translateX(-18%) skewX(-18deg);
+      transition: opacity 0.28s var(--ease-smooth), transform 0.72s var(--ease-premium);
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .service-card[data-service-title] {
+      position: relative;
+    }
+
+    .service-card[data-service-title]:focus-visible {
+      transform: translateY(-3px);
+      border-color: var(--border-refined-strong);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 255, 240, 0.18);
+      outline: none;
+    }
+
+    .service-card[data-service-title] .service-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 255, 240, 0.16);
+      background: rgba(4, 22, 27, 0.58);
+      color: var(--text-support);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .service-card[data-service-title] .service-hint::before {
+      content: "\f061";
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      font-size: 0.7rem;
+      color: var(--cyan-title);
+    }
+
+    .service-card.card-revealed {
+      animation: service-card-cinematic 0.72s var(--ease-premium) both;
+    }
+
+    .service-card:hover,
+    .service-card:focus-visible {
+      box-shadow:
+        0 24px 48px rgba(0, 0, 0, 0.24),
+        0 0 0 1px rgba(0, 255, 240, 0.12),
+        0 0 24px rgba(0, 255, 240, 0.1);
+      background:
+        linear-gradient(180deg, rgba(13, 39, 48, 0.98) 0%, rgba(9, 24, 31, 0.98) 100%),
+        repeating-linear-gradient(90deg, rgba(0, 255, 240, 0.05) 0 1px, transparent 1px 14px);
+    }
+
+    .service-card:hover::after,
+    .service-card:focus-visible::after {
+      opacity: 0.9;
+      transform: translateX(250%) skewX(-18deg);
+    }
+
+    @keyframes service-card-cinematic {
+      0% {
+        opacity: 0;
+        transform: translateY(18px) scale(0.975);
+        box-shadow: 0 0 0 rgba(0, 255, 240, 0);
+      }
+      62% {
+        opacity: 1;
+        transform: translateY(-3px) scale(1.01);
+        box-shadow: 0 0 20px rgba(0, 255, 240, 0.1);
+      }
+      100% {
+        opacity: 1;
+        transform: none;
+      }
     }
 
     .service-card strong {
@@ -2338,6 +2517,7 @@
     .cert-badge {
       justify-content: flex-start;
       background: linear-gradient(180deg, rgba(10, 32, 39, 0.94) 0%, rgba(8, 22, 29, 0.96) 100%);
+      border-color: rgba(0, 230, 255, 0.24);
     }
 
     .cert-badge i {
@@ -2365,6 +2545,19 @@
 
     .contact-section {
       padding: 40px 32px 34px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-section::before {
+      content: "";
+      position: absolute;
+      inset: -20% auto auto 55%;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(0, 255, 240, 0.14) 0%, rgba(0, 255, 240, 0.02) 42%, transparent 70%);
+      pointer-events: none;
+      filter: blur(6px);
     }
 
     .contact-title {
@@ -2405,6 +2598,10 @@
       text-align: left;
     }
 
+    .contact-form > div {
+      position: relative;
+    }
+
     .contact-form label {
       display: block;
       margin-bottom: 6px;
@@ -2423,6 +2620,7 @@
       border: 1px solid rgba(0, 230, 255, 0.24);
       background: rgba(4, 16, 22, 0.92);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+      box-sizing: border-box;
     }
 
     .contact-form input::placeholder,
@@ -2459,6 +2657,10 @@
       transform: translateY(-2px);
       box-shadow: 0 20px 36px rgba(0, 230, 255, 0.18);
       filter: brightness(1.04);
+    }
+
+    .contact-section.contact-armed {
+      box-shadow: 0 0 0 1px rgba(0, 255, 240, 0.16), 0 0 34px rgba(0, 255, 240, 0.12), var(--surface-refined-shadow);
     }
 
     .contact-links {
@@ -2617,8 +2819,19 @@
       .services,
       .certifications,
       .values {
-        flex-direction: column !important;
-        gap: 10px !important;
+        gap: 8px !important;
+      }
+
+      .certifications,
+      .values {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: stretch;
+      }
+
+      .services {
+        display: grid !important;
+        grid-template-columns: 1fr;
       }
 
       .specialty-card,
@@ -2651,32 +2864,48 @@
       }
 
       .service-card {
-        padding: 18px 14px 16px 60px !important;
-        font-size: 0.91rem;
-        line-height: 1.6;
+        min-height: 0 !important;
+        padding: 14px 12px 12px 50px !important;
+        font-size: 0.88rem;
+        line-height: 1.45;
       }
 
       .service-card::before {
-        top: 18px;
-        left: 16px;
-        width: 28px;
-        height: 28px;
-        border-radius: 10px;
-        font-size: 0.88rem;
+        top: 14px;
+        left: 12px;
+        width: 26px;
+        height: 26px;
+        border-radius: 9px;
+        font-size: 0.8rem;
+      }
+
+      .service-card::after {
+        width: 42%;
       }
 
       .service-card strong {
-        font-size: 0.98rem;
-        margin-bottom: 6px;
+        font-size: 0.92rem;
+        margin-bottom: 4px;
+        line-height: 1.3;
       }
 
       .cert-badge,
       .value-card {
+        min-height: 58px;
         justify-content: flex-start;
-        padding: 14px 14px !important;
-        font-size: 0.9rem;
-        line-height: 1.45;
+        padding: 10px 11px !important;
+        font-size: 0.8rem;
+        line-height: 1.25;
         text-align: left;
+        border-radius: 14px;
+      }
+
+      .cert-badge {
+        gap: 9px;
+      }
+
+      .cert-badge i {
+        font-size: 0.92rem;
       }
 
       .contact-title {
@@ -2703,8 +2932,8 @@
 
       .contact-form input,
       .contact-form textarea {
-        padding: 11px 12px;
-        font-size: 0.96rem;
+        padding: 10px 11px;
+        font-size: 0.92rem;
         border-radius: 12px;
       }
 
@@ -2729,6 +2958,13 @@
       .cta {
         font-size: 0.94rem;
         line-height: 1.55;
+      }
+
+      .service-card[data-service-title] .service-hint {
+        margin-top: 8px;
+        padding: 6px 9px;
+        font-size: 0.68rem;
+        letter-spacing: 0.04em;
       }
 
       footer {
@@ -2770,6 +3006,31 @@
       .cta {
         font-size: 0.88rem;
       }
+
+      .certifications,
+      .values {
+        grid-template-columns: 1fr;
+      }
+
+      .service-card {
+        padding: 13px 11px 11px 47px !important;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .section-title.typing-active .typing-caret,
+      .hero-title.typing-active .typing-caret,
+      .service-card::after {
+        animation: none !important;
+        transition: none !important;
+      }
+
+      .typing-section.typing-pending > :not(.section-title),
+      .typing-section.content-ready > :not(.section-title) {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+      }
     }
   </style>
   </head>
@@ -2779,26 +3040,42 @@
             document.addEventListener('DOMContentLoaded', function() {
               const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
               const hasIntersectionObserver = 'IntersectionObserver' in window;
-              
+              const typingSections = Array.from(document.querySelectorAll('main section')).filter(section => section.querySelector('.section-title'));
+              typingSections.forEach(section => {
+                section.classList.add('typing-section', 'typing-pending');
+              });
+               
               if (prefersReducedMotion) {
                 // Immediate reveal for accessibility
-                document.querySelectorAll('.section-title').forEach(t => t.classList.add('section-title-animated'));
+                document.querySelectorAll('.section-title').forEach(t => {
+                  prepareTypingText(t);
+                  t.classList.add('section-title-animated', 'typing-complete');
+                  const section = t.closest('section');
+                  if (section) {
+                    section.classList.remove('typing-pending');
+                    section.classList.add('content-ready');
+                  }
+                });
                 document.querySelectorAll('.specialty-card, .service-card, .value-card, .cert-badge, .about, .contact-section, footer').forEach(c => c.classList.add('card-revealed'));
                 return;
               }
-              
+               
               if (!hasIntersectionObserver) {
                 // Fallback for older browsers
-                document.querySelectorAll('.section-title').forEach(t => t.classList.add('section-title-animated'));
+                document.querySelectorAll('.section-title').forEach(t => {
+                  t.classList.add('section-title-animated');
+                  typeTitleText(t);
+                });
                 document.querySelectorAll('.specialty-card, .service-card, .value-card, .cert-badge, .about, .contact-section, footer').forEach(c => c.classList.add('card-revealed'));
                 return;
               }
-              
+               
               // Premium Section Titles - Elegant Light Sweep
               const titleObs = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                   if (entry.isIntersecting) {
                     entry.target.classList.add('section-title-animated');
+                    typeTitleText(entry.target);
                     observer.unobserve(entry.target);
                   }
                 });
@@ -2849,7 +3126,7 @@
       <div class="hero-overlay"></div>
     </div>
     <div class="hero-content">
-      <div class="hero-title cyber-fadein" id="heroTitle">CYBERSEC</div>
+      <div class="hero-title" id="heroTitle">CYBERSEC</div>
       <div class="hero-subtitle cyber-fadein">Ingeniero en Diseño de Software y Redes con especialidad en Ciberseguridad</div>
       <div class="hero-desc cyber-fadein">Combino ingeniería de software, diseño de redes y ciberseguridad para entregar soluciones tecnológicas sólidas: desarrollo web seguro, hardening de infraestructuras y protección de datos desde el diseño.</div>
       <div class="hero-buttons cyber-fadein">
@@ -2862,7 +3139,8 @@
         // Loader cybersec premium: glitch, scanlines, fade-in hero
         window.addEventListener('DOMContentLoaded', function() {
           const loader = document.getElementById('cyberLoader');
-          const fadeEls = document.querySelectorAll('.cyber-fadein');
+          const heroTitle = document.getElementById('heroTitle');
+          const fadeEls = document.querySelectorAll('.hero-subtitle.cyber-fadein, .hero-desc.cyber-fadein, .hero-buttons.cyber-fadein, .impact-phrase.cyber-fadein');
 
           // Seguridad: evitar handlers inline; uso de data-scroll-to para navegación interna
           document.querySelectorAll('.hero-buttons button[data-scroll-to]').forEach(btn => {
@@ -2872,16 +3150,33 @@
             });
           });
 
+          document.querySelectorAll('.service-card[data-service-title]').forEach(card => {
+            const activateCard = () => {
+              const serviceTitle = card.dataset.serviceTitle || '';
+              prefillContactSubject(serviceTitle);
+            };
+
+            card.addEventListener('click', activateCard);
+            card.addEventListener('keydown', event => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                activateCard();
+              }
+            });
+          });
+
           // Formulario de contacto (sitio estático): previene envío accidental y abre cliente de correo
           const contactForm = document.querySelector('.contact-form');
           if (contactForm) {
             contactForm.addEventListener('submit', event => {
               event.preventDefault();
-              const name = (contactForm.querySelector('input[type="text"]') || {}).value || '';
-              const email = (contactForm.querySelector('input[type="email"]') || {}).value || '';
-              const message = (contactForm.querySelector('textarea') || {}).value || '';
-              const subject = encodeURIComponent('Contacto desde sitio - ' + (name || 'Nuevo mensaje'));
-              const body = encodeURIComponent(`Nombre: ${name}\nCorreo: ${email}\n\n${message}`);
+              const name = (contactForm.querySelector('input[name="name"]') || {}).value || '';
+              const email = (contactForm.querySelector('input[name="email"]') || {}).value || '';
+              const phone = (contactForm.querySelector('input[name="phone"]') || {}).value || '';
+              const subjectField = (contactForm.querySelector('input[name="subject"]') || {}).value || '';
+              const message = (contactForm.querySelector('textarea[name="message"]') || {}).value || '';
+              const subject = encodeURIComponent(subjectField || ('Contacto desde sitio - ' + (name || 'Nuevo mensaje')));
+              const body = encodeURIComponent(`Nombre: ${name}\nCorreo: ${email}\nTeléfono: ${phone || 'No proporcionado'}\nAsunto: ${subjectField || 'Consulta general'}\n\n${message}`);
               window.location.href = `mailto:sergioh.cybersec@hotmail.com?subject=${subject}&body=${body}`;
             });
           }
@@ -2890,11 +3185,24 @@
           document.body.style.overflow = 'hidden';
           setTimeout(() => {
             loader.classList.add('hide');
-            fadeEls.forEach((el, i) => {
-              setTimeout(() => {
-                el.classList.add('active');
-              }, 120 + i * 80);
-            });
+            if (heroTitle) {
+              typeTitleText(heroTitle, {
+                baseDelay: 34,
+                onComplete: () => {
+                  fadeEls.forEach((el, i) => {
+                    setTimeout(() => {
+                      el.classList.add('active');
+                    }, 90 + i * 80);
+                  });
+                }
+              });
+            } else {
+              fadeEls.forEach((el, i) => {
+                setTimeout(() => {
+                  el.classList.add('active');
+                }, 120 + i * 80);
+              });
+            }
             setTimeout(() => {
               loader.style.display = 'none';
               document.body.style.overflow = '';
@@ -2963,29 +3271,35 @@
     </section>
     <section id="services" class="services">
       <div class="section-title">Servicios</div>
-      <div class="service-card">
+      <div class="service-card" role="button" tabindex="0" data-service-title="Desarrollo Web Seguro" aria-label="Solicitar Desarrollo Web Seguro">
         <strong style="color: var(--cyan-title);">Desarrollo Web Seguro</strong><br>
         Proyectos web con arquitectura robusta, rendimiento y seguridad integrada desde el diseño.
+        <span class="service-hint">Solicitar servicio</span>
       </div>
-      <div class="service-card">
+      <div class="service-card" role="button" tabindex="0" data-service-title="Landing Pages con Seguridad" aria-label="Solicitar Landing Pages con Seguridad">
         <strong style="color: var(--cyan-title);">Landing Pages con Seguridad</strong><br>
         Campañas web enfocadas en conversiones, construidas con controles y prácticas de ciberseguridad.
+        <span class="service-hint">Solicitar servicio</span>
       </div>
-      <div class="service-card">
+      <div class="service-card" role="button" tabindex="0" data-service-title="Portafolio y Presencia Digital" aria-label="Solicitar Portafolio y Presencia Digital">
         <strong style="color: var(--cyan-title);">Portafolio y Presencia Digital</strong><br>
         Portafolios profesionales que muestran tu trabajo con confianza técnica y postura segura.
+        <span class="service-hint">Solicitar servicio</span>
       </div>
-      <div class="service-card">
+      <div class="service-card" role="button" tabindex="0" data-service-title="Evaluación de Postura y Seguridad" aria-label="Solicitar Evaluación de Postura y Seguridad">
         <strong style="color: var(--cyan-title);">Evaluación de Postura y Seguridad</strong><br>
         Revisión técnica de tu sitio y red: vulnerabilidades, postura de seguridad y recomendaciones prácticas.
+        <span class="service-hint">Solicitar servicio</span>
       </div>
-      <div class="service-card">
+      <div class="service-card" role="button" tabindex="0" data-service-title="Rediseño + Hardening" aria-label="Solicitar Rediseño + Hardening">
         <strong style="color: var(--cyan-title);">Rediseño + Hardening</strong><br>
         Modernización de plataformas con foco en hardening, controles de acceso y resiliencia operativa.
+        <span class="service-hint">Solicitar servicio</span>
       </div>
-      <div class="service-card">
+      <div class="service-card" role="button" tabindex="0" data-service-title="Consultoría en Redes y Seguridad" aria-label="Solicitar Consultoría en Redes y Seguridad">
         <strong style="color: var(--cyan-title);">Consultoría en Redes y Seguridad</strong><br>
         Asesoría técnica en redes, seguridad digital y soluciones tecnológicas para infraestructuras críticas.
+        <span class="service-hint">Solicitar servicio</span>
       </div>
     </section>
     <section class="values">
@@ -2999,19 +3313,27 @@
       <div class="value-card">Aprendizaje continuo</div>
     </section>
     <section id="contact" class="contact-section">
-      <div class="contact-title">Contacto</div>
+      <div class="section-title contact-title">Contacto</div>
       <form class="contact-form">
         <div>
           <label for="contact-name">Nombre</label>
-          <input id="contact-name" name="name" type="text" placeholder="Nombre" autocomplete="name" required>
+          <input id="contact-name" name="name" type="text" placeholder="Tu nombre completo" autocomplete="name" required>
         </div>
         <div>
           <label for="contact-email">Correo electrónico</label>
-          <input id="contact-email" name="email" type="email" placeholder="Correo electrónico" autocomplete="email" required>
+          <input id="contact-email" name="email" type="email" placeholder="email" autocomplete="email" required>
+        </div>
+        <div>
+          <label for="contact-phone">Teléfono</label>
+          <input id="contact-phone" name="phone" type="tel" placeholder="+52 55 0000 0000" autocomplete="tel" inputmode="tel">
+        </div>
+        <div>
+          <label for="contact-subject">Asunto</label>
+          <input id="contact-subject" name="subject" type="text" placeholder="Cuéntame qué servicio o solución te interesa" autocomplete="off" required>
         </div>
         <div>
           <label for="contact-message">Mensaje</label>
-          <textarea id="contact-message" name="message" rows="4" placeholder="Mensaje" required></textarea>
+          <textarea id="contact-message" name="message" rows="4" placeholder="Cuéntame en qué servicio requieres apoyo y cómo puedo ayudarte." required></textarea>
         </div>
         <button type="submit">Enviar mensaje</button>
       </form>
@@ -3082,12 +3404,110 @@
       requestAnimationFrame(animateParticles);
     }
     animateParticles();
+
+    function prepareTypingText(element) {
+      if (!element || element.dataset.typingPrepared === 'true') return;
+      const originalText = (element.dataset.titleSource || element.textContent || '').trim();
+      element.dataset.titleSource = originalText;
+      element.textContent = '';
+
+      const textSpan = document.createElement('span');
+      textSpan.className = 'title-text';
+      textSpan.textContent = '';
+
+      const caretSpan = document.createElement('span');
+      caretSpan.className = 'typing-caret';
+      caretSpan.setAttribute('aria-hidden', 'true');
+      caretSpan.textContent = '_';
+
+      element.appendChild(textSpan);
+      element.appendChild(caretSpan);
+      element.dataset.typingPrepared = 'true';
+    }
+
+    function typeTitleText(element, options = {}) {
+      if (!element || element.dataset.typingDone === 'true') {
+        if (options.onComplete) options.onComplete();
+        return;
+      }
+
+      prepareTypingText(element);
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const titleText = element.dataset.titleSource || '';
+      const textNode = element.querySelector('.title-text');
+      const section = element.closest('section');
+
+      if (!textNode) {
+        if (options.onComplete) options.onComplete();
+        return;
+      }
+
+      const finishTyping = () => {
+        textNode.textContent = titleText;
+        element.classList.remove('typing-active');
+        element.classList.add('typing-complete');
+        element.dataset.typingDone = 'true';
+        if (section) {
+          section.classList.remove('typing-pending');
+          section.classList.add('content-ready');
+        }
+        if (options.onComplete) options.onComplete();
+      };
+
+      if (reduceMotion || !titleText) {
+        finishTyping();
+        return;
+      }
+
+      element.classList.add('typing-active');
+      let index = 0;
+      const baseDelay = options.baseDelay || (element.classList.contains('hero-title') ? 38 : 26);
+
+      const step = () => {
+        index += 1;
+        textNode.textContent = titleText.slice(0, index);
+        if (index >= titleText.length) {
+          finishTyping();
+          return;
+        }
+        const nextDelay = baseDelay + (index % 4 === 0 ? 20 : 0);
+        window.setTimeout(step, nextDelay);
+      };
+
+      window.setTimeout(step, options.initialDelay || 10);
+    }
+
     // Scroll suave a secciones
     function scrollToSection(id) {
       const section = document.getElementById(id);
       if (section) {
-        section.scrollIntoView({ behavior: 'smooth' });
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        section.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
       }
+    }
+
+    function prefillContactSubject(serviceTitle) {
+      const subjectInput = document.getElementById('contact-subject');
+      const contactSection = document.getElementById('contact');
+      if (!subjectInput || !contactSection) return;
+
+      const normalizedTitle = (serviceTitle || '').trim();
+      if (normalizedTitle) {
+        subjectInput.value = `Interés en ${normalizedTitle}`;
+      }
+
+      contactSection.classList.add('contact-armed');
+      scrollToSection('contact');
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.setTimeout(() => {
+        subjectInput.focus({ preventScroll: true });
+        subjectInput.select();
+      }, reduceMotion ? 0 : 420);
+
+      window.setTimeout(() => {
+        contactSection.classList.remove('contact-armed');
+      }, 2200);
     }
 
     // CURSOR CYBERSEC AVANZADO (compatibilidad touch y browsers)
