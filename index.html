@@ -1095,6 +1095,24 @@
       --card-glow: 0 0 16px #00FFF055;
       --shadow: 0 4px 24px #00000044;
       --border-cyan: #00E6FF;
+      --switcher-accent: rgba(220, 249, 255, 0.94);
+      --switcher-accent-soft: rgba(220, 249, 255, 0.62);
+      --switcher-glow: rgba(0, 230, 255, 0.18);
+      --theme-switcher-border: rgba(0, 255, 240, 0.18);
+      --theme-switcher-border-soft: rgba(0, 255, 240, 0.14);
+      --theme-switcher-bg: rgba(5, 16, 22, 0.72);
+      --theme-switcher-bg-soft: rgba(5, 16, 22, 0.64);
+      --theme-button-border: rgba(0, 255, 240, 0.16);
+      --theme-button-bg: rgba(6, 20, 27, 0.88);
+      --theme-button-text: rgba(220, 249, 255, 0.9);
+      --theme-button-border-hover: rgba(0, 255, 240, 0.34);
+      --theme-button-ring: rgba(0, 255, 240, 0.08);
+      --theme-primary-gradient: linear-gradient(180deg, rgba(108, 255, 250, 0.95) 0%, rgba(0, 214, 230, 0.88) 100%);
+      --theme-primary-text: #041216;
+      --theme-primary-border: rgba(0, 255, 240, 0.54);
+      --theme-primary-shadow: rgba(0, 230, 255, 0.18);
+      --theme-hud-label: rgba(220, 249, 255, 0.58);
+      --theme-hud-value: rgba(229, 252, 255, 0.92);
     }
     body {
       font-family: 'Montserrat', Arial, sans-serif;
@@ -3917,30 +3935,112 @@
       top: 18px;
       right: 18px;
       z-index: 10000;
-      display: inline-flex;
-      align-items: center;
+      display: grid;
       gap: 8px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(0, 255, 240, 0.18);
-      background: rgba(5, 16, 22, 0.72);
+      width: min(224px, calc(100vw - 36px));
+      padding: 10px;
+      border-radius: 22px;
+      border: 1px solid var(--theme-switcher-border);
+      background: var(--theme-switcher-bg);
       box-shadow: 0 16px 30px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.04);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+      transition: transform 0.22s ease, opacity 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .theme-switcher.is-collapsed .theme-switcher-panel {
+      opacity: 0;
+      transform: translateY(-8px);
+      max-height: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .theme-switcher-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 16px;
+      border: 1px solid var(--theme-button-border);
+      background: var(--theme-button-bg);
+      color: var(--theme-button-text);
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .theme-switcher-toggle:hover,
+    .theme-switcher-toggle:focus-visible {
+      transform: translateY(-1px);
+      border-color: var(--theme-button-border-hover);
+      box-shadow: 0 0 0 1px var(--theme-button-ring), 0 10px 18px rgba(0, 0, 0, 0.16);
+    }
+
+    .theme-switcher-toggle-label {
+      color: var(--switcher-accent-soft);
+      font-size: 0.66rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .theme-switcher-toggle-value {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--switcher-accent);
+      text-shadow: 0 0 12px var(--switcher-glow);
+    }
+
+    .theme-switcher-toggle-value::after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-right: 1.8px solid currentColor;
+      border-bottom: 1.8px solid currentColor;
+      transform: rotate(45deg) translateY(-1px);
+      opacity: 0.72;
+      transition: transform 0.18s ease;
+    }
+
+    .theme-switcher.is-open .theme-switcher-toggle-value::after {
+      transform: rotate(-135deg) translateY(-1px);
+    }
+
+    .theme-switcher-panel {
+      display: grid;
+      gap: 8px;
+      padding: 4px 2px 2px;
+      opacity: 1;
+      transform: translateY(0);
+      max-height: 320px;
+      transition: opacity 0.18s ease, transform 0.18s ease, max-height 0.22s ease;
+    }
+
+    .theme-switcher-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .session-hud {
       position: fixed;
-      top: 74px;
-      right: 18px;
+      top: 122px;
+      left: 18px;
+      right: auto;
       z-index: 10000;
       display: grid;
       gap: 6px;
-      min-width: 168px;
+      min-width: 184px;
       padding: 12px 14px;
       border-radius: 20px;
-      border: 1px solid rgba(0, 255, 240, 0.14);
-      background: rgba(5, 16, 22, 0.64);
+      border: 1px solid var(--theme-switcher-border-soft);
+      background: var(--theme-switcher-bg-soft);
       box-shadow: 0 16px 30px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.04);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
@@ -3954,7 +4054,7 @@
     }
 
     .session-hud-label {
-      color: rgba(220, 249, 255, 0.58);
+      color: var(--theme-hud-label);
       font-size: 0.64rem;
       font-weight: 800;
       letter-spacing: 0.14em;
@@ -3962,7 +4062,7 @@
     }
 
     .session-hud-value {
-      color: rgba(229, 252, 255, 0.92);
+      color: var(--theme-hud-value);
       font-size: 0.84rem;
       font-weight: 700;
       letter-spacing: 0.05em;
@@ -3970,18 +4070,19 @@
     }
 
     .theme-switcher-label {
-      color: rgba(220, 249, 255, 0.78);
-      font-size: 0.74rem;
+      color: var(--switcher-accent-soft);
+      font-size: 0.68rem;
       font-weight: 800;
       letter-spacing: 0.12em;
       text-transform: uppercase;
+      padding-left: 2px;
     }
 
     .theme-switcher-btn {
-      border: 1px solid rgba(0, 255, 240, 0.16);
+      border: 1px solid var(--theme-button-border);
       border-radius: 999px;
-      background: rgba(6, 20, 27, 0.88);
-      color: rgba(220, 249, 255, 0.86);
+      background: var(--theme-button-bg);
+      color: var(--theme-button-text);
       font-size: 0.8rem;
       font-weight: 700;
       padding: 8px 12px;
@@ -3992,20 +4093,23 @@
     .theme-switcher-btn:hover,
     .theme-switcher-btn:focus-visible {
       transform: translateY(-1px);
-      border-color: rgba(0, 255, 240, 0.34);
-      box-shadow: 0 0 0 1px rgba(0, 255, 240, 0.08), 0 10px 18px rgba(0, 0, 0, 0.16);
+      border-color: var(--theme-button-border-hover);
+      box-shadow: 0 0 0 1px var(--theme-button-ring), 0 10px 18px rgba(0, 0, 0, 0.16);
     }
 
     .theme-switcher-btn.is-active {
-      background: linear-gradient(180deg, rgba(108, 255, 250, 0.95) 0%, rgba(0, 214, 230, 0.88) 100%);
-      color: #041216;
-      border-color: rgba(0, 255, 240, 0.54);
-      box-shadow: 0 10px 20px rgba(0, 230, 255, 0.18);
+      background: var(--theme-primary-gradient);
+      color: var(--theme-primary-text);
+      border-color: var(--theme-primary-border);
+      box-shadow: 0 10px 20px var(--theme-primary-shadow);
     }
 
     body.theme-violet .theme-switcher {
       border-color: rgba(195, 127, 255, 0.22);
       background: rgba(12, 10, 26, 0.76);
+      --switcher-accent: rgba(248, 240, 255, 0.94);
+      --switcher-accent-soft: rgba(242, 232, 255, 0.62);
+      --switcher-glow: rgba(210, 143, 255, 0.22);
     }
 
     body.theme-violet .session-hud {
@@ -4013,12 +4117,15 @@
       background: rgba(12, 10, 26, 0.68);
     }
 
+    body.theme-violet .theme-switcher-toggle,
     body.theme-violet .theme-switcher-btn {
       border-color: rgba(195, 127, 255, 0.18);
       background: rgba(18, 14, 34, 0.9);
       color: rgba(240, 230, 255, 0.88);
     }
 
+    body.theme-violet .theme-switcher-toggle:hover,
+    body.theme-violet .theme-switcher-toggle:focus-visible,
     body.theme-violet .theme-switcher-btn:hover,
     body.theme-violet .theme-switcher-btn:focus-visible {
       border-color: rgba(195, 127, 255, 0.38);
@@ -4043,6 +4150,9 @@
     body.theme-orange .theme-switcher {
       border-color: rgba(255, 171, 84, 0.24);
       background: rgba(24, 11, 8, 0.78);
+      --switcher-accent: rgba(255, 242, 231, 0.94);
+      --switcher-accent-soft: rgba(255, 229, 205, 0.62);
+      --switcher-glow: rgba(255, 171, 84, 0.2);
     }
 
     body.theme-orange .session-hud {
@@ -4050,12 +4160,15 @@
       background: rgba(24, 11, 8, 0.7);
     }
 
+    body.theme-orange .theme-switcher-toggle,
     body.theme-orange .theme-switcher-btn {
       border-color: rgba(255, 171, 84, 0.2);
       background: rgba(34, 17, 12, 0.9);
       color: rgba(255, 237, 220, 0.9);
     }
 
+    body.theme-orange .theme-switcher-toggle:hover,
+    body.theme-orange .theme-switcher-toggle:focus-visible,
     body.theme-orange .theme-switcher-btn:hover,
     body.theme-orange .theme-switcher-btn:focus-visible {
       border-color: rgba(255, 171, 84, 0.4);
@@ -4324,6 +4437,9 @@
     body.theme-red-cyber .theme-switcher {
       border-color: var(--theme-switcher-border);
       background: var(--theme-switcher-bg);
+      --switcher-accent: var(--theme-hud-value);
+      --switcher-accent-soft: var(--theme-hud-label);
+      --switcher-glow: var(--theme-primary-shadow);
     }
 
     body.theme-emerald .session-hud,
@@ -4333,18 +4449,27 @@
       background: var(--theme-switcher-bg-soft);
     }
 
+    body.theme-emerald .theme-switcher-toggle,
     body.theme-emerald .theme-switcher-btn,
+    body.theme-ice-blue .theme-switcher-toggle,
     body.theme-ice-blue .theme-switcher-btn,
+    body.theme-red-cyber .theme-switcher-toggle,
     body.theme-red-cyber .theme-switcher-btn {
       border-color: var(--theme-button-border);
       background: var(--theme-button-bg);
       color: var(--theme-button-text);
     }
 
+    body.theme-emerald .theme-switcher-toggle:hover,
+    body.theme-emerald .theme-switcher-toggle:focus-visible,
     body.theme-emerald .theme-switcher-btn:hover,
     body.theme-emerald .theme-switcher-btn:focus-visible,
+    body.theme-ice-blue .theme-switcher-toggle:hover,
+    body.theme-ice-blue .theme-switcher-toggle:focus-visible,
     body.theme-ice-blue .theme-switcher-btn:hover,
     body.theme-ice-blue .theme-switcher-btn:focus-visible,
+    body.theme-red-cyber .theme-switcher-toggle:hover,
+    body.theme-red-cyber .theme-switcher-toggle:focus-visible,
     body.theme-red-cyber .theme-switcher-btn:hover,
     body.theme-red-cyber .theme-switcher-btn:focus-visible {
       border-color: var(--theme-button-border-hover);
@@ -4930,6 +5055,70 @@
     body.theme-red-cyber .contact-form input::placeholder,
     body.theme-red-cyber .contact-form textarea::placeholder {
       color: color-mix(in srgb, var(--text-support) 56%, transparent);
+    }
+
+    body.theme-violet .hud-lines rect:first-child,
+    body.theme-orange .hud-lines rect:first-child,
+    body.theme-emerald .hud-lines rect:first-child,
+    body.theme-ice-blue .hud-lines rect:first-child,
+    body.theme-red-cyber .hud-lines rect:first-child {
+      stroke: color-mix(in srgb, var(--cyan-title) 36%, transparent);
+    }
+
+    body.theme-violet .hud-lines rect:nth-child(2),
+    body.theme-orange .hud-lines rect:nth-child(2),
+    body.theme-emerald .hud-lines rect:nth-child(2),
+    body.theme-ice-blue .hud-lines rect:nth-child(2),
+    body.theme-red-cyber .hud-lines rect:nth-child(2) {
+      stroke: color-mix(in srgb, var(--cyan-ui) 32%, transparent);
+    }
+
+    body.theme-violet .hud-lines line,
+    body.theme-orange .hud-lines line,
+    body.theme-emerald .hud-lines line,
+    body.theme-ice-blue .hud-lines line,
+    body.theme-red-cyber .hud-lines line {
+      stroke: color-mix(in srgb, var(--cyan-ui) 18%, transparent);
+    }
+
+    body.theme-violet .hud-lines circle:first-of-type,
+    body.theme-orange .hud-lines circle:first-of-type,
+    body.theme-emerald .hud-lines circle:first-of-type,
+    body.theme-ice-blue .hud-lines circle:first-of-type,
+    body.theme-red-cyber .hud-lines circle:first-of-type {
+      fill: color-mix(in srgb, var(--cyan-title) 56%, transparent);
+    }
+
+    body.theme-violet .hud-lines circle:last-of-type,
+    body.theme-orange .hud-lines circle:last-of-type,
+    body.theme-emerald .hud-lines circle:last-of-type,
+    body.theme-ice-blue .hud-lines circle:last-of-type,
+    body.theme-red-cyber .hud-lines circle:last-of-type {
+      fill: color-mix(in srgb, var(--cyan-ui) 52%, transparent);
+    }
+
+    body.theme-violet .hero-wireframe path:nth-child(1),
+    body.theme-orange .hero-wireframe path:nth-child(1),
+    body.theme-emerald .hero-wireframe path:nth-child(1),
+    body.theme-ice-blue .hero-wireframe path:nth-child(1),
+    body.theme-red-cyber .hero-wireframe path:nth-child(1) {
+      stroke: color-mix(in srgb, var(--cyan-title) 42%, transparent);
+    }
+
+    body.theme-violet .hero-wireframe path:nth-child(2),
+    body.theme-orange .hero-wireframe path:nth-child(2),
+    body.theme-emerald .hero-wireframe path:nth-child(2),
+    body.theme-ice-blue .hero-wireframe path:nth-child(2),
+    body.theme-red-cyber .hero-wireframe path:nth-child(2) {
+      stroke: color-mix(in srgb, var(--cyan-ui) 34%, transparent);
+    }
+
+    body.theme-violet .hero-wireframe path:nth-child(3),
+    body.theme-orange .hero-wireframe path:nth-child(3),
+    body.theme-emerald .hero-wireframe path:nth-child(3),
+    body.theme-ice-blue .hero-wireframe path:nth-child(3),
+    body.theme-red-cyber .hero-wireframe path:nth-child(3) {
+      stroke: color-mix(in srgb, var(--cyan-ui) 22%, transparent);
     }
 
     body.theme-violet {
@@ -5608,19 +5797,53 @@
       .theme-switcher {
         top: 12px;
         right: 12px;
-        left: 12px;
-        gap: 6px;
-        justify-content: center;
-        flex-wrap: wrap;
+        left: auto;
+        width: min(188px, calc(100vw - 24px));
         padding: 10px;
       }
 
+      .theme-switcher-panel {
+        max-height: 220px;
+      }
+
       .session-hud {
-        top: 96px;
-        right: 12px;
+        top: 12px;
         left: 12px;
-        min-width: 0;
-        padding: 10px 12px;
+        right: auto;
+        width: min(154px, calc(100vw - 222px));
+        min-width: 136px;
+        padding: 10px 10px;
+        border-radius: 18px;
+      }
+
+      .session-hud-row {
+        gap: 8px;
+      }
+
+      .session-hud-label {
+        font-size: 0.58rem;
+        letter-spacing: 0.12em;
+      }
+
+      .session-hud-value {
+        font-size: 0.75rem;
+      }
+
+      .theme-switcher-toggle {
+        padding: 9px 10px;
+      }
+
+      .theme-switcher-toggle-label {
+        font-size: 0.58rem;
+      }
+
+      .theme-switcher-toggle-value {
+        font-size: 0.76rem;
+      }
+
+      .theme-switcher-btn {
+        padding: 7px 10px;
+        font-size: 0.74rem;
       }
 
       header,
@@ -5656,14 +5879,22 @@
   </head>
 <body>
           <div class="touch-pulse-layer" id="touchPulseLayer" aria-hidden="true"></div>
-          <div class="theme-switcher" aria-label="Comparar variaciones de color">
-            <span class="theme-switcher-label">Color</span>
-            <button type="button" class="theme-switcher-btn is-active" data-theme-variant="cyan">Cyan</button>
-            <button type="button" class="theme-switcher-btn" data-theme-variant="violet">Violet</button>
-            <button type="button" class="theme-switcher-btn" data-theme-variant="orange">Orange</button>
-            <button type="button" class="theme-switcher-btn" data-theme-variant="emerald">Emerald</button>
-            <button type="button" class="theme-switcher-btn" data-theme-variant="ice-blue">Ice Blue</button>
-            <button type="button" class="theme-switcher-btn" data-theme-variant="red-cyber">Red Cyber</button>
+          <div class="theme-switcher is-collapsed" aria-label="Comparar variaciones de color">
+            <button type="button" class="theme-switcher-toggle" aria-expanded="false" aria-controls="themeSwitcherPanel">
+              <span class="theme-switcher-toggle-label">Paleta</span>
+              <span class="theme-switcher-toggle-value" id="themeSwitcherValue">Cyan</span>
+            </button>
+            <div class="theme-switcher-panel" id="themeSwitcherPanel">
+              <span class="theme-switcher-label">Color</span>
+              <div class="theme-switcher-options">
+                <button type="button" class="theme-switcher-btn is-active" data-theme-variant="cyan">Cyan</button>
+                <button type="button" class="theme-switcher-btn" data-theme-variant="violet">Violet</button>
+                <button type="button" class="theme-switcher-btn" data-theme-variant="orange">Orange</button>
+                <button type="button" class="theme-switcher-btn" data-theme-variant="emerald">Emerald</button>
+                <button type="button" class="theme-switcher-btn" data-theme-variant="ice-blue">Ice Blue</button>
+                <button type="button" class="theme-switcher-btn" data-theme-variant="red-cyber">Red Cyber</button>
+              </div>
+            </div>
           </div>
           <div class="session-hud" aria-live="polite">
             <div class="session-hud-row">
@@ -6394,18 +6625,52 @@
 
     function setupThemeSwitcher() {
       const body = document.body;
+      const switcher = document.querySelector('.theme-switcher');
+      const toggleButton = switcher ? switcher.querySelector('.theme-switcher-toggle') : null;
+      const switcherValue = document.getElementById('themeSwitcherValue');
       const switchButtons = document.querySelectorAll('.theme-switcher-btn[data-theme-variant]');
-      if (!switchButtons.length) return;
+      if (!switchButtons.length || !switcher || !toggleButton) return;
       const availableThemes = ['cyan', 'violet', 'orange', 'emerald', 'ice-blue', 'red-cyber'];
       const themeClasses = ['theme-violet', 'theme-orange', 'theme-emerald', 'theme-ice-blue', 'theme-red-cyber'];
+      let hideTimer = 0;
 
       const storedTheme = window.localStorage.getItem('cybersec-theme-variant') || 'cyan';
+
+      const formatThemeName = (theme) => ({
+        cyan: 'Cyan',
+        violet: 'Violet',
+        orange: 'Orange',
+        emerald: 'Emerald',
+        'ice-blue': 'Ice Blue',
+        'red-cyber': 'Red Cyber'
+      }[theme] || 'Cyan');
+
+      const openSwitcher = () => {
+        window.clearTimeout(hideTimer);
+        switcher.classList.add('is-open');
+        switcher.classList.remove('is-collapsed');
+        toggleButton.setAttribute('aria-expanded', 'true');
+      };
+
+      const closeSwitcher = () => {
+        switcher.classList.remove('is-open');
+        switcher.classList.add('is-collapsed');
+        toggleButton.setAttribute('aria-expanded', 'false');
+      };
+
+      const scheduleClose = (delay = 2200) => {
+        window.clearTimeout(hideTimer);
+        hideTimer = window.setTimeout(closeSwitcher, delay);
+      };
 
       const applyTheme = (theme) => {
         const nextTheme = availableThemes.includes(theme) ? theme : 'cyan';
         themeClasses.forEach(className => body.classList.remove(className));
         if (nextTheme !== 'cyan') {
           body.classList.add(`theme-${nextTheme}`);
+        }
+        if (switcherValue) {
+          switcherValue.textContent = formatThemeName(nextTheme);
         }
         switchButtons.forEach(button => {
           button.classList.toggle('is-active', button.dataset.themeVariant === nextTheme);
@@ -6415,10 +6680,32 @@
       };
 
       applyTheme(storedTheme);
+      scheduleClose(1400);
+
+      toggleButton.addEventListener('click', () => {
+        if (switcher.classList.contains('is-open')) {
+          closeSwitcher();
+          return;
+        }
+        openSwitcher();
+        scheduleClose();
+      });
+
+      switcher.addEventListener('mouseenter', openSwitcher);
+      switcher.addEventListener('mouseleave', () => scheduleClose(900));
+      switcher.addEventListener('focusin', openSwitcher);
+      switcher.addEventListener('focusout', () => scheduleClose(900));
+
+      document.addEventListener('pointerdown', (event) => {
+        if (!switcher.contains(event.target)) {
+          closeSwitcher();
+        }
+      });
 
       switchButtons.forEach(button => {
         button.addEventListener('click', () => {
           applyTheme(button.dataset.themeVariant || 'cyan');
+          scheduleClose(850);
         });
       });
     }
