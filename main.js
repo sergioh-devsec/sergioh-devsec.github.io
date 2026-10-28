@@ -1,7 +1,6 @@
 /* Native browser application. All user/data strings are inserted as text, never HTML. */
 (() => {
   'use strict';
-  const EMAIL = 'sergioh.cybersec@hotmail.com';
   const LINKEDIN = 'https://www.linkedin.com/in/jose-sergio-hernandez-hernandez-a355a3227';
 
   function safeUrl(value) {
@@ -24,14 +23,8 @@
     const findings = [...sources].filter(([, count]) => count >= 3).map(([ip, count]) => ({ ip, count })).sort((a, b) => b.count - a.count);
     return { valid, invalid, accepted, denied, findings, total:lines.length };
   }
-  function buildMessage(fields) {
-    const clean = value => String(value || '').trim();
-    const subject = clean(fields.subject).replace(/[\r\n]+/g, ' ');
-    const body = `Nombre: ${clean(fields.name)}\nCorreo: ${clean(fields.email)}\n\n${clean(fields.message)}`;
-    return { subject, body, url:`mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}` };
-  }
   // Export pure logic for dependency-free Node tests; the browser uses the same functions.
-  if (typeof module !== 'undefined' && module.exports) module.exports = { safeUrl, filterProjects, analyzeLogs, buildMessage };
+  if (typeof module !== 'undefined' && module.exports) module.exports = { safeUrl, filterProjects, analyzeLogs };
   if (typeof document === 'undefined') return;
 
   const data = window.PORTFOLIO;
@@ -167,7 +160,7 @@
     const filter=event.target.closest('[data-filter]');if(filter)setFilter(filter.dataset.filter);
     const project=event.target.closest('[data-project]');if(project)openProject(project.dataset.project,project);
     const service=event.target.closest('[data-service]');
-    if(service){closeDialog();$('#contact-subject').value=`Información sobre ${service.dataset.service}`;requestAnimationFrame(()=>$('#contact-subject').focus({preventScroll:true}));}
+    if(service){closeDialog();$('#contact-interest').textContent=`Tema de interés: ${service.dataset.service}`;requestAnimationFrame(()=>$('#private-contact').focus({preventScroll:true}));}
     const anchor=event.target.closest('a[href^="#"]');
     if(anchor){const hash=anchor.getAttribute('href');const target=document.getElementById(hash.slice(1));if(target?.classList.contains('project-card')&&target.hidden)setFilter('all');closeMenu();if(dialog.open)closeDialog();}
     if(event.target.closest('.print-cv'))window.print();
@@ -177,12 +170,6 @@
   window.addEventListener('hashchange',handleHash);
   window.addEventListener('load',handleHash,{once:true});
 
-  function setupContact(){
-    const form=$('#contact-form');const status=$('#contact-status');const copy=$('#copy-message');
-    const fields=()=>Object.fromEntries(new FormData(form));$('#contact-submit').disabled=false;copy.hidden=false;
-    form.addEventListener('submit',event=>{event.preventDefault();if(!form.reportValidity())return;const message=buildMessage(fields());status.textContent='Borrador preparado. Revisa tu aplicación de correo; si no se abre, usa «Copiar mensaje» o el enlace de correo.';window.location.href=message.url;});
-    copy.addEventListener('click',async()=>{if(!form.reportValidity())return;const message=buildMessage(fields());try{await navigator.clipboard.writeText(`Para: ${EMAIL}\nAsunto: ${message.subject}\n\n${message.body}`);status.textContent='Mensaje copiado. Pégalo en tu correo y envíalo cuando lo hayas revisado.';}catch{status.textContent='El navegador no permitió copiar. Puedes seleccionar los campos o usar el enlace de correo.';}});
-  }
   function setupLab(){
     const input=$('#log-input');const sample=input.value;const output=$('#log-output');
     const run=()=>{const result=analyzeLogs(input.value);output.replaceChildren();if(!result.total){output.append(el('p','log-error','Escribe al menos un evento para analizar.'));return;}
@@ -260,7 +247,7 @@
     const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>visible.set(entry.target.id,entry.isIntersecting));const current=links.find(link=>visible.get(link.hash.slice(1)));links.forEach(link=>{if(link===current)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');});},{rootMargin:'-15% 0px -55% 0px'});
     links.forEach(link=>{const section=document.getElementById(link.hash.slice(1));if(section)observer.observe(section);});
   }
-  renderProjects();renderCredentials();renderServices();setupSocialLinks();setupCoreExplorer();setupContact();setupLab();setupMotion();setupActiveNavigation();
+  renderProjects();renderCredentials();renderServices();setupSocialLinks();setupCoreExplorer();setupLab();setupMotion();setupActiveNavigation();
   $$('.print-cv').forEach(button=>{button.hidden=false;});
   requestAnimationFrame(handleHash);
 })();

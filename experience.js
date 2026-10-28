@@ -94,9 +94,4 @@
   document.addEventListener('portfolio:motion',syncMotion);document.addEventListener('visibilitychange',syncMotion);reduced.addEventListener('change',syncMotion);fine.addEventListener('change',syncMotion);syncMotion();
   if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{entry.target.classList.toggle('effect-offscreen',!entry.isIntersecting);if(entry.target===flow&&!entry.isIntersecting&&playing)stopFlow('RECORRIDO EN PAUSA · pulsa para reiniciar');});});[flow,$('#creadoras'),$('.lab-console'),$('#apoyar')].forEach(node=>observer.observe(node));}
 
-  // No payment destination exists yet; no placeholder link or invented checkout.
-  const value=window.PORTFOLIO?.supportUrl;
-  if(typeof value==='string'&&!/[\u0000-\u0020\\]/.test(value)){
-    try{const url=new URL(value);if(url.protocol==='https:'&&!url.username&&!url.password){const action=$('#support-action');const a=document.createElement('a');a.className='button primary';a.href=url.href;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Apoyar el laboratorio ↗';const note=document.createElement('p');note.className='small muted';note.textContent='Aportación voluntaria. Revisa el importe y las condiciones en la plataforma antes de confirmar.';action.replaceChildren(a,note);}}catch{/* Invalid configuration stays visibly pending. */}
-  }
 })();
