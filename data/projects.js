@@ -423,21 +423,55 @@ window.PORTFOLIO = {
   "axiomAudio": {
     "es": {
       "thanks": "gracias_es.mp3",
-      "welcome": "01_saludo.mp3",
+      "welcome": "10_saludo_serch.mp3",
       "businessAnswer": "02_negocio.mp3",
       "creatorAnswer": "03_contenido.mp3",
       "labAnswer": "04_proyectos.mp3",
       "trialJoke1": "05_humor.mp3",
       "trialJoke2": "06_humor.mp3",
       "trialJoke3": "07_humor.mp3",
-      "trialInvite": "08_apoyo.mp3",
-      "bye": "09_cierre.mp3",
-      "supportAnswer": "08_apoyo.mp3"
+      "trialInvite": "26_apoyo_serch.mp3",
+      "bye": "27_despedida.mp3",
+      "supportAnswer": "26_apoyo_serch.mp3",
+      "who": "11_quien_serch.mp3",
+      "webTerm": "12_web.mp3",
+      "automationTerm": "13_automatizacion.mp3",
+      "aiTerm": "14_ia_local.mp3",
+      "securityTerm": "15_seguridad.mp3",
+      "cvAnswer": "16_perfil.mp3",
+      "contactAnswer": "17_revision.mp3",
+      "trialJoke4": "18_caja.mp3",
+      "trialJoke5": "19_web_sencilla.mp3",
+      "trialJoke6": "20_modem.mp3",
+      "trialJoke7": "21_contrasena.mp3",
+      "trialJoke8": "22_rapido.mp3",
+      "trialJoke9": "23_cinco_minutos.mp3",
+      "trialJoke10": "24_nube.mp3",
+      "trialJoke11": "25_celda.mp3",
+      "trialJoke12": "28_explotacion.mp3",
+      "trialJoke13": "29_sueldo_virtual.mp3",
+      "trialJoke14": "30_vacaciones.mp3"
     },
     "en": {
       "welcome": "saludo_en.mp3",
       "thanks": "gracias_en.mp3",
       "bye": "adios_en.mp3"
     }
-  }
+  },
+  "axiomJokes": [
+    "trialJoke1",
+    "trialJoke2",
+    "trialJoke3",
+    "trialJoke4",
+    "trialJoke5",
+    "trialJoke6",
+    "trialJoke7",
+    "trialJoke8",
+    "trialJoke9",
+    "trialJoke10",
+    "trialJoke11",
+    "trialJoke12",
+    "trialJoke13",
+    "trialJoke14"
+  ]
 };
