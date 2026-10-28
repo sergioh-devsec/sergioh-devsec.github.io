@@ -35,7 +35,6 @@ dialog{border:1px solid #42626f;border-radius:20px;background:#0b1721;color:var(
 @keyframes icon-hello{to{transform:translateY(-9px) rotate(10deg) scale(1.08)}}
 .studio-layout{align-items:start}.studio-visuals{display:grid;gap:20px}.studio-visuals .stage-character{height:350px}.studio-visuals .creative-panel{min-height:0}.studio-visuals .creative-art{height:90px}
 .axiom-header-actions{display:flex;gap:7px}.axiom-panel>header{gap:10px;padding:14px}.axiom-header-actions .close-button{padding:8px;font-size:.68rem}
-#axiom-audio{width:calc(100% - 30px);height:36px;min-height:36px;margin:9px 15px 0;color-scheme:dark}
 .axiom-settings{flex-shrink:0}.axiom-notice{font-size:.67rem}.axiom-settings button{min-width:78px;text-align:center}
 .axiom-panel{height:min(700px,calc(100dvh - 150px))}.axiom-messages{min-height:100px}.axiom-chips{max-height:115px;flex-shrink:0}
 .motion-toggle[aria-pressed=true]{color:#ffd39e;border-color:#906e48}

@@ -55,7 +55,7 @@
   const audio=$('axiom-audio');
   const tone=$('axiom-tone');try{const saved=localStorage.getItem('cyberserch-tone');if(['professional','playful'].includes(saved))tone.value=saved;}catch{/* Optional preference. */}
   function settlePlayback(played=false){const done=playbackDone;playbackDone=null;if(done)done(played);}
-  function stopVoice(){turn++;settlePlayback();audio.pause();audio.removeAttribute('src');audio.load();audio.hidden=true;speaking=false;syncVoice();}
+  function stopVoice(){turn++;settlePlayback();audio.pause();audio.removeAttribute('src');audio.load();speaking=false;syncVoice();}
   function syncVoice(){const button=$('axiom-voice');button.setAttribute('aria-pressed',String(voiceEnabled));button.querySelector('[data-i18n]').dataset.i18n=voiceEnabled?'voiceOn':'voiceOff';I.apply(button);$('axiom-trial-listen').disabled=!audio.paused&&!audio.ended;}
   function resetVoice(){stopVoice();syncVoice();setVoiceStatus('voiceReady');}
   function setVoiceStatus(key){$('axiom-voice-status').textContent=I.t(key);$('axiom-trial-status').textContent=I.t(key);}
@@ -65,7 +65,7 @@
     const file=currentClip(),currentTurn=turn;
     if(!file){setVoiceStatus('voiceUnavailable');return Promise.resolve(false);}
     // Only packaged recordings are played. No synthesis, model download or external connection.
-    audio.src=`assets/axiom/audio/${file}`;audio.hidden=false;setVoiceStatus('voiceLoading');
+    audio.src=`assets/axiom/audio/${file}`;setVoiceStatus('voiceLoading');
     return new Promise(resolve=>{
       playbackDone=resolve;
       audio.play().catch(()=>{if(turn===currentTurn){speaking=false;syncVoice();setVoiceStatus('voiceFailed');settlePlayback();}});
