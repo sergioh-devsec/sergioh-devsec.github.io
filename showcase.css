@@ -4,3 +4,4 @@
 @media(max-width:900px){.case-card{padding:25px}.automation-body{grid-template-columns:1fr}.cases-section{padding-top:25px}}
 @media(max-width:650px){.case-grid,.profile-preview{grid-template-columns:1fr}.case-card{padding:24px}.case-card h3{font-size:1.5rem}.case-metrics span{font-size:.65rem}.automation-demo>summary{padding-left:20px;font-size:1rem}.automation-body{padding:5px 18px 22px}.profile-free{font-size:1.6rem}.axiom-trial-controls{gap:7px}.axiom-trial-controls small{font-size:.59rem}}
 @media(max-height:650px){.axiom-trial-controls small{display:none}.axiom-trial-controls{padding-block:5px}}
+#axiom-trial-listen{margin:0 10px 12px 0}#axiom-trial-status{font-size:.7rem;line-height:1.5}.axiom-trial-controls[hidden]{display:none}

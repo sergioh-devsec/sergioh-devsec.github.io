@@ -1,4 +1,3 @@
-/* Public editorial data. null means not yet available; never a fabricated link. */
 window.PORTFOLIO = {
   "supportLinks": {
     "patreon": "https://www.patreon.com/c/CyberserchMX/membership",
@@ -421,18 +420,24 @@ window.PORTFOLIO = {
       "use": "Producción asistida · edición · automatización creativa"
     }
   ],
-  "axiomTrialAudio": {
+  "axiomAudio": {
     "es": {
-      "joke1": null,
-      "joke2": null,
-      "joke3": null,
-      "support": null
+      "thanks": "gracias_es.mp3",
+      "welcome": "01_saludo.mp3",
+      "businessAnswer": "02_negocio.mp3",
+      "creatorAnswer": "03_contenido.mp3",
+      "labAnswer": "04_proyectos.mp3",
+      "trialJoke1": "05_humor.mp3",
+      "trialJoke2": "06_humor.mp3",
+      "trialJoke3": "07_humor.mp3",
+      "trialInvite": "08_apoyo.mp3",
+      "bye": "09_cierre.mp3",
+      "supportAnswer": "08_apoyo.mp3"
     },
     "en": {
-      "joke1": null,
-      "joke2": null,
-      "joke3": null,
-      "support": null
+      "welcome": "saludo_en.mp3",
+      "thanks": "gracias_en.mp3",
+      "bye": "adios_en.mp3"
     }
   }
 };
