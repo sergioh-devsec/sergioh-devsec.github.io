@@ -1,5 +1,6 @@
 /* Editorial data. null means not published/confirmed, never a fabricated URL or progress. */
 window.PORTFOLIO = {
+  supportUrl: null, // Activate only with the owner's verified HTTPS contribution link.
   // Add the verified HTTPS profile URL when each account exists. null keeps it visibly pending.
   socialLinks: { x: null, instagram: null, tiktok: null, youtube: null },
   projects: [

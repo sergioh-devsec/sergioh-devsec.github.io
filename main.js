@@ -53,10 +53,17 @@
   function tags(values) { const node = el('div','tags'); values.forEach(value => node.append(el('span','',value))); return node; }
   function architectureDiagram() {
     const diagram = el('div','ai-architecture'); diagram.setAttribute('aria-label','Arquitectura conceptual de Plataforma de IA local');
-    diagram.append(el('p','architecture-label mono','LOCAL AI / CONCEPT ARCHITECTURE'),el('div','pipeline-input','IDEA / BRIEF'),el('div','pipeline-link'),el('div','pipeline-hub','LOCAL AI'),el('div','pipeline-link'));
+    diagram.id='ai-flow';diagram.dataset.step='0';diagram.dataset.output='image';
+    diagram.append(el('p','architecture-label mono','LOCAL AI / EXPLORA EL FLUJO'),el('div','pipeline-input','01 / IDEA + BRIEF'),el('div','pipeline-link'),el('div','pipeline-hub','02 / LOCAL AI'),el('div','pipeline-link'));
     const models = el('div','pipeline-models');
-    [['image','IMAGEN'],['video','VIDEO'],['voice','VOZ']].forEach(([name,label]) => {const node = el('span');node.append(icon(name),document.createTextNode(label));models.append(node);});
-    diagram.append(models,el('div','pipeline-link'),el('div','pipeline-output','REVISIÓN → EXPORTACIÓN'),el('p','architecture-note','DISEÑO PROPUESTO · DESARROLLO EN CURSO'));return diagram;
+    models.setAttribute('role','group');models.setAttribute('aria-label','Elegir salida del flujo');
+    [['image','Imagen'],['video','Video'],['voice','Voz']].forEach(([name,label]) => {const node=el('button');node.type='button';node.dataset.aiOutput=name;node.setAttribute('aria-pressed',String(name==='image'));node.setAttribute('aria-controls','flow-detail');node.append(icon(name),document.createTextNode(label));models.append(node);});
+    const detail=el('div','flow-detail');detail.id='flow-detail';
+    const signal=el('div','flow-signal');signal.setAttribute('aria-hidden','true');for(let i=0;i<12;i++)signal.append(el('i'));
+    const title=el('strong','','Del brief a una imagen');title.id='flow-title';const text=el('p','','Define estilo, composición y referencias; revisa el resultado antes de exportarlo.');text.id='flow-copy';
+    detail.append(signal,title,text);
+    const controls=el('div','flow-controls');const run=el('button','button secondary small-button','Recorrer flujo ↗');run.id='flow-run';run.type='button';run.setAttribute('aria-describedby','flow-status');const status=el('span','mono small','LISTO PARA EXPLORAR');status.id='flow-status';status.setAttribute('role','status');controls.append(run,status);
+    diagram.append(models,el('div','pipeline-link'),el('div','pipeline-output','04 / REVISIÓN → EXPORTACIÓN'),detail,controls,el('p','architecture-note','SIMULACIÓN VISUAL · NO GENERA ARCHIVOS NI EJECUTA MODELOS'));return diagram;
   }
   function renderProjects() {
     const fragment = document.createDocumentFragment();
@@ -180,6 +187,8 @@
     const input=$('#log-input');const sample=input.value;const output=$('#log-output');
     const run=()=>{const result=analyzeLogs(input.value);output.replaceChildren();if(!result.total){output.append(el('p','log-error','Escribe al menos un evento para analizar.'));return;}
       output.append(el('strong','',`${result.valid} ${result.valid === 1 ? 'evento válido' : 'eventos válidos'} · ${result.denied} ${result.denied === 1 ? 'rechazo' : 'rechazos'} · ${result.accepted} ${result.accepted === 1 ? 'acceso' : 'accesos'}`));
+      const chart=el('div','lab-chart');chart.setAttribute('aria-label','Distribución de eventos de la muestra');
+      [['ACCEPT',result.accepted,'accepted'],['DENY',result.denied,'denied'],['INVÁLIDOS',result.invalid,'invalid']].forEach(([label,count,kind])=>{const row=el('div',`lab-chart-row ${kind}`);const track=el('div','lab-chart-track');const bar=el('i');bar.style.width=`${result.total?count/result.total*100:0}%`;track.setAttribute('aria-hidden','true');track.append(bar);row.append(el('span','mono',label),track,el('strong','',String(count)));chart.append(row);});output.append(chart);
       if(result.invalid)output.append(el('p','log-error',`${result.invalid} ${result.invalid === 1 ? 'línea descartada' : 'líneas descartadas'}. Formato: HH:MM:SS ACCEPT|DENY IPv4.`));
       if(!result.valid)return;
       if(result.findings.length)result.findings.forEach(finding=>output.append(el('p','alert',`${finding.ip} → ${finding.count} rechazos. Umbral alcanzado: revisar contexto.`)));
@@ -227,6 +236,7 @@
     function frame(time){raf=0;if(!shouldRun())return;const dt=Math.min((time-last)/1000,.04);last=time;draw(dt);if(moved){core.style.transform=`translate3d(${px}px,${py}px,0)`;moved=false;}raf=requestAnimationFrame(frame);}
     function sync(){cancelAnimationFrame(raf);raf=0;paused=query.matches||userPaused;document.documentElement.classList.toggle('motion-paused',paused);toggle.setAttribute('aria-pressed',String(paused));toggle.setAttribute('aria-label',query.matches?'Movimiento reducido por el sistema':paused?'Activar animaciones':'Pausar animaciones');toggle.title=query.matches?'Tu sistema tiene activada la reducción de movimiento':paused?'Activar animaciones':'Pausar animaciones';
       syncStudio();
+      document.dispatchEvent(new CustomEvent('portfolio:motion',{detail:{paused}}));
       if(paused){clearTimeout(typingTimer);typed.textContent=phrase;core.style.transform='';pending.forEach(node=>node.classList.remove('reveal-pending'));pending.clear();revealObserver?.disconnect();}
       draw();if(shouldRun()){last=performance.now();raf=requestAnimationFrame(frame);}
     }
