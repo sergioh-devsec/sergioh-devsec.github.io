@@ -88,9 +88,9 @@
   }
   function renderCredentials() {
     data.credentials.forEach(credential => {
-      const card=el('article','cert-card reveal'); const time=el('time','',credential.displayDate);time.dateTime=credential.date;
+      const card=el('article','cert-card reveal'); const time=el('time','',credential.displayDate);if(credential.date)time.dateTime=credential.date;
       card.append(el('div',`cert-brand ${credential.issuer.toLowerCase()}`,credential.issuer),el('h3','',credential.name),time,el('span','credential-state',credential.type));
-      card.append(link(credential.url ? 'Verificar credencial ↗' : 'Ver en LinkedIn ↗',credential.url || `${LINKEDIN}/details/certifications/`));
+      if(credential.source!=='owner')card.append(link(credential.url ? 'Verificar credencial ↗' : 'Ver en LinkedIn ↗',credential.url || `${LINKEDIN}/details/certifications/`));
       $('#cert-grid').append(card);
     });
   }
@@ -147,7 +147,7 @@
     dialogOpener=opener;dialog.showModal();document.body.classList.add('dialog-open');dialog.scrollTop=0;$('#dialog-close').focus();
   }
   function closeDialog() { if(dialog.open)dialog.close(); }
-  dialog.addEventListener('close',()=>{document.body.classList.remove('dialog-open');dialogOpener?.focus({preventScroll:true});});
+  dialog.addEventListener('close',()=>{if(!document.querySelector('dialog[open]'))document.body.classList.remove('dialog-open');dialogOpener?.focus({preventScroll:true});});
   dialog.addEventListener('click',event=>{if(event.target!==dialog)return;const rect=dialog.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)closeDialog();});
   $('#dialog-close').addEventListener('click',closeDialog);
 
@@ -163,7 +163,6 @@
     if(service){closeDialog();$('#contact-interest').textContent=`Tema de interés: ${service.dataset.service}`;requestAnimationFrame(()=>$('#private-contact').focus({preventScroll:true}));}
     const anchor=event.target.closest('a[href^="#"]');
     if(anchor){const hash=anchor.getAttribute('href');const target=document.getElementById(hash.slice(1));if(target?.classList.contains('project-card')&&target.hidden)setFilter('all');closeMenu();if(dialog.open)closeDialog();}
-    if(event.target.closest('.print-cv'))window.print();
   });
   const mobileQuery=matchMedia('(max-width: 800px)');mobileQuery.addEventListener('change',()=>closeMenu());
   function handleHash(){const target=document.getElementById(location.hash.slice(1));if(!target)return;if(target.classList.contains('project-card')&&target.hidden)setFilter('all');target.scrollIntoView({behavior:'instant',block:'start'});}
@@ -248,6 +247,6 @@
     links.forEach(link=>{const section=document.getElementById(link.hash.slice(1));if(section)observer.observe(section);});
   }
   renderProjects();renderCredentials();renderServices();setupSocialLinks();setupCoreExplorer();setupLab();setupMotion();setupActiveNavigation();
-  $$('.print-cv').forEach(button=>{button.hidden=false;});
+  $$('.cv-open').forEach(button=>{button.hidden=false;});
   requestAnimationFrame(handleHash);
 })();
