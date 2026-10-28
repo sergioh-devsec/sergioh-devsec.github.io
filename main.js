@@ -100,6 +100,15 @@
       card.append(icon(service.icon),el('h3','',service.name),el('p','',service.description),el('p','use-case',service.use),button);$('#service-grid').append(card);
     });
   }
+  function setupSocialLinks() {
+    $$('[data-social]').forEach(card => {
+      const url = safeUrl(data.socialLinks?.[card.dataset.social]);
+      if (!url || !url.startsWith('https:')) return;
+      const name = card.querySelector('h3').textContent;
+      card.querySelector('.social-action').replaceWith(link(`Visitar ${name} ↗`, url, 'social-action text-link'));
+      card.querySelector('.social-status').textContent = 'CANAL ACTIVO';
+    });
+  }
   const dialog=$('#project-dialog'); let dialogOpener=null;
   function openProject(id, opener) {
     const project=data.projects.find(item => item.id===id); if (!project) return;
@@ -162,6 +171,23 @@
   function setupMotion(){
     const query=matchMedia('(prefers-reduced-motion: reduce)');const coarse=matchMedia('(pointer: coarse), (max-width: 580px)');
     const toggle=$('#motion-toggle');let userPaused=false;
+    const studioFrame=$('#studio-frame');
+    const studioControl=$('#studio-toggle');
+    let studioPaused=false;
+    function syncStudio() {
+      const stopped=paused||studioPaused;
+      studioFrame.classList.toggle('studio-paused',stopped);
+      studioControl.disabled=paused;
+      studioControl.setAttribute('aria-pressed',String(stopped));
+      const label=query.matches?'Movimiento reducido por el sistema':userPaused?'Activa los efectos de la cabecera para reanudar':studioPaused?'Reanudar visualización':'Pausar visualización';
+      studioControl.setAttribute('aria-label',label);
+      studioControl.title=label;
+      $('#studio-control-icon').setAttribute('href',`assets/icons.svg#${stopped?'play':'pause'}`);
+      $('#studio-state').textContent=query.matches?'MOVIMIENTO REDUCIDO':userPaused?'EFECTOS GLOBALES EN PAUSA':studioPaused?'VISUALIZACIÓN EN PAUSA':'VISUALIZACIÓN ANIMADA';
+    }
+    studioFrame.classList.add('studio-ready');
+    studioControl.hidden=false;
+    studioControl.addEventListener('click',()=>{studioPaused=!studioPaused;syncStudio();});
     try{userPaused=localStorage.getItem('cyberserch-motion')==='paused';}catch{/* Storage can be disabled. */}
     const hero=$('.hero');const core=$('#core-parallax');const canvas=$('#particles');const ctx=canvas.getContext('2d');
     let width=0,height=0,points=[],raf=0,last=0,heroVisible=true,px=0,py=0,moved=false;
@@ -180,6 +206,7 @@
     function shouldRun(){return !!ctx&&!paused&&!coarse.matches&&heroVisible&&!document.hidden;}
     function frame(time){raf=0;if(!shouldRun())return;const dt=Math.min((time-last)/1000,.04);last=time;draw(dt);if(moved){core.style.transform=`translate3d(${px}px,${py}px,0)`;moved=false;}raf=requestAnimationFrame(frame);}
     function sync(){cancelAnimationFrame(raf);raf=0;paused=query.matches||userPaused;document.documentElement.classList.toggle('motion-paused',paused);toggle.setAttribute('aria-pressed',String(paused));toggle.setAttribute('aria-label',query.matches?'Movimiento reducido por el sistema':paused?'Activar animaciones':'Pausar animaciones');toggle.title=query.matches?'Tu sistema tiene activada la reducción de movimiento':paused?'Activar animaciones':'Pausar animaciones';
+      syncStudio();
       if(paused){clearTimeout(typingTimer);typed.textContent=phrase;core.style.transform='';pending.forEach(node=>node.classList.remove('reveal-pending'));pending.clear();revealObserver?.disconnect();}
       draw();if(shouldRun()){last=performance.now();raf=requestAnimationFrame(frame);}
     }
@@ -203,7 +230,7 @@
     const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>visible.set(entry.target.id,entry.isIntersecting));const current=links.find(link=>visible.get(link.hash.slice(1)));links.forEach(link=>{if(link===current)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');});},{rootMargin:'-15% 0px -55% 0px'});
     links.forEach(link=>{const section=document.getElementById(link.hash.slice(1));if(section)observer.observe(section);});
   }
-  renderProjects();renderCredentials();renderServices();setupContact();setupLab();setupMotion();setupActiveNavigation();
+  renderProjects();renderCredentials();renderServices();setupSocialLinks();setupContact();setupLab();setupMotion();setupActiveNavigation();
   $$('.print-cv').forEach(button=>{button.hidden=false;});
   requestAnimationFrame(handleHash);
 })();

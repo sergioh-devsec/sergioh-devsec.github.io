@@ -1,5 +1,7 @@
 /* Editorial data. null means not published/confirmed, never a fabricated URL or progress. */
 window.PORTFOLIO = {
+  // Add the verified HTTPS profile URL when each account exists. null keeps it visibly pending.
+  socialLinks: { x: null, instagram: null, tiktok: null, youtube: null },
   projects: [
     {id:'local-ai-platform',name:'Plataforma de IA local',subtitle:'Local AI Production Platform',icon:'core',categories:['ai','automation','content','python'],categoryLabel:'AI / AUTOMATION / CONTENT',status:'EN DESARROLLO',statusType:'active',featured:true,
       description:'Una plataforma de inteligencia artificial local para conectar la generación de imagen, video y voz en un mismo flujo de producción.',
