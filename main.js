@@ -38,7 +38,7 @@
   function openDialog(id,opener){const d=document.getElementById(id);if(!d||d.open)return;window.AXIOM?.close(false);$$('dialog[open]').forEach(x=>x.close());openers.set(d,opener||document.activeElement);d.showModal();document.body.classList.add('dialog-open');d.scrollTop=0;d.querySelector('[data-close-dialog]').focus();}
   $$('dialog').forEach(d=>{
     d.querySelectorAll('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>d.close()));
-    d.addEventListener('close',()=>{if(!$('dialog[open]'))document.body.classList.remove('dialog-open');const opener=openers.get(d);if(opener?.isConnected)opener.focus({preventScroll:true});});
+    d.addEventListener('close',()=>{if(!$('dialog[open]'))document.body.classList.remove('dialog-open');if(!$('#axiom-panel').hidden){$('#axiom-close').focus({preventScroll:true});return;}const opener=openers.get(d);if(opener?.isConnected)opener.focus({preventScroll:true});});
     d.addEventListener('click',e=>{if(e.target!==d)return;const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();});
   });
   function revealTarget(hash){const target=document.getElementById(hash.replace(/^#/,''));if(!target)return null;let node=target;while(node){if(node.tagName==='DETAILS')node.open=true;node=node.parentElement;}if(target.classList.contains('project-card')&&target.hidden){filter='all';setFilter();}return target;}

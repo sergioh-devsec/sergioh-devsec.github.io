@@ -6,18 +6,20 @@
   const intents=[
     ['cvAnswer',['cv','curriculum','resume'],'#contact'],['contactAnswer',['contacto','contact','correo','email','precio','price'],'#contact'],
     ['supportAnswer',['apoyar','apoyo','support','donar','donate','paypal','patreon'],'#apoyar'],
-    ['webTerm',['web','website','pagina','software'],'#services'],['automationTerm',['automatizacion','automatizar','automation','automate'],'#services'],
+    ['webTerm',['web','website','pagina','software'],'#services'],['automationTerm',['automatizacion','automatizar','automation','automate'],'#automation'],
     ['aiTerm',['ia local','local ai','llm','inteligencia artificial','artificial intelligence'],'#local-ai-platform'],
     ['securityTerm',['seguridad','security','ciberseguridad','cybersecurity'],'#services'],['osintTerm',['osint'],'#technologies'],['siemTerm',['siem','wazuh'],'#laboratory'],['hardeningTerm',['hardening'],'#technologies'],
     ['conversionTerm',['conversion','suscriptores','subscribers','seguidores','followers'],'#creadoras'],
     ['who',['quien eres','who are you'],''],['thanks',['gracias','thanks','thank you'],'','gracias'],['bye',['adios','bye','goodbye'],'','adios'],['welcome',['hola','hello','hi'],'']
   ];
   function matchIntent(value){const text=' '+normalize(value)+' ';return intents.find(([,words])=>words.some(w=>text.includes(' '+w+' ')))||null;}
-  if(typeof module!=='undefined'&&module.exports)module.exports={normalize,matchIntent};
+  function trialStep(index){if(!Number.isInteger(index)||index<0)throw new Error('Invalid trial index');const slot=index%4;return slot===3?{key:'trialInvite',clip:'support',donation:true}:{key:'trialJoke'+(slot+1),clip:'joke'+(slot+1),donation:false};}
+  if(typeof module!=='undefined'&&module.exports)module.exports={normalize,matchIntent,trialStep};
   if(typeof document==='undefined')return;
   const I=window.I18N,S=window.Site,$=id=>document.getElementById(id),panel=$('axiom-panel'),messages=$('axiom-messages'),chips=$('axiom-chips'),input=$('axiom-input');
   let opener=null,lastResponse={key:'welcome'},voiceEnabled=true,manualTone=false,turn=0,speaking=false,waveAt=-10000;
   const audio=$('axiom-audio');
+  const trial={active:false,index:0,timer:0};
   const tone=$('axiom-tone');try{const saved=localStorage.getItem('cyberserch-tone');if(['professional','playful'].includes(saved)){tone.value=saved;manualTone=true;}}catch{/* Optional preference. */}
   function stopVoice(){turn++;audio.pause();audio.removeAttribute('src');audio.load();audio.hidden=true;speaking=false;syncVoice();}
   function syncVoice(){const playing=!audio.paused&&!audio.ended,button=$('axiom-voice');button.setAttribute('aria-pressed',String(playing));button.querySelector('[data-i18n]').dataset.i18n=playing?'voiceStop':'originalVoice';I.apply(button);}
@@ -36,31 +38,42 @@
   ['pause','ended','emptied'].forEach(event=>audio.addEventListener(event,()=>{speaking=false;syncVoice();}));
   audio.addEventListener('error',()=>{speaking=false;setVoiceStatus('voiceFailed');});
   function greeting(){voiceEnabled=true;syncVoice();answer('recordedGreeting','','saludo');}
-  function clearConversation(){stopVoice();messages.replaceChildren();chips.replaceChildren();input.value='';lastResponse={key:'welcome'};addMessage(I.t('welcome'));showRoutes();setVoiceStatus('chatCleared');input.focus({preventScroll:true});}
+  function clearConversation(){stopTrial();stopVoice();messages.replaceChildren();chips.replaceChildren();input.value='';lastResponse={key:'welcome'};addMessage(I.t('welcome'));showRoutes();setVoiceStatus('chatCleared');input.focus({preventScroll:true});}
+  function stopTrial(){clearTimeout(trial.timer);trial.timer=0;trial.active=false;trial.index=0;$('axiom-trial').setAttribute('aria-pressed','false');$('axiom-trial-bubble').hidden=true;}
+  function trialTick(){trial.timer=0;if(!trial.active||document.hidden||document.querySelector('dialog[open]')){stopTrial();return;}if(!audio.paused){trial.timer=setTimeout(trialTick,10000);return;}
+    const step=trialStep(trial.index++);$('axiom-trial-text').textContent=I.t(step.key);$('axiom-trial-support').hidden=!step.donation;
+    const clip=window.PORTFOLIO.axiomTrialAudio?.[I.language]?.[step.clip];
+    // Only reviewed original recordings can be assigned here. Missing recordings stay silent.
+    if(typeof clip==='string'&&/^[a-z0-9_]+$/.test(clip)){lastResponse={key:step.key,audio:clip};voiceEnabled=true;playResponse();}
+    if(step.donation){trial.active=false;$('axiom-trial').setAttribute('aria-pressed','false');$('axiom-trial-stop').textContent=I.t('trialDone');return;}
+    trial.timer=setTimeout(trialTick,10000);
+  }
+  function startTrial(){stopTrial();close(false,true);trial.active=true;trial.index=0;$('axiom-trial').setAttribute('aria-pressed','true');$('axiom-trial-bubble').hidden=false;$('axiom-trial-support').hidden=true;$('axiom-trial-text').textContent=I.t('trialWaiting');$('axiom-trial-stop').textContent=I.t('trialStop');$('axiom-trial-stop').focus({preventScroll:true});document.dispatchEvent(new CustomEvent('portfolio:axiom-trial'));trial.timer=setTimeout(trialTick,10000);}
   function addMessage(text,user=false){const n=S.el('div','axiom-message'+(user?' user':''));n.append(S.el('p','',text));messages.append(n);while(messages.children.length>14)messages.firstElementChild.remove();messages.scrollTop=messages.scrollHeight;return n;}
   function actionLink(n,label,hash){const a=S.link(label,hash);if(!a)return;a.addEventListener('click',()=>close(false));n.append(a);}
   function answer(key,hash='',audioId='',joke=''){lastResponse={key,audio:audioId};const text=I.t(key)+(tone.value==='playful'&&joke?' '+I.t(joke):'');const n=addMessage(text);if(hash)actionLink(n,I.t('goSection'),hash);messages.scrollTop=messages.scrollHeight;playResponse();return n;}
   function makeChip(key,action){const b=S.el('button','chip',I.t(key));b.type='button';b.addEventListener('click',action);chips.append(b);}
-  function showRoutes(){chips.replaceChildren();[['routeCreator','creator'],['routeBusiness','business'],['routeLab','lab']].forEach(([key,route])=>makeChip(key,()=>chooseRoute(route)));}
+  function showRoutes(){chips.replaceChildren();[['routeBusiness','business'],['routeCreator','creator'],['routeLab','lab']].forEach(([key,route])=>makeChip(key,()=>chooseRoute(route)));}
   function chooseRoute(route){chips.replaceChildren();if(!manualTone)tone.value=route==='business'?'professional':'playful';
     if(route==='creator'){answer('creatorAnswer','#services','','jokeCreator');makeChip('creatorMore',()=>{close(false);S.openDialog('creator-dialog',$('creators-open'));});}
-    else if(route==='business'){answer('businessAnswer','','','jokeBusiness');[['webTerm','#services'],['automationTerm','#services'],['aiTerm','#local-ai-platform'],['securityTerm','#services']].forEach(([key,hash],i)=>{const names=['Web','Automation','Local AI','Security'];const labels=I.language==='es'?['Web','Automatización','IA local','Seguridad']:names;const b=S.el('button','chip',labels[i]);b.type='button';b.addEventListener('click',()=>answer(key,hash));chips.append(b);});}
-    else answer('labAnswer','#laboratory','','jokeLab');
+    else if(route==='business'){answer('businessAnswer');[['webTerm','#services'],['automationTerm','#automation'],['aiTerm','#local-ai-platform'],['securityTerm','#services']].forEach(([key,hash],i)=>{const names=['Web','Automation','Local AI','Security'];const labels=I.language==='es'?['Web','Automatización','IA local','Seguridad']:names;const b=S.el('button','chip',labels[i]);b.type='button';b.addEventListener('click',()=>answer(key,hash));chips.append(b);});}
+    else answer('labAnswer','#cases');
     makeChip('showRoutes',showRoutes);
   }
-  function open(source,withGreeting=true){if(!panel.hidden)return;opener=source||document.activeElement;panel.hidden=false;$('axiom-launcher').setAttribute('aria-expanded','true');waveAt=performance.now();if(!messages.children.length){addMessage(I.t('welcome'));showRoutes();if(withGreeting&&voiceEnabled)greeting();}document.dispatchEvent(new CustomEvent('portfolio:axiom-open'));$('axiom-close').focus({preventScroll:true});}
-  function close(restore=true){if(panel.hidden)return;panel.hidden=true;$('axiom-launcher').setAttribute('aria-expanded','false');resetVoice();if(restore&&opener?.isConnected)opener.focus({preventScroll:true});}
-  function searchPage(value){const words=normalize(value).split(' ').filter(w=>w.length>2&&!['que','como','los','las','the','what','how','can','una','del','para'].includes(w));if(!words.length)return[];const ids=['services','creadoras','contact','content','projects','laboratory','technologies','certifications','experience','apoyar'];return ids.map(id=>{const n=$(id),heading=n.querySelector('summary,h2,h3');return {id,label:heading?.textContent||id,text:normalize(n.textContent)};}).filter(item=>words.some(w=>item.text.includes(w))).slice(0,3);}
+  function open(source,withGreeting=true){stopTrial();if(!panel.hidden)return;opener=source||document.activeElement;panel.hidden=false;$('axiom-launcher').setAttribute('aria-expanded','true');waveAt=performance.now();if(!messages.children.length){addMessage(I.t('welcome'));showRoutes();if(withGreeting&&voiceEnabled)greeting();}document.dispatchEvent(new CustomEvent('portfolio:axiom-open'));$('axiom-close').focus({preventScroll:true});}
+  function close(restore=true,keepTrial=false){if(!keepTrial)stopTrial();if(panel.hidden){stopVoice();return;}panel.hidden=true;$('axiom-launcher').setAttribute('aria-expanded','false');resetVoice();if(restore&&opener?.isConnected)opener.focus({preventScroll:true});}
+  function searchPage(value){const words=normalize(value).split(' ').filter(w=>w.length>2&&!['que','como','los','las','the','what','how','can','una','del','para'].includes(w));if(!words.length)return[];const ids=['cases','automation','services','creadoras','contact','content','projects','laboratory','technologies','certifications','experience','apoyar'];return ids.map(id=>{const n=$(id),heading=n.querySelector('summary,h2,h3');return {id,label:heading?.textContent||id,text:normalize(n.textContent)};}).filter(item=>words.some(w=>item.text.includes(w))).slice(0,3);}
   function ask(value){const raw=String(value).trim().slice(0,240);if(!raw)return;addMessage(raw,true);input.value='';chips.replaceChildren();const intent=matchIntent(raw);if(intent)answer(intent[0],intent[2],intent[3]);else {stopVoice();const found=searchPage(raw);lastResponse={key:found.length?'searchFound':'fallback'};const n=addMessage(I.t(lastResponse.key));found.forEach(item=>actionLink(n,item.label,'#'+item.id));playResponse();}makeChip('showRoutes',showRoutes);messages.scrollTop=messages.scrollHeight;}
   $('axiom-launcher').addEventListener('click',e=>panel.hidden?open(e.currentTarget):close());$('axiom-close').addEventListener('click',()=>close());
   document.querySelectorAll('[data-open-axiom]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('dialog[open]').forEach(d=>d.close());open(b);}));
   $('axiom-send').addEventListener('click',()=>ask(input.value));input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();ask(input.value);}});panel.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();close();}});
   $('axiom-voice').addEventListener('click',()=>{if(!audio.paused&&!audio.ended){voiceEnabled=false;stopVoice();setVoiceStatus('voiceMuted');}else greeting();});
   $('axiom-clear').addEventListener('click',clearConversation);
+  $('axiom-trial').addEventListener('click',startTrial);$('axiom-trial-stop').addEventListener('click',()=>{stopTrial();stopVoice();$('axiom-launcher').focus({preventScroll:true});});
   tone.addEventListener('change',()=>{manualTone=true;try{localStorage.setItem('cyberserch-tone',tone.value);}catch{/* Optional. */}});
-  document.addEventListener('portfolio:language',()=>{resetVoice();messages.replaceChildren();input.value='';lastResponse={key:'welcome'};if(!panel.hidden){addMessage(I.t('welcome'));showRoutes();}});
-  document.addEventListener('visibilitychange',()=>{if(document.hidden)stopVoice();});
-  window.AXIOM={open,close,ask,startService(index,source){open(source,false);const keys=['webTerm','automationTerm','aiTerm','securityTerm','businessAnswer','securityTerm','creatorAnswer'];answer(keys[index]||'businessAnswer','#contact');chips.replaceChildren();makeChip('showRoutes',showRoutes);}};
+  document.addEventListener('portfolio:language',()=>{stopTrial();resetVoice();messages.replaceChildren();input.value='';lastResponse={key:'welcome'};if(!panel.hidden){addMessage(I.t('welcome'));showRoutes();}});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){stopTrial();stopVoice();}});
+  window.AXIOM={open,close,ask,get trialActive(){return trial.active;},startService(index,source){open(source,false);const keys=['webTerm','automationTerm','aiTerm','securityTerm','businessAnswer','securityTerm','creatorAnswer'];answer(keys[index]||'businessAnswer',index===1?'#automation':'#contact');chips.replaceChildren();makeChip('showRoutes',showRoutes);}};
   syncVoice();setVoiceStatus('voiceReady');
 
   // All seven supplied layers share a 1029×1183 coordinate system.

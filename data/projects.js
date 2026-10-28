@@ -1,43 +1,438 @@
-/* Editorial data. null means not published/confirmed, never a fabricated URL or progress. */
+/* Public editorial data. null means not yet available; never a fabricated link. */
 window.PORTFOLIO = {
-  supportLinks: {patreon: 'https://www.patreon.com/c/CyberserchMX/membership', paypal: 'https://www.paypal.com/donate/?hosted_button_id=D587QCAYURRYG'},
-  cvCheckoutUrl: null, // Enable only after the private PDF product is published and priced at US$5.
-  // Add the verified HTTPS profile URL when each account exists. null keeps it visibly pending.
-  socialLinks: { x: null, instagram: null, tiktok: 'https://www.tiktok.com/@cyberserch.mx', youtube: 'https://www.youtube.com/@cyberserchmx', telegram: null },
-  projects: [
-    {id:'local-ai-platform',name:'Plataforma de IA local',subtitle:'Local AI Production Platform',icon:'core',categories:['ai','automation','content','python'],categoryLabel:'AI / AUTOMATION / CONTENT',status:'EN DESARROLLO',statusType:'active',featured:true,
-      description:'Una plataforma de inteligencia artificial local para conectar la generación de imagen, video y voz en un mismo flujo de producción.',
-      problem:'Reducir la fragmentación entre herramientas creativas y explorar una producción multimedia automatizada bajo control local.',
-      architecture:'Brief → orquestador Python → modelos locales de imagen, video y voz → revisión humana → exportación',
-      architectureLabel:'Arquitectura propuesta',stack:['Python','ComfyUI','LLM local','TTS'],stackLabel:'Stack propuesto',
-      features:['Generación de imágenes y video.','Síntesis de voz, clonación autorizada, avatar digital y lip sync.','Agentes locales y automatización de procesos multimedia.','Revisión humana y preparación de piezas para distintos canales.'],
-      scope:'Visión de producto en desarrollo. El esquema representa una arquitectura conceptual; no acredita módulos terminados. Repositorio, capturas y demo pendientes de publicación.',version:null,progress:null,updated:null,github:null,demo:null,docs:null,screenshots:[]},
-    {id:'python-lab',name:'Python Lab',icon:'code',categories:['python','automation'],categoryLabel:'PYTHON / TOOLS',status:'PLANIFICADO',statusType:'',description:'Herramientas pequeñas para resolver tareas concretas: archivos, datos, APIs y automatización.',problem:'Transformar operaciones repetitivas en procesos reproducibles y revisables.',architecture:'Entrada de datos → validación → procesamiento Python → resultado / reporte',architectureLabel:'Arquitectura de referencia',stack:['Python','APIs','Data processing'],stackLabel:'Tecnologías previstas',features:['Procesamiento y análisis de archivos.','Integración de APIs y agentes.','Scraping solo de fuentes autorizadas.'],scope:'Línea de laboratorio preparada para incorporar repositorios, pruebas y resultados reales. Aún no hay una herramienta Python publicada en esta ficha.',version:null,progress:null,updated:null,github:null,demo:null,docs:null,screenshots:[]},
-    {id:'cybersecurity-lab',name:'Cybersecurity Lab',icon:'shield',categories:['cyber'],categoryLabel:'DEFENSIVE SECURITY',status:'LAB · PLANIFICADO',statusType:'',description:'Una línea de trabajo sobre detección, análisis de logs, hardening y respuesta a incidentes.',problem:'Convertir eventos de seguridad en señales comprensibles y acciones defensivas documentadas.',architecture:'Fuentes de logs → SIEM / Wazuh → reglas → análisis → respuesta documentada',architectureLabel:'Arquitectura de referencia',stack:['Wazuh','SIEM','OSINT'],stackLabel:'Tecnologías previstas',features:['Detección y correlación de eventos.','Investigación forense y revisión de evidencias.','Hardening y monitoreo en entornos autorizados.'],scope:'Proyecto de laboratorio planificado. El analizador web de esta página es una demostración independiente y no representa una implementación de Wazuh.',version:null,progress:null,updated:null,github:null,demo:null,docs:null,screenshots:[]},
-    {id:'network-lab',name:'Network Lab',icon:'network',categories:['networks','cyber'],categoryLabel:'NETWORKS / ANALYSIS',status:'PLANIFICADO',statusType:'',description:'Visibilidad del tráfico, segmentación y arquitectura para entender mejor una red.',problem:'Identificar flujos, dependencias y superficies de exposición en un entorno controlado.',architecture:'Topología de laboratorio → captura autorizada → análisis → propuesta de segmentación',architectureLabel:'Arquitectura de referencia',stack:['Wireshark','Nmap','Networking'],stackLabel:'Tecnologías previstas',features:['Análisis de tráfico y protocolos.','Monitoreo y documentación de topologías.','Segmentación y revisión de seguridad de red.'],scope:'Línea de proyecto; topologías, capturas y resultados pendientes de publicación.',version:null,progress:null,updated:null,github:null,demo:null,docs:null,screenshots:[]},
-    {id:'automation-lab',name:'Automation Lab',icon:'automation',categories:['automation','python','ai'],categoryLabel:'WORKFLOWS / AGENTS',status:'PLANIFICADO',statusType:'',description:'Pipelines y agentes para unir herramientas y dar continuidad a procesos repetitivos.',problem:'Reducir pasos manuales conservando trazabilidad y control sobre cada ejecución.',architecture:'Disparador → validación → pasos del flujo → revisión → registro de resultados',architectureLabel:'Arquitectura de referencia',stack:['Python','AI agents','Pipelines'],stackLabel:'Tecnologías previstas',features:['Integración entre servicios.','Procesamiento automático y tareas programadas.','Revisión humana en decisiones relevantes.'],scope:'Espacio preparado para flujos documentados. No hay integraciones o agentes de producción acreditados en esta ficha.',version:null,progress:null,updated:null,github:null,demo:null,docs:null,screenshots:[]},
-    {id:'ai-pentesting',name:'Local AI Security',icon:'shield',categories:['ai','cyber','python'],categoryLabel:'AUTHORIZED SECURITY TESTING',status:'RESEARCH',statusType:'research',description:'Investigación sobre IA local aplicada al análisis de resultados de seguridad y a la generación de reportes.',problem:'Ayudar a organizar y explicar hallazgos de pruebas autorizadas manteniendo la información en un laboratorio local.',architecture:'Alcance autorizado → resultados de herramientas → análisis local → revisión humana → reporte',architectureLabel:'Arquitectura conceptual',stack:['LLM local','Python','Reporting'],stackLabel:'Tecnologías en investigación',features:['Reconocimiento y enumeración dentro del alcance autorizado.','Clasificación de resultados y análisis de vulnerabilidades.','Agentes locales para apoyar la elaboración de reportes.'],scope:'AUTHORIZED SECURITY TESTING · LAB ENVIRONMENT · DEFENSIVE SECURITY. Proyecto futuro de investigación, únicamente para sistemas propios o con autorización expresa. Sin motor de pruebas implementado en este sitio.',version:null,progress:null,updated:null,github:null,demo:null,docs:null,screenshots:[]},
-    {id:'log-analyzer',name:'Auth Log Analyzer',icon:'terminal',categories:['cyber'],categoryLabel:'BROWSER / DETECTION',status:'PROTOTYPE',statusType:'active',description:'Prueba una regla defensiva: agrupa rechazos por IP y detecta patrones en una muestra editable.',problem:'Mostrar de forma transparente cómo un conjunto de eventos se convierte en una señal de atención.',architecture:'Texto local → validación de hora / estado / IPv4 → agrupación por IP → umbral ≥ 3 → hallazgos',architectureLabel:'Arquitectura implementada',stack:['JavaScript','DOM API','Local processing'],stackLabel:'Stack implementado',features:['Entrada editable con datos sintéticos.','Validación de IPv4, hora y estados ACCEPT / DENY.','Resumen de eventos, descartes y fuentes que superan el umbral.','Sin transferencias de datos ni dependencias externas.'],scope:'Prototipo educativo implementado en main.js. Cuenta eventos de toda la muestra, no utiliza una ventana temporal y no sustituye un SIEM. La misma IP no demuestra por sí sola un ataque.',version:'1.0.0',progress:null,updated:'2026-10-27',github:null,demo:'#laboratory',docs:null,screenshots:[]},
-    {id:'cyberserch',name:'CYBERSERCH Portfolio',icon:'globe',categories:['web'],categoryLabel:'WEB / PERSONAL BRAND',status:'ACTIVE',statusType:'active',description:'Este portafolio: una experiencia estática, accesible y sin frameworks, diseñada para GitHub Pages.',problem:'Reunir perfil técnico, proyectos y servicios en una experiencia mantenible con carga ligera.',architecture:'HTML semántico → CSS adaptable → datos estáticos → JavaScript progresivo → GitHub Pages',architectureLabel:'Arquitectura implementada',stack:['HTML','CSS','JavaScript'],stackLabel:'Stack implementado',features:['Filtros y fichas de proyectos.','Gráficos vectoriales locales y partículas limitadas.','Navegación por teclado y control de movimiento.','Contacto reservado y acceso a la información del CV.'],scope:'Portafolio publicado en GitHub Pages. Las opciones de pago se activan solo cuando sus proveedores están configurados.',version:'1.0.0',progress:null,updated:'2026-10-27',github:'https://github.com/sergioh-devsec/sergioh-devsec.github.io',demo:'#home',docs:null,screenshots:[]}
+  "supportLinks": {
+    "patreon": "https://www.patreon.com/c/CyberserchMX/membership",
+    "paypal": "https://www.paypal.com/donate/?hosted_button_id=D587QCAYURRYG"
+  },
+  "cvCheckoutUrl": null,
+  "socialLinks": {
+    "x": null,
+    "instagram": null,
+    "tiktok": "https://www.tiktok.com/@cyberserch.mx",
+    "youtube": "https://www.youtube.com/@cyberserchmx",
+    "telegram": null
+  },
+  "projects": [
+    {
+      "id": "local-ai-platform",
+      "name": "Plataforma de IA local",
+      "subtitle": "Local AI Production Platform",
+      "icon": "core",
+      "categories": [
+        "ai",
+        "automation",
+        "content",
+        "python"
+      ],
+      "categoryLabel": "AI / AUTOMATION / CONTENT",
+      "status": "EN DESARROLLO",
+      "statusType": "active",
+      "featured": true,
+      "description": "Una plataforma de inteligencia artificial local para conectar la generación de imagen, video y voz en un mismo flujo de producción.",
+      "problem": "Reducir la fragmentación entre herramientas creativas y explorar una producción multimedia automatizada bajo control local.",
+      "architecture": "Brief → orquestador Python → modelos locales de imagen, video y voz → revisión humana → exportación",
+      "architectureLabel": "Arquitectura propuesta",
+      "stack": [
+        "Python",
+        "ComfyUI",
+        "LLM local",
+        "TTS"
+      ],
+      "stackLabel": "Stack propuesto",
+      "features": [
+        "Generación de imágenes y video.",
+        "Síntesis de voz, clonación autorizada, avatar digital y lip sync.",
+        "Agentes locales y automatización de procesos multimedia.",
+        "Revisión humana y preparación de piezas para distintos canales."
+      ],
+      "scope": "Visión de producto en desarrollo. El esquema representa una arquitectura conceptual; no acredita módulos terminados. Repositorio, capturas y demo pendientes de publicación.",
+      "version": null,
+      "progress": null,
+      "updated": null,
+      "github": null,
+      "demo": null,
+      "docs": null,
+      "screenshots": []
+    },
+    {
+      "id": "python-lab",
+      "name": "Python Lab",
+      "icon": "code",
+      "categories": [
+        "python",
+        "automation"
+      ],
+      "categoryLabel": "PYTHON / TOOLS",
+      "status": "PLANIFICADO",
+      "statusType": "",
+      "description": "Herramientas pequeñas para resolver tareas concretas: archivos, datos, APIs y automatización.",
+      "problem": "Transformar operaciones repetitivas en procesos reproducibles y revisables.",
+      "architecture": "Entrada de datos → validación → procesamiento Python → resultado / reporte",
+      "architectureLabel": "Arquitectura de referencia",
+      "stack": [
+        "Python",
+        "APIs",
+        "Data processing"
+      ],
+      "stackLabel": "Tecnologías previstas",
+      "features": [
+        "Procesamiento y análisis de archivos.",
+        "Integración de APIs y agentes.",
+        "Scraping solo de fuentes autorizadas."
+      ],
+      "scope": "Línea de laboratorio preparada para incorporar repositorios, pruebas y resultados reales. Aún no hay una herramienta Python publicada en esta ficha.",
+      "version": null,
+      "progress": null,
+      "updated": null,
+      "github": null,
+      "demo": null,
+      "docs": null,
+      "screenshots": []
+    },
+    {
+      "id": "cybersecurity-lab",
+      "name": "Cybersecurity Lab",
+      "icon": "shield",
+      "categories": [
+        "cyber"
+      ],
+      "categoryLabel": "DEFENSIVE SECURITY",
+      "status": "LAB · PLANIFICADO",
+      "statusType": "",
+      "description": "Una línea de trabajo sobre detección, análisis de logs, hardening y respuesta a incidentes.",
+      "problem": "Convertir eventos de seguridad en señales comprensibles y acciones defensivas documentadas.",
+      "architecture": "Fuentes de logs → SIEM / Wazuh → reglas → análisis → respuesta documentada",
+      "architectureLabel": "Arquitectura de referencia",
+      "stack": [
+        "Wazuh",
+        "SIEM",
+        "OSINT"
+      ],
+      "stackLabel": "Tecnologías previstas",
+      "features": [
+        "Detección y correlación de eventos.",
+        "Investigación forense y revisión de evidencias.",
+        "Hardening y monitoreo en entornos autorizados."
+      ],
+      "scope": "Proyecto de laboratorio planificado. El analizador web de esta página es una demostración independiente y no representa una implementación de Wazuh.",
+      "version": null,
+      "progress": null,
+      "updated": null,
+      "github": null,
+      "demo": null,
+      "docs": null,
+      "screenshots": []
+    },
+    {
+      "id": "network-lab",
+      "name": "Network Lab",
+      "icon": "network",
+      "categories": [
+        "networks",
+        "cyber"
+      ],
+      "categoryLabel": "NETWORKS / ANALYSIS",
+      "status": "PLANIFICADO",
+      "statusType": "",
+      "description": "Visibilidad del tráfico, segmentación y arquitectura para entender mejor una red.",
+      "problem": "Identificar flujos, dependencias y superficies de exposición en un entorno controlado.",
+      "architecture": "Topología de laboratorio → captura autorizada → análisis → propuesta de segmentación",
+      "architectureLabel": "Arquitectura de referencia",
+      "stack": [
+        "Wireshark",
+        "Nmap",
+        "Networking"
+      ],
+      "stackLabel": "Tecnologías previstas",
+      "features": [
+        "Análisis de tráfico y protocolos.",
+        "Monitoreo y documentación de topologías.",
+        "Segmentación y revisión de seguridad de red."
+      ],
+      "scope": "Línea de proyecto; topologías, capturas y resultados pendientes de publicación.",
+      "version": null,
+      "progress": null,
+      "updated": null,
+      "github": null,
+      "demo": null,
+      "docs": null,
+      "screenshots": []
+    },
+    {
+      "id": "automation-lab",
+      "name": "Organizador de tareas",
+      "icon": "automation",
+      "categories": [
+        "automation",
+        "web"
+      ],
+      "categoryLabel": "LOCAL WORKFLOW / CSV",
+      "status": "PROTOTIPO FUNCIONAL",
+      "statusType": "active",
+      "description": "Convierte una lista CSV en un plan descargable: valida registros, elimina duplicados exactos y ordena pendientes.",
+      "problem": "Reducir la limpieza repetitiva de listas mostrando de forma clara qué registros se descartan.",
+      "architecture": "CSV → validación → deduplicación exacta → tareas pendientes → orden por prioridad y fecha → descarga CSV",
+      "architectureLabel": "Arquitectura implementada",
+      "stack": [
+        "JavaScript",
+        "CSV",
+        "Local processing"
+      ],
+      "stackLabel": "Stack implementado",
+      "features": [
+        "Procesa la lista localmente, sin subidas.",
+        "Admite campos CSV entrecomillados y valida fechas reales.",
+        "Informa duplicados, tareas completadas y registros inválidos.",
+        "Exporta CSV neutralizando prefijos de fórmulas de hoja de cálculo."
+      ],
+      "scope": "Herramienta funcional en el navegador, implementada en showcase.js. La muestra contiene tareas ficticias. No sincroniza servicios externos ni modifica archivos de origen.",
+      "version": "1.0.0",
+      "progress": null,
+      "updated": "2026-10-28",
+      "github": null,
+      "demo": "#automation",
+      "docs": null,
+      "screenshots": [],
+      "subtitle": "CSV Task Organizer"
+    },
+    {
+      "id": "ai-pentesting",
+      "name": "Local AI Security",
+      "icon": "shield",
+      "categories": [
+        "ai",
+        "cyber",
+        "python"
+      ],
+      "categoryLabel": "AUTHORIZED SECURITY TESTING",
+      "status": "RESEARCH",
+      "statusType": "research",
+      "description": "Investigación sobre IA local aplicada al análisis de resultados de seguridad y a la generación de reportes.",
+      "problem": "Ayudar a organizar y explicar hallazgos de pruebas autorizadas manteniendo la información en un laboratorio local.",
+      "architecture": "Alcance autorizado → resultados de herramientas → análisis local → revisión humana → reporte",
+      "architectureLabel": "Arquitectura conceptual",
+      "stack": [
+        "LLM local",
+        "Python",
+        "Reporting"
+      ],
+      "stackLabel": "Tecnologías en investigación",
+      "features": [
+        "Reconocimiento y enumeración dentro del alcance autorizado.",
+        "Clasificación de resultados y análisis de vulnerabilidades.",
+        "Agentes locales para apoyar la elaboración de reportes."
+      ],
+      "scope": "AUTHORIZED SECURITY TESTING · LAB ENVIRONMENT · DEFENSIVE SECURITY. Proyecto futuro de investigación, únicamente para sistemas propios o con autorización expresa. Sin motor de pruebas implementado en este sitio.",
+      "version": null,
+      "progress": null,
+      "updated": null,
+      "github": null,
+      "demo": null,
+      "docs": null,
+      "screenshots": []
+    },
+    {
+      "id": "log-analyzer",
+      "name": "Auth Log Analyzer",
+      "icon": "terminal",
+      "categories": [
+        "cyber"
+      ],
+      "categoryLabel": "BROWSER / DETECTION",
+      "status": "PROTOTYPE",
+      "statusType": "active",
+      "description": "Prueba una regla defensiva: agrupa rechazos por IP y detecta patrones en una muestra editable.",
+      "problem": "Mostrar de forma transparente cómo un conjunto de eventos se convierte en una señal de atención.",
+      "architecture": "Texto local → validación de hora / estado / IPv4 → agrupación por IP → umbral ≥ 3 → hallazgos",
+      "architectureLabel": "Arquitectura implementada",
+      "stack": [
+        "JavaScript",
+        "DOM API",
+        "Local processing"
+      ],
+      "stackLabel": "Stack implementado",
+      "features": [
+        "Entrada editable con datos sintéticos.",
+        "Validación de IPv4, hora y estados ACCEPT / DENY.",
+        "Resumen de eventos, descartes y fuentes que superan el umbral.",
+        "Sin transferencias de datos ni dependencias externas."
+      ],
+      "scope": "Prototipo educativo implementado en main.js. Cuenta eventos de toda la muestra, no utiliza una ventana temporal y no sustituye un SIEM. La misma IP no demuestra por sí sola un ataque.",
+      "version": "1.0.0",
+      "progress": null,
+      "updated": "2026-10-27",
+      "github": null,
+      "demo": "#laboratory",
+      "docs": null,
+      "screenshots": []
+    },
+    {
+      "id": "cyberserch",
+      "name": "CYBERSERCH Portfolio",
+      "icon": "globe",
+      "categories": [
+        "web"
+      ],
+      "categoryLabel": "WEB / PERSONAL BRAND",
+      "status": "ACTIVE",
+      "statusType": "active",
+      "description": "Este portafolio: una experiencia estática, accesible y sin frameworks, diseñada para GitHub Pages.",
+      "problem": "Reunir perfil técnico, proyectos y servicios en una experiencia mantenible con carga ligera.",
+      "architecture": "HTML semántico → CSS adaptable → datos estáticos → JavaScript progresivo → GitHub Pages",
+      "architectureLabel": "Arquitectura implementada",
+      "stack": [
+        "HTML",
+        "CSS",
+        "JavaScript"
+      ],
+      "stackLabel": "Stack implementado",
+      "features": [
+        "Filtros y fichas de proyectos.",
+        "Gráficos vectoriales locales y partículas limitadas.",
+        "Navegación por teclado y control de movimiento.",
+        "Contacto reservado y acceso a la información del CV."
+      ],
+      "scope": "Portafolio publicado en GitHub Pages. Las opciones de pago se activan solo cuando sus proveedores están configurados.",
+      "version": "1.0.0",
+      "progress": null,
+      "updated": "2026-10-27",
+      "github": "https://github.com/sergioh-devsec/sergioh-devsec.github.io",
+      "demo": "#home",
+      "docs": null,
+      "screenshots": []
+    }
   ],
-  credentials:[
-    {name:'SC-100: Microsoft Cybersecurity Architect',issuer:'Microsoft',date:null,displayDate:'EXAMEN APROBADO',type:'Examen oficial aprobado',source:'owner',url:null},
-    {name:'CyberOps Associate',issuer:'Cisco',date:'2025-01',displayDate:'ENE 2025',type:'Formación publicada en LinkedIn',url:null},
-    {name:'Introduction to Cybersecurity',issuer:'Cisco',date:'2025-01',displayDate:'ENE 2025',type:'Curso publicado en LinkedIn',url:null},
-    {name:'CCNA: Enterprise Networking, Security, and Automation',issuer:'Cisco',date:'2024-10',displayDate:'OCT 2024',type:'Formación publicada en LinkedIn',url:null},
-    {name:'Data Analysis Using Python',issuer:'IBM',date:'2024-04',displayDate:'ABR 2024',type:'Curso publicado en LinkedIn',url:null},
-    {name:'Data Visualization Using Python',issuer:'IBM',date:'2024-04',displayDate:'ABR 2024',type:'Curso publicado en LinkedIn',url:null},
-    {name:'Python for Data Science',issuer:'IBM',date:'2024-04',displayDate:'ABR 2024',type:'Curso publicado en LinkedIn',url:null},
-    {name:'CCNA: Introduction to Networks',issuer:'Cisco',date:'2023-12',displayDate:'DIC 2023',type:'Formación publicada en LinkedIn',url:null},
-    {name:'Google Cybersecurity Certificate',issuer:'Google',date:'2023-09',displayDate:'SEP 2023',type:'Credencial publicada en LinkedIn',url:null}
+  "credentials": [
+    {
+      "name": "SC-100: Microsoft Cybersecurity Architect",
+      "issuer": "Microsoft",
+      "date": null,
+      "displayDate": "EXAMEN APROBADO",
+      "type": "Examen oficial aprobado",
+      "source": "owner",
+      "url": null
+    },
+    {
+      "name": "CyberOps Associate",
+      "issuer": "Cisco",
+      "date": "2025-01",
+      "displayDate": "ENE 2025",
+      "type": "Formación publicada en LinkedIn",
+      "url": null
+    },
+    {
+      "name": "Introduction to Cybersecurity",
+      "issuer": "Cisco",
+      "date": "2025-01",
+      "displayDate": "ENE 2025",
+      "type": "Curso publicado en LinkedIn",
+      "url": null
+    },
+    {
+      "name": "CCNA: Enterprise Networking, Security, and Automation",
+      "issuer": "Cisco",
+      "date": "2024-10",
+      "displayDate": "OCT 2024",
+      "type": "Formación publicada en LinkedIn",
+      "url": null
+    },
+    {
+      "name": "Data Analysis Using Python",
+      "issuer": "IBM",
+      "date": "2024-04",
+      "displayDate": "ABR 2024",
+      "type": "Curso publicado en LinkedIn",
+      "url": null
+    },
+    {
+      "name": "Data Visualization Using Python",
+      "issuer": "IBM",
+      "date": "2024-04",
+      "displayDate": "ABR 2024",
+      "type": "Curso publicado en LinkedIn",
+      "url": null
+    },
+    {
+      "name": "Python for Data Science",
+      "issuer": "IBM",
+      "date": "2024-04",
+      "displayDate": "ABR 2024",
+      "type": "Curso publicado en LinkedIn",
+      "url": null
+    },
+    {
+      "name": "CCNA: Introduction to Networks",
+      "issuer": "Cisco",
+      "date": "2023-12",
+      "displayDate": "DIC 2023",
+      "type": "Formación publicada en LinkedIn",
+      "url": null
+    },
+    {
+      "name": "Google Cybersecurity Certificate",
+      "issuer": "Google",
+      "date": "2023-09",
+      "displayDate": "SEP 2023",
+      "type": "Credencial publicada en LinkedIn",
+      "url": null
+    }
   ],
-  services:[
-    {name:'Creación de páginas web',icon:'globe',description:'Sitios y portafolios que explican tu propuesta y facilitan el contacto con tus clientes.',use:'Landing pages · sitios profesionales · rediseño'},
-    {name:'Automatización',icon:'automation',description:'Menos tareas repetitivas y procesos más consistentes mediante herramientas hechas para tu flujo.',use:'Archivos · reportes · integraciones · tareas programadas'},
-    {name:'Inteligencia artificial local',icon:'core',description:'Evaluación e integración de modelos locales según tu objetivo, infraestructura y necesidades de privacidad.',use:'LLM locales · asistentes · flujos creativos'},
-    {name:'Ciberseguridad',icon:'shield',description:'Evaluación técnica y recomendaciones para reducir exposición y fortalecer tus sistemas.',use:'Hardening · postura de seguridad · pruebas autorizadas'},
-    {name:'Consultoría tecnológica',icon:'terminal',description:'Criterio técnico para tomar decisiones de arquitectura, herramientas y evolución de tus proyectos.',use:'Diagnóstico · selección de tecnologías · hoja de ruta'},
-    {name:'Análisis de redes',icon:'network',description:'Comprende tu infraestructura, sus flujos y los puntos que necesitan atención.',use:'Tráfico · segmentación · documentación · monitoreo'},
-    {name:'Contenido con IA',icon:'video',description:'Diseño de flujos creativos para imagen, video, guion y voz, según la viabilidad de cada proyecto.',use:'Producción asistida · edición · automatización creativa'}
-  ]
+  "services": [
+    {
+      "name": "Creación de páginas web",
+      "icon": "globe",
+      "description": "Sitios y portafolios que explican tu propuesta y facilitan el contacto con tus clientes.",
+      "use": "Landing pages · sitios profesionales · rediseño"
+    },
+    {
+      "name": "Automatización",
+      "icon": "automation",
+      "description": "Menos tareas repetitivas y procesos más consistentes mediante herramientas hechas para tu flujo.",
+      "use": "Archivos · reportes · integraciones · tareas programadas"
+    },
+    {
+      "name": "Inteligencia artificial local",
+      "icon": "core",
+      "description": "Evaluación e integración de modelos locales según tu objetivo, infraestructura y necesidades de privacidad.",
+      "use": "LLM locales · asistentes · flujos creativos"
+    },
+    {
+      "name": "Ciberseguridad",
+      "icon": "shield",
+      "description": "Evaluación técnica y recomendaciones para reducir exposición y fortalecer tus sistemas.",
+      "use": "Hardening · postura de seguridad · pruebas autorizadas"
+    },
+    {
+      "name": "Consultoría tecnológica",
+      "icon": "terminal",
+      "description": "Criterio técnico para tomar decisiones de arquitectura, herramientas y evolución de tus proyectos.",
+      "use": "Diagnóstico · selección de tecnologías · hoja de ruta"
+    },
+    {
+      "name": "Análisis de redes",
+      "icon": "network",
+      "description": "Comprende tu infraestructura, sus flujos y los puntos que necesitan atención.",
+      "use": "Tráfico · segmentación · documentación · monitoreo"
+    },
+    {
+      "name": "Contenido con IA",
+      "icon": "video",
+      "description": "Diseño de flujos creativos para imagen, video, guion y voz, según la viabilidad de cada proyecto.",
+      "use": "Producción asistida · edición · automatización creativa"
+    }
+  ],
+  "axiomTrialAudio": {
+    "es": {
+      "joke1": null,
+      "joke2": null,
+      "joke3": null,
+      "support": null
+    },
+    "en": {
+      "joke1": null,
+      "joke2": null,
+      "joke3": null,
+      "support": null
+    }
+  }
 };
