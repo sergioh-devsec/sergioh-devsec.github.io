@@ -3,7 +3,7 @@ window.PORTFOLIO = {
   supportLinks: {patreon: 'https://www.patreon.com/c/CyberserchMX/membership', paypal: 'https://www.paypal.com/donate/?hosted_button_id=D587QCAYURRYG'},
   cvCheckoutUrl: null, // Enable only after the private PDF product is published and priced at US$5.
   // Add the verified HTTPS profile URL when each account exists. null keeps it visibly pending.
-  socialLinks: { x: null, instagram: null, tiktok: null, youtube: null, telegram: null },
+  socialLinks: { x: null, instagram: null, tiktok: 'https://www.tiktok.com/@cyberserch.mx', youtube: 'https://www.youtube.com/@cyberserchmx', telegram: null },
   projects: [
     {id:'local-ai-platform',name:'Plataforma de IA local',subtitle:'Local AI Production Platform',icon:'core',categories:['ai','automation','content','python'],categoryLabel:'AI / AUTOMATION / CONTENT',status:'EN DESARROLLO',statusType:'active',featured:true,
       description:'Una plataforma de inteligencia artificial local para conectar la generación de imagen, video y voz en un mismo flujo de producción.',
