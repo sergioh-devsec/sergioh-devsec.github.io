@@ -109,6 +109,24 @@
       card.querySelector('.social-status').textContent = 'CANAL ACTIVO';
     });
   }
+  function setupCoreExplorer() {
+    const scene=$('.core-scene');
+    const modes={
+      ai:{kicker:'LOCAL',label:'INTELLIGENCE',description:'Modelos locales, agentes y flujos creativos conectados.'},
+      security:{kicker:'DEFENSIVE',label:'SECURITY',description:'Análisis de señales, protección de redes y seguridad desde el diseño.'},
+      software:{kicker:'BUILD',label:'SOFTWARE',description:'Código, interfaces y automatización para resolver problemas reales.'}
+    };
+    $('.core-controls').hidden=false;
+    $$('[data-core-mode]').forEach(button=>button.addEventListener('click',()=>{
+      const mode=button.dataset.coreMode;
+      if(!Object.hasOwn(modes,mode))return;
+      scene.dataset.mode=mode;
+      $('#core-kicker').textContent=modes[mode].kicker;
+      $('#core-mode-label').textContent=modes[mode].label;
+      $('#core-description').textContent=modes[mode].description;
+      $$('[data-core-mode]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+    }));
+  }
   const dialog=$('#project-dialog'); let dialogOpener=null;
   function openProject(id, opener) {
     const project=data.projects.find(item => item.id===id); if (!project) return;
@@ -148,8 +166,9 @@
     if(event.target.closest('.print-cv'))window.print();
   });
   const mobileQuery=matchMedia('(max-width: 800px)');mobileQuery.addEventListener('change',()=>closeMenu());
-  function handleHash(){const target=document.getElementById(location.hash.slice(1));if(target?.classList.contains('project-card')){if(target.hidden)setFilter('all');target.scrollIntoView({behavior:'instant',block:'start'});}}
+  function handleHash(){const target=document.getElementById(location.hash.slice(1));if(!target)return;if(target.classList.contains('project-card')&&target.hidden)setFilter('all');target.scrollIntoView({behavior:'instant',block:'start'});}
   window.addEventListener('hashchange',handleHash);
+  window.addEventListener('load',handleHash,{once:true});
 
   function setupContact(){
     const form=$('#contact-form');const status=$('#contact-status');const copy=$('#copy-message');
@@ -190,6 +209,7 @@
     studioControl.addEventListener('click',()=>{studioPaused=!studioPaused;syncStudio();});
     try{userPaused=localStorage.getItem('cyberserch-motion')==='paused';}catch{/* Storage can be disabled. */}
     const hero=$('.hero');const core=$('#core-parallax');const canvas=$('#particles');const ctx=canvas.getContext('2d');
+    $('.core-scene').classList.add('core-ready');
     let width=0,height=0,points=[],raf=0,last=0,heroVisible=true,px=0,py=0,moved=false;
     let pointerRect=null;
     let paused=query.matches||userPaused;
@@ -230,7 +250,7 @@
     const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>visible.set(entry.target.id,entry.isIntersecting));const current=links.find(link=>visible.get(link.hash.slice(1)));links.forEach(link=>{if(link===current)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');});},{rootMargin:'-15% 0px -55% 0px'});
     links.forEach(link=>{const section=document.getElementById(link.hash.slice(1));if(section)observer.observe(section);});
   }
-  renderProjects();renderCredentials();renderServices();setupSocialLinks();setupContact();setupLab();setupMotion();setupActiveNavigation();
+  renderProjects();renderCredentials();renderServices();setupSocialLinks();setupCoreExplorer();setupContact();setupLab();setupMotion();setupActiveNavigation();
   $$('.print-cv').forEach(button=>{button.hidden=false;});
   requestAnimationFrame(handleHash);
 })();
