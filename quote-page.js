@@ -1,4 +1,4 @@
-/* The estimate page needs no assistant, tracking, external scripts or network API. */
+/* Small DOM helpers for the estimate page; external integrations have separate consent gates. */
 (() => {
   'use strict';
   function el(tag,cls='',text){const node=document.createElement(tag);node.className=cls;if(text!==undefined)node.textContent=text;return node;}
