@@ -525,7 +525,10 @@ window.PORTFOLIO = {
       "trialJoke19": "77_presupuesto.mp3",
       "trialJoke20": "78_cafe.mp3",
       "trialJoke21": "79_ideas.mp3",
-      "trialJoke22": "80_patron.mp3"
+      "trialJoke22": "80_patron.mp3",
+      "idleReturn": "81_regreso.mp3",
+      "idleReturnNote": "82_cafe_tactico.mp3",
+      "axiomStoryVoice": "83_concepto.mp3"
     },
     "en": {
       "welcome": "saludo_en.mp3",

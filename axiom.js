@@ -61,7 +61,7 @@
   function remember(key){const added=visit.mark(phraseId(key));syncCounters();return added;}
   function syncCounters(){visit.tick();}
   function settlePlayback(played=false){const done=playbackDone;playbackDone=null;if(done)done(played);}
-  function stopVoice(){turn++;settlePlayback();voiceContext=null;audio.pause();audio.removeAttribute('src');audio.load();speaking=false;syncVoice();}
+  function stopVoice(){turn++;settlePlayback();voiceContext=null;audio.pause();audio.removeAttribute('src');audio.load();audio.volume=1;speaking=false;syncVoice();}
   function syncVoice(){const button=$('axiom-voice');button.setAttribute('aria-pressed',String(voiceEnabled));button.querySelector('[data-i18n]').dataset.i18n=voiceEnabled?'voiceOn':'voiceOff';I.apply(button);document.querySelectorAll('[data-listen-key]').forEach(b=>{const playing=speaking&&lastResponse.key===b.dataset.listenKey;b.dataset.i18n=playing?'stopClip':(b.dataset.listenLabel||'trialListen');b.textContent=I.t(b.dataset.i18n);b.setAttribute('aria-pressed',String(playing));});}
   function resetVoice(){stopVoice();setVoiceStatus('voiceReady');}
   function setVoiceStatus(key){$('axiom-voice-status').textContent=I.t(key);}
@@ -132,23 +132,71 @@
   window.AXIOM={open,close,get trialActive(){return trial.active;},startService(index,source){open(source,false);activeRoute=index===6?'creator':'business';const keys=['webTerm','automationTerm','aiTerm','securityTerm','consultingTerm','networkTerm','contentTerm'];topic(keys[index]||'businessAnswer',index===1?'#automation':'#contact');}};
   syncVoice();syncCounters();setVoiceStatus('voiceReady');
 
-  // Inactivity is measured from real input; speech waits for a user gesture.
-  // A donation opens only after the visitor chooses a provider link.
+  // Return to a break gently; ordinary movement never abruptly cuts the voice.
   let gestureSeen=false,idleSpeaking=false,idleKey=null,lastPointer=0;
   const idleBubble=$('axiom-idle-bubble');
-  function hideIdle(stop=false){idleBubble.hidden=true;if(stop&&voiceContext==='idle'){stopVoice();idleSpeaking=false;}}
+  function hideIdle(stop=false){returnFlow.cancel();idleBubble.hidden=true;if(stop&&voiceContext==='idle'){stopVoice();idleSpeaking=false;}}
   function syncIdle(){$('axiom-idle-voice').textContent=I.t(voiceEnabled?'idleMuted':'idleVoice');}
-  const idle=window.AxiomIdle.createIdle({allowed:()=>!document.hidden&&tone.value==='playful'&&!trial.active&&!speaking&&!document.querySelector('dialog[open]')&&panel.hidden&&!document.activeElement?.matches('input,textarea,select,[contenteditable=true]')&&fresh(window.PORTFOLIO.axiomJokes).length>0,
-    async present(){const available=fresh(window.PORTFOLIO.axiomJokes);if(!available.length)return;idleKey=available[Math.floor(Math.random()*available.length)];remember(idleKey);lastResponse={key:idleKey};$('axiom-idle-text').textContent=I.t(idleKey);const jokeNumber=Number(idleKey.replace('trialJoke',''));$('axiom-idle-note').textContent=I.t(jokeNumber===1?'idleCoffee':[12,13,17,22].includes(jokeNumber)?'idleSalary':[14,15,18,19].includes(jokeNumber)?'idleVacation':'idleNote');idleBubble.hidden=false;syncIdle();document.dispatchEvent(new CustomEvent('portfolio:axiom-idle'));if(gestureSeen&&voiceEnabled){idleSpeaking=true;const playing=playResponse();voiceContext='idle';await playing;idleSpeaking=false;}}
+  function showIdle(key){
+    idleKey=key;lastResponse={key};const returned=key==='idleReturn';idleBubble.dataset.returned=String(returned);
+    $('axiom-idle-text').textContent=I.t(key);
+    const number=Number(key.replace('trialJoke',''));
+    $('axiom-idle-note').textContent=I.t(returned?'idleReturnNote':number===1?'idleCoffee':[12,13,17,22].includes(number)?'idleSalary':[14,15,18,19].includes(number)?'idleVacation':'idleNote');
+    [['idle-paypal-link',returned?'idleReturnPaypal':'idlePaypal'],['idle-patreon-link',returned?'idleReturnPatreon':'idlePatreon']].forEach(([id,label])=>{const link=$(id);link.dataset.i18n=label;link.textContent=I.t(label);});
+    idleBubble.hidden=false;syncIdle();document.dispatchEvent(new CustomEvent('portfolio:axiom-idle'));
+  }
+  function fadeIdleVoice(){
+    if(voiceContext!=='idle')return Promise.resolve();
+    const token=turn,volume=audio.volume,start=performance.now();
+    return new Promise(resolve=>{
+      function step(){
+        if(turn!==token){resolve();return;}
+        const progress=Math.min(1,(performance.now()-start)/180);audio.volume=volume*(1-progress);
+        if(progress===1){stopVoice();resolve();}else setTimeout(step,20);
+      }step();
+    });
+  }
+  async function playIdleSpeech(keys,current=()=>!idleBubble.hidden){
+    if(!gestureSeen||!voiceEnabled)return;
+    idleSpeaking=true;
+    try{for(const key of keys){
+      if(!current()||!voiceEnabled||idleBubble.hidden||document.hidden)return;
+      lastResponse={key};const playing=playResponse();voiceContext='idle';
+      const played=await playing;if(!played)return;
+    }}finally{if(voiceContext==='idle')idleSpeaking=false;}
+  }
+  const returnFlow=window.AxiomIdle.createReturnSequence({
+    allowed:()=>idle.enabled&&!document.hidden&&panel.hidden&&!document.querySelector('dialog[open]')&&!visit.has(phraseId('idleReturn')),
+    fade:fadeIdleVoice,
+    show(){remember('idleReturn');showIdle('idleReturn');},
+    speak:current=>playIdleSpeech(['idleReturn','idleReturnNote'],current),
+    finish(){idle.activity();}
   });
-  function activity(event){if(event.type==='pointermove'){const at=performance.now();if(at-lastPointer<100)return;lastPointer=at;}if(['pointerdown','keydown'].includes(event.type)&&event.isTrusted)gestureSeen=true;idle.activity();if(event.type!=='pointermove'&&!(event.type==='keydown'&&event.key==='Tab')&&!event.target?.closest?.('#axiom-idle-bubble'))hideIdle(true);}
+  const idle=window.AxiomIdle.createIdle({allowed:()=>!document.hidden&&tone.value==='playful'&&!trial.active&&!speaking&&!returnFlow.busy&&!document.querySelector('dialog[open]')&&panel.hidden&&!document.activeElement?.matches('input,textarea,select,[contenteditable=true]')&&fresh(window.PORTFOLIO.axiomJokes).length>0,
+    async present(){const available=fresh(window.PORTFOLIO.axiomJokes);if(!available.length)return;
+      const key=available[Math.floor(Math.random()*available.length)];remember(key);returnFlow.begin();showIdle(key);await playIdleSpeech([key]);
+    }
+  });
+  function activity(event){
+    if(event.type==='pointermove'){const at=performance.now();if(at-lastPointer<100)return;lastPointer=at;}
+    if(['pointerdown','keydown'].includes(event.type)&&event.isTrusted)gestureSeen=true;
+    idle.activity();if(event.target?.closest?.('#axiom-idle-bubble'))return;
+    const editable=event.target?.closest?.('input,textarea,select,[contenteditable=true]');
+    const action=event.target?.closest?.('a,button,[role=button],summary');
+    if(editable||event.type==='input'||(event.type==='pointerdown'&&action)||(event.type==='keydown'&&event.key==='Escape')){hideIdle(true);return;}
+    if(event.type==='keydown'&&event.key==='Tab')return;
+    if(!idleBubble.hidden&&event.isTrusted&&['pointermove','pointerdown','wheel','keydown'].includes(event.type))void returnFlow.resume();
+  }
   ['pointerdown','pointermove','keydown','wheel','input','scroll'].forEach(name=>document.addEventListener(name,activity,{passive:true,capture:true}));
   $('axiom-idle-dismiss').addEventListener('click',()=>{idle.setEnabled(false);hideIdle(true);syncIdle();$('axiom-launcher').focus({preventScroll:true});});
-  $('axiom-idle-voice').addEventListener('click',()=>{voiceEnabled=!voiceEnabled;if(!voiceEnabled)stopVoice();else if(idleKey){lastResponse={key:idleKey};idleSpeaking=true;const playing=playResponse();voiceContext='idle';playing.finally(()=>{idleSpeaking=false;syncIdle();});}syncVoice();syncIdle();});
+  $('axiom-idle-voice').addEventListener('click',()=>{voiceEnabled=!voiceEnabled;returnFlow.cancel();if(!voiceEnabled){stopVoice();idleSpeaking=false;}else if(idleKey){void playIdleSpeech(idleKey==='idleReturn'?['idleReturn','idleReturnNote']:[idleKey]);}syncVoice();syncIdle();});
   $('axiom-voice').addEventListener('click',syncIdle);
   ['portfolio:dialog-open','portfolio:axiom-open','portfolio:axiom-trial','portfolio:language'].forEach(name=>document.addEventListener(name,()=>{hideIdle(true);idle.activity();syncIdle();}));
   document.addEventListener('visibilitychange',()=>{idle.setVisible(!document.hidden);if(document.hidden)hideIdle(true);});
   document.addEventListener('focusin',event=>{if(event.target?.matches('input,textarea,select,[contenteditable=true]')){hideIdle(true);idle.activity();}});
+  function syncStory(){$('axiom-story-listen').hidden=!resolveAudio('axiomStoryVoice',I.language,catalog);}
+  $('axiom-story-listen').addEventListener('click',()=>{listenKey('axiomStoryVoice');if(speaking||audio.hasAttribute('src'))voiceContext='story';});
+  document.addEventListener('portfolio:language',syncStory);syncStory();
   idle.start();syncIdle();
 
   // All seven supplied layers share a 1029×1183 coordinate system.

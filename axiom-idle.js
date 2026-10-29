@@ -8,6 +8,22 @@
     async function tick(){timer=null;if(!enabled||!visible)return;if(!allowed()){last=now();arm();return;}const token=generation;busy=true;try{await present();}finally{busy=false;if(token===generation)last=now();arm();}}
     return {activity(){last=now();arm();},setEnabled(value){enabled=Boolean(value);generation++;last=now();arm();},setVisible(value){visible=Boolean(value);generation++;last=now();arm();},start:arm,get enabled(){return enabled;},get busy(){return busy;}};
   }
-  if(typeof module!=='undefined'&&module.exports)module.exports={createIdle};
-  if(typeof window!=='undefined')window.AxiomIdle={createIdle};
+  // One return per idle presentation. Cancellation invalidates every pending await.
+  function createReturnSequence({allowed=()=>true,fade,show,speak,finish=()=>{}}){
+    let generation=0,armed=false,busy=false;
+    function cancel(){generation++;armed=false;busy=false;}
+    return {
+      begin(){cancel();armed=true;},cancel,
+      async resume(){
+        if(!armed||busy||!allowed())return false;
+        armed=false;busy=true;const token=++generation;
+        const current=()=>token===generation;
+        try{await fade();if(!current()||!allowed())return false;show();await speak(current);return current();}
+        finally{if(current()){busy=false;finish();}}
+      },
+      get busy(){return busy;}
+    };
+  }
+  if(typeof module!=='undefined'&&module.exports)module.exports={createIdle,createReturnSequence};
+  if(typeof window!=='undefined')window.AxiomIdle={createIdle,createReturnSequence};
 })();

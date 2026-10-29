@@ -45,7 +45,7 @@ window.TRANSLATIONS = {
     "scope": "Explorar mi necesidad",
     "scopeNote": "Empieza con la guía de Axiom.",
     "channels": "Encuéntrame. Sigue lo que viene.",
-    "channelsNote": "Solo los canales activos tienen enlace.",
+    "channelsNote": "Toca una tarjeta para abrir su canal.",
     "studioTitle": "Una idea. Distintos caminos.",
     "studioLead": "Explora cómo un mismo brief puede transformarse en imagen, video o voz. Una vista del proceso que estoy desarrollando.",
     "image": "Imagen",
@@ -497,7 +497,19 @@ window.TRANSLATIONS = {
     "shareLabel": "Enlace del recorrido",
     "shareCopy": "Copiar enlace",
     "shareNative": "Elegir dónde compartir",
-    "shareNote": "El enlace no incluye tus datos. Nada se publica automáticamente."
+    "shareNote": "El enlace no incluye tus datos. Nada se publica automáticamente.",
+    "idleReturn": "¿Ya regresaste? A ver, abre rápido tres pestañas y frunce el ceño, que si el patrón nos ve sin hacer nada, se enoja.",
+    "idleReturnNote": "Si te estoy salvando el pellejo hoy, puedes cooperar para el café.",
+    "axiomStoryVoice": "Soy Axiom, el ciberasistente de Serch. Nací de una idea sencilla: que explorar tecnología se sienta como una conversación. Te acompaño entre proyectos, conceptos y posibilidades, con curiosidad, una voz propia y alguna broma cuando el código se pone demasiado serio.",
+    "openSocial": "Abrir {name} en una pestaña nueva",
+    "axiomStoryTag": "LA IDEA DETRÁS DE AXIOM",
+    "axiomStoryTitle": "Una voz para la curiosidad.",
+    "axiomStoryMore": "Mi mundo vive aquí: entre ideas que toman forma, herramientas que ya puedes explorar y experimentos que siguen creciendo. Tú eliges el camino; yo te acerco una explicación, una pista o el siguiente lugar que merece un clic.",
+    "axiomStoryClose": "Esa es la idea de Axiom: darle una presencia cercana al laboratorio. Que detrás de cada botón encuentres algo por descubrir… y, con suerte, una sonrisa.",
+    "axiomStorySignature": "AXIOM · CURIOSIDAD EN MOVIMIENTO",
+    "storyListen": "Escuchar mi presentación",
+    "idleReturnPaypal": "Pagar el café táctico (PayPal) ↗",
+    "idleReturnPatreon": "Ser cómplice (Patreon) ↗"
   },
   "en": {
     "skip": "Skip to content",
@@ -545,7 +557,7 @@ window.TRANSLATIONS = {
     "scope": "Explore my needs",
     "scopeNote": "Start with Axiom’s guide.",
     "channels": "Find me. Follow what’s next.",
-    "channelsNote": "Only active channels have a link.",
+    "channelsNote": "Tap a card to open its channel.",
     "studioTitle": "One idea. Different directions.",
     "studioLead": "Explore how one brief can become an image, video or voice. A look at the workflow I’m developing.",
     "image": "Image",
@@ -1146,6 +1158,18 @@ window.TRANSLATIONS = {
     "shareLabel": "Route link",
     "shareCopy": "Copy link",
     "shareNative": "Choose where to share",
-    "shareNote": "The link contains no personal details. Nothing is posted automatically."
+    "shareNote": "The link contains no personal details. Nothing is posted automatically.",
+    "openSocial": "Open {name} in a new tab",
+    "axiomStoryTag": "THE IDEA BEHIND AXIOM",
+    "axiomStoryTitle": "A voice for curiosity.",
+    "axiomStoryVoice": "I’m Axiom, Serch’s cyber assistant. I grew from a simple idea: exploring technology should feel like a conversation. I guide you through projects, concepts and possibilities, with curiosity, a voice of my own and the occasional joke when the code gets too serious.",
+    "axiomStoryMore": "My world lives here: among ideas taking shape, tools you can explore and experiments that keep growing. You choose the route; I offer an explanation, a clue or the next place worth a click.",
+    "axiomStoryClose": "That is the idea behind Axiom: a friendly presence in the lab. Something to discover behind every button… and, hopefully, a smile.",
+    "axiomStorySignature": "AXIOM · CURIOSITY IN MOTION",
+    "storyListen": "Listen to my introduction",
+    "idleReturn": "You’re back? Quick, open three tabs and look worried. If the boss catches us doing nothing, we’re in trouble.",
+    "idleReturnNote": "If I’m saving your skin today, you can chip in for coffee.",
+    "idleReturnPaypal": "Buy tactical coffee (PayPal) ↗",
+    "idleReturnPatreon": "Be my accomplice (Patreon) ↗"
   }
 };
