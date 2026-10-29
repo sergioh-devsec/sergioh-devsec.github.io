@@ -403,46 +403,46 @@ window.PORTFOLIO = {
   ],
   "services": [
     {
-      "name": "Creación de páginas web",
+      "name": "Tu página web",
       "icon": "globe",
-      "description": "Sitios y portafolios que explican tu propuesta y facilitan el contacto con tus clientes.",
-      "use": "Landing pages · sitios profesionales · rediseño"
+      "description": "Una web para presentar tu negocio y explicar lo que ofreces, pensada también para quien entra desde el celular.",
+      "use": "Páginas de presentación · portafolios · rediseño"
     },
     {
-      "name": "Automatización",
+      "name": "Menos tareas repetidas",
       "icon": "automation",
-      "description": "Menos tareas repetitivas y procesos más consistentes mediante herramientas hechas para tu flujo.",
-      "use": "Archivos · reportes · integraciones · tareas programadas"
+      "description": "Conecta tus herramientas para no capturar la misma información varias veces. Primero revisamos qué vale la pena automatizar.",
+      "use": "Archivos · avisos · reportes · tareas programadas"
     },
     {
-      "name": "Inteligencia artificial local",
+      "name": "IA en tu propio equipo",
       "icon": "core",
-      "description": "Evaluación e integración de modelos locales según tu objetivo, infraestructura y necesidades de privacidad.",
-      "use": "LLM locales · asistentes · flujos creativos"
+      "description": "Revisamos si tu equipo puede ejecutar un modelo de IA y cómo usarlo en una tarea concreta. La viabilidad se evalúa antes.",
+      "use": "Modelos locales · asistentes · imagen y voz"
     },
     {
-      "name": "Ciberseguridad",
+      "name": "Revisar tu seguridad",
       "icon": "shield",
-      "description": "Evaluación técnica y recomendaciones para reducir exposición y fortalecer tus sistemas.",
-      "use": "Hardening · postura de seguridad · pruebas autorizadas"
+      "description": "Buscamos qué necesita atención y te explico cómo reducir riesgos. Cualquier revisión requiere tu autorización y un alcance definido.",
+      "use": "Configuración · recomendaciones · revisión autorizada"
     },
     {
-      "name": "Consultoría tecnológica",
+      "name": "Elegir con más claridad",
       "icon": "terminal",
-      "description": "Criterio técnico para tomar decisiones de arquitectura, herramientas y evolución de tus proyectos.",
-      "use": "Diagnóstico · selección de tecnologías · hoja de ruta"
+      "description": "Una revisión o conversación para comparar herramientas y decidir qué conviene hacer primero.",
+      "use": "Un objetivo · opciones · siguientes pasos"
     },
     {
-      "name": "Análisis de redes",
+      "name": "Entender tu red",
       "icon": "network",
-      "description": "Comprende tu infraestructura, sus flujos y los puntos que necesitan atención.",
-      "use": "Tráfico · segmentación · documentación · monitoreo"
+      "description": "Documentamos cómo se conectan tus equipos y qué puntos conviene revisar.",
+      "use": "Conexiones · tráfico · separación de redes"
     },
     {
-      "name": "Contenido con IA",
+      "name": "Crear contenido con IA",
       "icon": "video",
-      "description": "Diseño de flujos creativos para imagen, video, guion y voz, según la viabilidad de cada proyecto.",
-      "use": "Producción asistida · edición · automatización creativa"
+      "description": "Diseñamos un proceso para trabajar imágenes, video o voz según lo que necesitas y los recursos disponibles.",
+      "use": "Guiones · edición · flujos de trabajo"
     }
   ],
   "axiomAudio": {
@@ -528,7 +528,9 @@ window.PORTFOLIO = {
       "trialJoke22": "80_patron.mp3",
       "idleReturn": "81_regreso.mp3",
       "idleReturnNote": "82_cafe_tactico.mp3",
-      "axiomStoryVoice": "83_concepto.mp3"
+      "axiomStoryVoice": "83_concepto.mp3",
+      "scrollBrake": "84_frenos.mp3",
+      "scrollRadar": "85_radar.mp3"
     },
     "en": {
       "welcome": "saludo_en.mp3",

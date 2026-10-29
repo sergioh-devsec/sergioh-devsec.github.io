@@ -24,6 +24,21 @@
       get busy(){return busy;}
     };
   }
-  if(typeof module!=='undefined'&&module.exports)module.exports={createIdle,createReturnSequence};
-  if(typeof window!=='undefined')window.AxiomIdle={createIdle,createReturnSequence};
+  // Observe actual downward travel, not wheel noise, anchor jumps or slow reading.
+  function createScrollRadar({now=()=>performance.now(),windowMs=850,cooldown=90000}={}){
+    let previous=null,samples=[],lastShown=-Infinity;
+    return {observe(y,{intent=false,allowed=true,viewport=800}={}){
+      const time=now();if(!Number.isFinite(y))return false;
+      if(previous===null){previous={y,time};return false;}
+      const before=previous;previous={y,time};const delta=y-before.y;
+      if(!intent||!allowed||delta<=0||time-lastShown<cooldown){samples=[];return false;}
+      samples.push({from:before.time,to:time,delta});samples=samples.filter(s=>time-s.from<=windowMs);
+      if(!samples.length)return false;
+      const distance=samples.reduce((sum,s)=>sum+s.delta,0),duration=Math.max(40,time-samples[0].from);
+      if(distance<Math.max(900,viewport*1.2)||distance/duration<1.6)return false;
+      lastShown=time;samples=[];return true;
+    },reset(){previous=null;samples=[];}};
+  }
+  if(typeof module!=='undefined'&&module.exports)module.exports={createIdle,createReturnSequence,createScrollRadar};
+  if(typeof window!=='undefined')window.AxiomIdle={createIdle,createReturnSequence,createScrollRadar};
 })();
