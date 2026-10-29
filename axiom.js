@@ -99,7 +99,7 @@
     const played=await response.done;if(turn!==response.turn||panel.hidden||(!played&&voiceEnabled))return;
     manualJokes++;if(manualJokes%3===0&&chooseKey('supportAnswer')){answer('supportAnswer','#apoyar');makeChip('voluntarySupport',support);}
   }
-  function chooseRoute(route){activeRoute=route;chips.replaceChildren();
+  function chooseRoute(route){activeRoute=route;chips.replaceChildren();document.dispatchEvent(new CustomEvent('portfolio:intent',{detail:{route}}));
     if(route==='creator'){answer('creatorAnswer');makeChip('creatorMore',()=>S.openDialog('creator-dialog',$('creators-open')));makeButton(chips,I.language==='es'?'Organizar publicaciones':'Organize publishing',()=>topic('contentTerm','#content'));}
     else if(route==='business'){answer('businessAnswer');[['webTerm','#services','Web'],['automationTerm','#automation',I.language==='es'?'Automatización':'Automation'],['aiTerm','#local-ai-platform','IA / AI'],['securityTerm','#services',I.language==='es'?'Seguridad':'Security']].forEach(([key,hash,label])=>makeButton(chips,label,()=>topic(key,hash)));}
     else {answer('labAnswer');makeButton(chips,I.language==='es'?'Analizar eventos':'Analyze events',()=>topic('siemTerm','https://github.com/sergioh-devsec/auth-log-analyzer'));makeButton(chips,I.language==='es'?'Probar automatización':'Try automation',()=>topic('automationTerm','https://github.com/sergioh-devsec/csv-task-organizer'));makeButton(chips,I.language==='es'?'Explorar esta web':'Explore this website',()=>topic('webTerm','#cases'));}

@@ -483,7 +483,21 @@ window.TRANSLATIONS = {
     "authRepo": "Abrir analizador en GitHub ↗",
     "projectRepo": "Ver código y documentación ↗",
     "reviewCheckAvailability": "1. Consultar disponibilidad ↗",
-    "reviewPay": "2. Pagar revisión · US$10 ↗"
+    "reviewPay": "2. Pagar revisión · US$10 ↗",
+    "discoveryFind": "Encontrar mi camino",
+    "discoveryTag": "A TU RITMO / EMPIEZA AQUÍ",
+    "discoveryTitle": "Tu siguiente clic, con sentido.",
+    "discoveryLead": "Elige lo que te interesa. Te acercamos dos ideas para empezar.",
+    "discoveryGroup": "Elige tu recorrido",
+    "discoveryMore": "Ver otras ideas ↻",
+    "discoveryShareCopy": "Las buenas ideas viajan mejor acompañadas. Pásale este recorrido a alguien con curiosidad.",
+    "discoveryShare": "Compartir este recorrido ↗",
+    "shareTitle": "Una idea lleva a otra.",
+    "shareLead": "Comparte el recorrido que elegiste. Quien lo abra encontrará sugerencias para ese interés.",
+    "shareLabel": "Enlace del recorrido",
+    "shareCopy": "Copiar enlace",
+    "shareNative": "Elegir dónde compartir",
+    "shareNote": "El enlace no incluye tus datos. Nada se publica automáticamente."
   },
   "en": {
     "skip": "Skip to content",
@@ -1118,6 +1132,20 @@ window.TRANSLATIONS = {
     "authRepo": "Open log analyzer on GitHub ↗",
     "projectRepo": "View code and documentation ↗",
     "reviewCheckAvailability": "1. Check availability ↗",
-    "reviewPay": "2. Pay for review · US$10 ↗"
+    "reviewPay": "2. Pay for review · US$10 ↗",
+    "discoveryFind": "Find my path",
+    "discoveryTag": "AT YOUR PACE / START HERE",
+    "discoveryTitle": "Make your next click count.",
+    "discoveryLead": "Choose your interest. Discover two ideas to get started.",
+    "discoveryGroup": "Choose your route",
+    "discoveryMore": "See other ideas ↻",
+    "discoveryShareCopy": "Good ideas travel better together. Send this route to someone curious.",
+    "discoveryShare": "Share this route ↗",
+    "shareTitle": "One idea leads to another.",
+    "shareLead": "Share the route you chose. Anyone opening it will find suggestions for that interest.",
+    "shareLabel": "Route link",
+    "shareCopy": "Copy link",
+    "shareNative": "Choose where to share",
+    "shareNote": "The link contains no personal details. Nothing is posted automatically."
   }
 };
