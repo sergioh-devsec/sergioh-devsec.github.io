@@ -450,7 +450,51 @@ window.PORTFOLIO = {
       "trialJoke11": "25_celda.mp3",
       "trialJoke12": "28_explotacion.mp3",
       "trialJoke13": "29_sueldo_virtual.mp3",
-      "trialJoke14": "30_vacaciones.mp3"
+      "trialJoke14": "30_vacaciones.mp3",
+      "welcome2": "31_bienvenida.mp3",
+      "welcome3": "32_bienvenida.mp3",
+      "businessAnswer2": "33_negocio.mp3",
+      "creatorAnswer2": "34_contenido.mp3",
+      "labAnswer2": "35_proyectos.mp3",
+      "webTerm2": "36_web.mp3",
+      "automationTerm2": "37_automatizacion.mp3",
+      "aiTerm2": "38_ia.mp3",
+      "securityTerm2": "39_seguridad.mp3",
+      "consultingTerm": "40_consultoria.mp3",
+      "networkTerm": "41_redes.mp3",
+      "contentTerm": "42_produccion.mp3",
+      "cvAnswer2": "43_perfil.mp3",
+      "contactAnswer2": "44_revision.mp3",
+      "who2": "45_identidad.mp3",
+      "thanks2": "46_gracias.mp3",
+      "bye2": "47_despedida.mp3",
+      "fallback": "48_alternativas.mp3",
+      "fallback2": "49_alternativas.mp3",
+      "searchFound": "50_busqueda.mp3",
+      "osintTerm": "51_osint.mp3",
+      "siemTerm": "52_siem.mp3",
+      "hardeningTerm": "53_hardening.mp3",
+      "conversionTerm": "54_conversion.mp3",
+      "glossaryIntro": "55_glosario.mp3",
+      "supportAnswer2": "56_apoyo.mp3",
+      "supportAnswer3": "57_apoyo.mp3",
+      "businessWrap": "58_cierre_negocio.mp3",
+      "creatorWrap": "59_cierre_creador.mp3",
+      "labWrap": "60_cierre_lab.mp3",
+      "adultWelcome": "61_creadoras.mp3",
+      "adultWelcome2": "62_creadoras.mp3",
+      "trialJoke15": "63_horario.mp3",
+      "trialJoke16": "64_vacaciones.mp3",
+      "glossPhishing": "65_phishing.mp3",
+      "glossMfa": "66_dos_factores.mp3",
+      "glossApi": "67_api.mp3",
+      "glossHosting": "68_alojamiento.mp3",
+      "glossSeo": "69_seo.mp3",
+      "glossBackup": "70_respaldo.mp3",
+      "glossHttps": "71_https.mp3",
+      "glossMalware": "72_malware.mp3",
+      "glossLlm": "73_modelo.mp3",
+      "glossAutomation": "74_automatizar.mp3"
     },
     "en": {
       "welcome": "saludo_en.mp3",
@@ -472,6 +516,76 @@ window.PORTFOLIO = {
     "trialJoke11",
     "trialJoke12",
     "trialJoke13",
-    "trialJoke14"
-  ]
+    "trialJoke14",
+    "trialJoke15",
+    "trialJoke16"
+  ],
+  "axiomVariants": {
+    "businessAnswer": [
+      "businessAnswer",
+      "businessAnswer2"
+    ],
+    "creatorAnswer": [
+      "creatorAnswer",
+      "creatorAnswer2"
+    ],
+    "labAnswer": [
+      "labAnswer",
+      "labAnswer2"
+    ],
+    "webTerm": [
+      "webTerm",
+      "webTerm2"
+    ],
+    "automationTerm": [
+      "automationTerm",
+      "automationTerm2"
+    ],
+    "aiTerm": [
+      "aiTerm",
+      "aiTerm2"
+    ],
+    "securityTerm": [
+      "securityTerm",
+      "securityTerm2"
+    ],
+    "cvAnswer": [
+      "cvAnswer",
+      "cvAnswer2"
+    ],
+    "contactAnswer": [
+      "contactAnswer",
+      "contactAnswer2"
+    ],
+    "who": [
+      "who",
+      "who2"
+    ],
+    "thanks": [
+      "thanks",
+      "thanks2"
+    ],
+    "bye": [
+      "bye",
+      "bye2"
+    ],
+    "fallback": [
+      "fallback",
+      "fallback2"
+    ],
+    "adultWelcome": [
+      "adultWelcome",
+      "adultWelcome2"
+    ],
+    "welcome": [
+      "welcome",
+      "welcome2",
+      "welcome3"
+    ],
+    "supportAnswer": [
+      "supportAnswer",
+      "supportAnswer2",
+      "supportAnswer3"
+    ]
+  }
 };
