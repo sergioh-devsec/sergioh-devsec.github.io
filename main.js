@@ -85,7 +85,7 @@
   function handleHash(){const n=revealTarget(location.hash);if(n)n.scrollIntoView({behavior:'instant',block:'start'});}
 
   // Attention follows visibility and respects both motion controls.
-  if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>entries.forEach(e=>{e.target.dataset.attention=String(e.isIntersecting);}),{threshold:.5});$$('.support-card,.paypal-nudge').forEach(n=>observer.observe(n));}
+  if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>entries.forEach(e=>{e.target.dataset.attention=String(e.isIntersecting);}),{threshold:.5});$$('.support-card,.paypal-nudge,.quote-launch').forEach(n=>observer.observe(n));}
   window.addEventListener('hashchange',handleHash);window.addEventListener('load',handleHash,{once:true});
 })();
 
