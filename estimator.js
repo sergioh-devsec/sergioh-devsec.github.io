@@ -1,0 +1,53 @@
+/* Transparent estimates in MXN. The same pure functions power the UI and tests. */
+(() => {
+  'use strict';
+  const packages = {
+    landing:{price:3500,label:['Landing page','Landing page'],scope:['Una página adaptable a celular, formulario y una ronda de cambios. Textos e imágenes proporcionados por ti.','One responsive page, a contact form and one revision round. You provide text and images.'],options:{sections:[700,6,['Secciones adicionales','Additional sections']],language:[2500,1,['Segundo idioma · textos proporcionados','Second language · supplied copy']],copy:[1200,1,['Redacción de textos','Copywriting']],motion:[1500,1,['Animaciones personalizadas','Custom animations']],revisions:[600,3,['Rondas de cambios adicionales','Extra revision rounds']]}},
+    information:{price:7000,label:['Sitio informativo','Informational website'],scope:['De 3 a 5 secciones, estructura de contenidos, diseño adaptable, formulario y una ronda de cambios.','3–5 sections, content structure, responsive design, a form and one revision round.'],options:{pages:[1200,8,['Páginas adicionales','Additional pages']],language:[3500,1,['Segundo idioma · textos proporcionados','Second language · supplied copy']],copy:[2000,1,['Redacción de textos','Copywriting']],motion:[2000,1,['Animaciones personalizadas','Custom animations']],revisions:[800,3,['Rondas de cambios adicionales','Extra revision rounds']]}},
+    custom:{price:30000,label:['Web a medida','Custom website'],scope:['Diseño y desarrollo propio, hasta 5 secciones y una función interactiva sencilla. Dos rondas de cambios.','Custom design and development, up to 5 sections and one simple interactive feature. Two revision rounds.'],options:{pages:[1800,8,['Páginas adicionales','Additional pages']],language:[7500,1,['Versión bilingüe completa','Full bilingual version']],assistant:[12000,1,['Asistente guiado con voz · recursos aparte','Guided voice assistant · assets extra']],tool:[7500,3,['Herramientas interactivas adicionales','Additional interactive tools']],dashboard:[10000,1,['Panel de administración básico','Basic administration panel']],revisions:[1500,3,['Rondas de cambios adicionales','Extra revision rounds']]}},
+    automation:{price:2500,label:['Automatización','Automation'],scope:['Un flujo sencillo entre hasta 2 herramientas con API disponible, pruebas y entrega documentada.','One simple workflow between up to 2 tools with available APIs, testing and documented handoff.'],options:{flows:[2500,4,['Flujos adicionales','Additional workflows']],sources:[1200,4,['Conexiones adicionales','Additional connections']],dashboard:[3500,1,['Tablero de seguimiento','Tracking dashboard']],alerts:[1800,1,['Avisos de error y registro','Error alerts and logging']]}},
+    security:{price:5000,label:['Revisión básica de seguridad','Basic security review'],scope:['Una web pública: revisión externa no intrusiva, informe y recomendaciones. Requiere autorización escrita del titular.','One public website: non-intrusive external review, report and recommendations. Written owner authorization required.'],options:{assets:[1500,4,['Sitios o activos adicionales del mismo titular','Additional sites or assets from the same owner']],followup:[1800,1,['Revisión posterior de las correcciones','Follow-up review of corrections']]}}
+  };
+  function estimate(kind,selected={}){
+    if(!Object.hasOwn(packages,kind)||!selected||typeof selected!=='object'||Array.isArray(selected))return null;
+    const pack=packages[kind],lines=[{id:'base',quantity:1,unit:pack.price,total:pack.price}];
+    for(const [id,count] of Object.entries(selected)){
+      if(!Object.hasOwn(pack.options,id)||!Number.isInteger(count)||count<0||count>pack.options[id][1])return null;
+      if(count)lines.push({id,quantity:count,unit:pack.options[id][0],total:count*pack.options[id][0]});
+    }
+    const total=lines.reduce((sum,line)=>sum+line.total,0);
+    return {kind,lines,total,upper:Math.ceil(total*1.25),currency:'MXN'};
+  }
+  function formEndpoint(value){return typeof value==='string'&&/^https:\/\/formspree\.io\/f\/[a-zA-Z0-9]{6,32}$/.test(value)?value:null;}
+  function paymentLink(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&u.hostname==='www.paypal.com'&&/^\/ncp\/payment\/[A-Za-z0-9]+\/?$/.test(u.pathname)&&!u.search&&!u.hash?u.href:null;}catch{return null;}}
+  function bookingLink(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&u.hostname==='cal.com'&&/^\/[a-z0-9_-]+\/[a-z0-9_-]+\/?$/i.test(u.pathname)&&!u.search&&!u.hash?u.href:null;}catch{return null;}}
+  const api={packages,estimate,formEndpoint,paymentLink,bookingLink};
+  if(typeof module!=='undefined'&&module.exports)module.exports=api;
+  if(typeof document==='undefined')return;
+  const I=window.I18N,S=window.Site,C=window.COMMERCE,$=id=>document.getElementById(id),root=$('quote-builder');
+  if(!root)return;
+  let kind='landing',selected={};
+  const en=()=>I.language==='en',label=arr=>arr[en()?1:0],money=n=>new Intl.NumberFormat(en()?'en-US':'es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0}).format(n)+' MXN';
+  const tx=(es,english)=>en()?english:es;
+  function tax(){return C.taxMode==='included'?tx('Precios con impuestos incluidos.','Prices include taxes.'):C.taxMode==='excluded'?tx('Importes antes de IVA; se detallará en la propuesta final.','Amounts before VAT; itemized in the final proposal.'):tx('Impuestos y facturación por confirmar antes de contratar.','Taxes and invoicing to be confirmed before purchase.');}
+  function brief(){const r=estimate(kind,selected);return ['CYBERSERCH · '+tx('Estimación orientativa','Indicative estimate'),label(packages[kind].label),label(packages[kind].scope),...r.lines.map(l=>`${l.id==='base'?tx('Base','Base'):label(packages[kind].options[l.id][2])}: ${l.quantity} × ${money(l.unit)} = ${money(l.total)}`),tx('Subtotal estimado: ','Estimated subtotal: ')+money(r.total),tx('Rango orientativo: ','Indicative range: ')+money(r.total)+' – '+money(r.upper),tax(),tx('No es una oferta final. Dominio, hosting, licencias, consumo de APIs y recursos de voz/imagen se cotizan aparte. Alcance y plazo se confirman antes del pago.','Not a final offer. Domain, hosting, licenses, API usage and voice/image assets are separate. Scope and timeline confirmed before payment.')].join('\n');}
+  function update(){const r=estimate(kind,selected),lines=$('quote-lines');lines.replaceChildren();for(const l of r.lines){const li=S.el('li');li.append(S.el('span','',l.id==='base'?label(packages[kind].label):`${label(packages[kind].options[l.id][2])} × ${l.quantity}`),S.el('strong','',money(l.total)));lines.append(li);}$('quote-total').textContent=money(r.total);$('quote-range').textContent=tx('Rango orientativo: ','Indicative range: ')+money(r.total)+' – '+money(r.upper);$('quote-tax').textContent=tax();$('quote-summary').value=brief();$('quote-contact-summary').value=brief();}
+  function render(){
+    const choices=$('quote-packages');choices.replaceChildren();Object.entries(packages).forEach(([id,p])=>{const b=S.el('button','quote-package');b.type='button';b.setAttribute('aria-pressed',String(id===kind));b.append(S.el('strong','',label(p.label)),S.el('span','',tx('Desde ','From ')+money(p.price)));b.addEventListener('click',()=>{kind=id;selected={};render();$('quote-options-title').focus({preventScroll:true});});choices.append(b);});
+    $('quote-scope').textContent=label(packages[kind].scope);const options=$('quote-options');options.replaceChildren();
+    for(const [id,[price,max,names]] of Object.entries(packages[kind].options)){
+      const row=S.el('div','quote-option'),input=S.el('input'),lab=S.el('label');input.id='quote-'+id;input.name=id;lab.htmlFor=input.id;
+      lab.append(S.el('span','',label(names)),S.el('small','',`+ ${money(price)}${max>1?tx(' por unidad',' each'):''}`));
+      input.type=max===1?'checkbox':'number';if(max===1)input.checked=selected[id]===1;else{input.min='0';input.max=String(max);input.step='1';input.value=String(selected[id]||0);}
+      input.addEventListener('input',()=>{const valid=Array.from(options.querySelectorAll('input')).every(field=>field.validity.valid&&field.value!=='');$('quote-download').disabled=!valid;if(!valid){$('quote-error').textContent=tx('Revisa las cantidades: usa enteros dentro del límite indicado.','Check quantities: use whole numbers within the indicated limits.');$('quote-total').textContent='—';return;}selected=Object.fromEntries(Array.from(options.querySelectorAll('input')).map(field=>[field.name,field.type==='checkbox'?Number(field.checked):Number(field.value)]));$('quote-error').textContent='';update();});row.append(lab,input);options.append(row);
+    }$('quote-download').disabled=false;$('quote-error').textContent='';update();configureContact();
+  }
+  function download(){const blob=new Blob([brief()],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='cyberserch-estimacion.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('quote-feedback').textContent=tx('Resumen preparado para descargar. No se ha enviado a nadie.','Summary prepared for download. It has not been sent.');}
+  $('quote-download').addEventListener('click',download);
+  $('quote-reset').addEventListener('click',()=>{kind='landing';selected={};render();$('quote-feedback').textContent='';});
+  function configureContact(){const endpoint=formEndpoint(C.formspreeEndpoint),form=$('quote-contact-form');form.hidden=!endpoint;$('quote-contact-pending').hidden=Boolean(endpoint);if(endpoint)form.action=endpoint;else form.removeAttribute('action');$('quote-contact-ready').hidden=!endpoint;}
+  $('quote-contact-form').addEventListener('submit',event=>{const endpoint=formEndpoint(C.formspreeEndpoint);if(!endpoint||$('quote-download').disabled){event.preventDefault();return;}if($('contact-website').value){event.preventDefault();$('quote-contact-result').textContent=tx('No se pudo enviar. Revisa los campos.','Could not send. Check the fields.');return;}if(!event.currentTarget.reportValidity()){event.preventDefault();return;}$('quote-contact-summary').value=brief();});
+  const review=$('review-actions'),pay=paymentLink(C.reviewPaymentUrl),booking=bookingLink(C.bookingUrl);
+  if(pay&&booking){$('review-pending-note').hidden=true;review.append(S.link(tx('1. Consultar disponibilidad ↗','1. Check availability ↗'),booking,'button secondary'),S.link(tx('2. Pagar revisión · US$10 ↗','2. Pay for review · US$10 ↗'),pay,'button primary'));}
+  document.addEventListener('portfolio:language',render);render();
+})();

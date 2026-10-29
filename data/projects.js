@@ -26,7 +26,7 @@ window.PORTFOLIO = {
       "categoryLabel": "AI / AUTOMATION / CONTENT",
       "status": "EN DESARROLLO",
       "statusType": "active",
-      "featured": true,
+      "featured": false,
       "description": "Una plataforma de inteligencia artificial local para conectar la generación de imagen, video y voz en un mismo flujo de producción.",
       "problem": "Reducir la fragmentación entre herramientas creativas y explorar una producción multimedia automatizada bajo control local.",
       "architecture": "Brief → orquestador Python → modelos locales de imagen, video y voz → revisión humana → exportación",
@@ -51,76 +51,86 @@ window.PORTFOLIO = {
       "github": null,
       "demo": null,
       "docs": null,
-      "screenshots": []
+      "screenshots": [],
+      "shipped": false,
+      "backlog": true
     },
     {
       "id": "python-lab",
-      "name": "Python Lab",
+      "name": "Organizador CSV · Python",
       "icon": "code",
       "categories": [
         "python",
         "automation"
       ],
       "categoryLabel": "PYTHON / TOOLS",
-      "status": "PLANIFICADO",
-      "statusType": "",
-      "description": "Herramientas pequeñas para resolver tareas concretas: archivos, datos, APIs y automatización.",
-      "problem": "Transformar operaciones repetitivas en procesos reproducibles y revisables.",
-      "architecture": "Entrada de datos → validación → procesamiento Python → resultado / reporte",
+      "status": "PUBLICADO · PROBADO",
+      "statusType": "active",
+      "description": "Una herramienta ejecutable convierte archivos CSV en un plan de tareas limpio, con resumen de descartes.",
+      "problem": "Evitar la limpieza repetida de listas y saber qué se elimina.",
+      "architecture": "CSV local → validación de fechas y columnas → deduplicación → pendientes ordenados → CSV seguro",
       "architectureLabel": "Arquitectura de referencia",
       "stack": [
         "Python",
-        "APIs",
-        "Data processing"
+        "CSV",
+        "unittest"
       ],
       "stackLabel": "Tecnologías previstas",
       "features": [
-        "Procesamiento y análisis de archivos.",
-        "Integración de APIs y agentes.",
-        "Scraping solo de fuentes autorizadas."
+        "CLI sin dependencias, con muestra reproducible.",
+        "Admite ES/EN y celdas entrecomilladas.",
+        "Neutraliza prefijos de fórmulas al exportar.",
+        "No sobrescribe archivos existentes."
       ],
-      "scope": "Línea de laboratorio preparada para incorporar repositorios, pruebas y resultados reales. Aún no hay una herramienta Python publicada en esta ficha.",
-      "version": null,
+      "scope": "Herramienta local terminada y probada. Máximo 200 registros y 20 KB. No conecta servicios ni modifica el archivo de origen.",
+      "version": "1.0.0",
       "progress": null,
-      "updated": null,
-      "github": null,
-      "demo": null,
+      "updated": "2026-10-28",
+      "github": "https://github.com/sergioh-devsec/csv-task-organizer",
+      "demo": "#automation",
       "docs": null,
-      "screenshots": []
+      "screenshots": [],
+      "shipped": true,
+      "backlog": false,
+      "featured": false
     },
     {
       "id": "cybersecurity-lab",
-      "name": "Cybersecurity Lab",
+      "name": "Analizador de eventos · Python",
       "icon": "shield",
       "categories": [
         "cyber"
       ],
       "categoryLabel": "DEFENSIVE SECURITY",
-      "status": "LAB · PLANIFICADO",
-      "statusType": "",
-      "description": "Una línea de trabajo sobre detección, análisis de logs, hardening y respuesta a incidentes.",
-      "problem": "Convertir eventos de seguridad en señales comprensibles y acciones defensivas documentadas.",
-      "architecture": "Fuentes de logs → SIEM / Wazuh → reglas → análisis → respuesta documentada",
+      "status": "PUBLICADO · PROBADO",
+      "statusType": "active",
+      "description": "CLI local para validar registros de autenticación, agrupar rechazos por IP y exportar señales de revisión.",
+      "problem": "Encontrar orígenes con rechazos repetidos sin revisar cada evento a mano.",
+      "architecture": "Archivo local → validación hora/estado/IPv4 → umbral configurable → informe JSON",
       "architectureLabel": "Arquitectura de referencia",
       "stack": [
-        "Wazuh",
-        "SIEM",
-        "OSINT"
+        "Python",
+        "JSON",
+        "unittest"
       ],
       "stackLabel": "Tecnologías previstas",
       "features": [
-        "Detección y correlación de eventos.",
-        "Investigación forense y revisión de evidencias.",
-        "Hardening y monitoreo en entornos autorizados."
+        "Muestra: 5 eventos, 4 rechazos, 1 origen por revisar.",
+        "Umbral configurable y descarte explicado por línea.",
+        "Informe JSON sin sobrescribir archivos.",
+        "Pruebas para horas, IP, límites y entradas malformadas."
       ],
-      "scope": "Proyecto de laboratorio planificado. El analizador web de esta página es una demostración independiente y no representa una implementación de Wazuh.",
-      "version": null,
+      "scope": "Herramienta terminada de triage local. Cuenta todo el archivo, no aplica ventana temporal y no es un SIEM o Wazuh. Una señal no demuestra un ataque.",
+      "version": "1.0.0",
       "progress": null,
-      "updated": null,
-      "github": null,
-      "demo": null,
+      "updated": "2026-10-28",
+      "github": "https://github.com/sergioh-devsec/auth-log-analyzer",
+      "demo": "#laboratory",
       "docs": null,
-      "screenshots": []
+      "screenshots": [],
+      "shipped": true,
+      "backlog": false,
+      "featured": false
     },
     {
       "id": "network-lab",
@@ -155,7 +165,10 @@ window.PORTFOLIO = {
       "github": null,
       "demo": null,
       "docs": null,
-      "screenshots": []
+      "screenshots": [],
+      "shipped": false,
+      "backlog": true,
+      "featured": false
     },
     {
       "id": "automation-lab",
@@ -192,7 +205,10 @@ window.PORTFOLIO = {
       "demo": "#automation",
       "docs": null,
       "screenshots": [],
-      "subtitle": "CSV Task Organizer"
+      "subtitle": "CSV Task Organizer",
+      "shipped": false,
+      "backlog": false,
+      "featured": false
     },
     {
       "id": "ai-pentesting",
@@ -228,7 +244,10 @@ window.PORTFOLIO = {
       "github": null,
       "demo": null,
       "docs": null,
-      "screenshots": []
+      "screenshots": [],
+      "shipped": false,
+      "backlog": true,
+      "featured": false
     },
     {
       "id": "log-analyzer",
@@ -263,7 +282,10 @@ window.PORTFOLIO = {
       "github": null,
       "demo": "#laboratory",
       "docs": null,
-      "screenshots": []
+      "screenshots": [],
+      "shipped": false,
+      "backlog": false,
+      "featured": false
     },
     {
       "id": "cyberserch",
@@ -298,7 +320,10 @@ window.PORTFOLIO = {
       "github": "https://github.com/sergioh-devsec/sergioh-devsec.github.io",
       "demo": "#home",
       "docs": null,
-      "screenshots": []
+      "screenshots": [],
+      "shipped": true,
+      "backlog": false,
+      "featured": false
     }
   ],
   "credentials": [
@@ -494,7 +519,13 @@ window.PORTFOLIO = {
       "glossHttps": "71_https.mp3",
       "glossMalware": "72_malware.mp3",
       "glossLlm": "73_modelo.mp3",
-      "glossAutomation": "74_automatizar.mp3"
+      "glossAutomation": "74_automatizar.mp3",
+      "trialJoke17": "75_familia.mp3",
+      "trialJoke18": "76_descanso.mp3",
+      "trialJoke19": "77_presupuesto.mp3",
+      "trialJoke20": "78_cafe.mp3",
+      "trialJoke21": "79_ideas.mp3",
+      "trialJoke22": "80_patron.mp3"
     },
     "en": {
       "welcome": "saludo_en.mp3",
@@ -518,7 +549,13 @@ window.PORTFOLIO = {
     "trialJoke13",
     "trialJoke14",
     "trialJoke15",
-    "trialJoke16"
+    "trialJoke16",
+    "trialJoke17",
+    "trialJoke18",
+    "trialJoke19",
+    "trialJoke20",
+    "trialJoke21",
+    "trialJoke22"
   ],
   "axiomVariants": {
     "businessAnswer": [

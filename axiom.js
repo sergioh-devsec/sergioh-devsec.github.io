@@ -53,6 +53,7 @@
   const catalog=window.PORTFOLIO.axiomAudio,variants=window.PORTFOLIO.axiomVariants||{},glossary=window.AXIOM_GLOSSARY||[];
   let opener=null,lastResponse={key:'welcome'},voiceEnabled=true,turn=0,speaking=false,waveAt=-10000,playbackDone=null,voiceContext=null,manualJokes=0,activeRoute='lab',activeTerm=null,adultKey=null;
   const audio=$('axiom-audio'),tone=$('axiom-tone');
+  tone.value='playful';
   try{const saved=localStorage.getItem('cyberserch-tone');if(['professional','playful'].includes(saved))tone.value=saved;}catch{/* Optional preference. */}
   const visit=K.createVisit({onReset(){stopTrial();manualJokes=0;setVoiceStatus('visitRenewed');}});
   const phraseId=key=>resolveAudio(key,'es',catalog)||key;
@@ -151,6 +152,27 @@
   document.addEventListener('visibilitychange',()=>{visit.setVisible(!document.hidden);if(document.hidden)stopTrial();});
   window.AXIOM={open,close,ask,get trialActive(){return trial.active;},startService(index,source){open(source,false);activeRoute=index===6?'creator':'business';const keys=['webTerm','automationTerm','aiTerm','securityTerm','consultingTerm','networkTerm','contentTerm'];topic(keys[index]||'businessAnswer',index===1?'#automation':'#contact');}};
   syncVoice();syncTone();syncCounters();setVoiceStatus('voiceReady');
+
+  // Inactivity is measured from real input; speech waits for a user gesture.
+  // A donation opens only after the visitor chooses a provider link.
+  let gestureSeen=false,idleSpeaking=false,idleKey=null,lastPointer=0;
+  const idleBubble=$('axiom-idle-bubble');
+  function hideIdle(stop=false){idleBubble.hidden=true;if(stop&&voiceContext==='idle'){stopVoice();idleSpeaking=false;}}
+  function syncIdle(){const b=$('axiom-idle-toggle'),enabled=idle.enabled&&tone.value==='playful';b.setAttribute('aria-pressed',String(enabled));b.textContent=I.t(enabled?'idleOn':'idleOff');b.dataset.i18n=enabled?'idleOn':'idleOff';$('axiom-idle-voice').textContent=I.t(voiceEnabled?'idleMuted':'idleVoice');}
+  const idle=window.AxiomIdle.createIdle({allowed:()=>!document.hidden&&tone.value==='playful'&&!trial.active&&!speaking&&!document.querySelector('dialog[open]')&&panel.hidden&&!document.activeElement?.matches('input,textarea,select,[contenteditable=true]')&&fresh(window.PORTFOLIO.axiomJokes).length>0,
+    async present(){const available=fresh(window.PORTFOLIO.axiomJokes);if(!available.length)return;idleKey=available[Math.floor(Math.random()*available.length)];remember(idleKey);lastResponse={key:idleKey};$('axiom-idle-text').textContent=I.t(idleKey);idleBubble.hidden=false;syncIdle();document.dispatchEvent(new CustomEvent('portfolio:axiom-idle'));if(gestureSeen&&voiceEnabled){idleSpeaking=true;const playing=playResponse();voiceContext='idle';await playing;idleSpeaking=false;}}
+  });
+  function activity(event){if(event.type==='pointermove'){const at=performance.now();if(at-lastPointer<100)return;lastPointer=at;}if(['pointerdown','keydown'].includes(event.type)&&event.isTrusted)gestureSeen=true;idle.activity();if(event.type!=='pointermove'&&!(event.type==='keydown'&&event.key==='Tab')&&!event.target?.closest?.('#axiom-idle-bubble'))hideIdle(true);}
+  ['pointerdown','pointermove','keydown','wheel','input','scroll'].forEach(name=>document.addEventListener(name,activity,{passive:true,capture:true}));
+  $('axiom-idle-toggle').addEventListener('click',()=>{if(tone.value!=='playful'){tone.value='playful';syncTone();idle.setEnabled(true);}else idle.setEnabled(!idle.enabled);hideIdle(true);syncIdle();});
+  $('axiom-idle-dismiss').addEventListener('click',()=>{idle.setEnabled(false);hideIdle(true);syncIdle();$('axiom-launcher').focus({preventScroll:true});});
+  $('axiom-idle-voice').addEventListener('click',()=>{voiceEnabled=!voiceEnabled;if(!voiceEnabled)stopVoice();else if(idleKey){lastResponse={key:idleKey};idleSpeaking=true;const playing=playResponse();voiceContext='idle';playing.finally(()=>{idleSpeaking=false;syncIdle();});}syncVoice();syncIdle();});
+  $('axiom-voice').addEventListener('click',syncIdle);
+  ['portfolio:dialog-open','portfolio:axiom-open','portfolio:axiom-trial','portfolio:language'].forEach(name=>document.addEventListener(name,()=>{hideIdle(true);idle.activity();syncIdle();}));
+  document.addEventListener('visibilitychange',()=>{idle.setVisible(!document.hidden);if(document.hidden)hideIdle(true);});
+  document.addEventListener('focusin',event=>{if(event.target?.matches('input,textarea,select,[contenteditable=true]')){hideIdle(true);idle.activity();}});
+  tone.addEventListener('change',()=>{hideIdle(true);idle.activity();syncIdle();});
+  idle.start();syncIdle();
 
   // All seven supplied layers share a 1029×1183 coordinate system.
   const layers={},names=['cola','cuerpo','brazo','raices','branquias_izq','branquias_der','cabeza'];
