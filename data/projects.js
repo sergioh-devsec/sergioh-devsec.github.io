@@ -317,7 +317,7 @@ window.PORTFOLIO = {
       "version": "1.0.0",
       "progress": null,
       "updated": "2026-10-27",
-      "github": "https://github.com/sergioh-devsec/sergioh-devsec.github.io",
+      "github": null,
       "demo": "#home",
       "docs": null,
       "screenshots": [],
