@@ -5,8 +5,8 @@ window.PORTFOLIO = {
   },
   "cvCheckoutUrl": null,
   "socialLinks": {
-    "x": null,
-    "instagram": null,
+    "x": "https://x.com/CyberSerchsMX",
+    "instagram": "https://www.instagram.com/cyberserch.mx/",
     "tiktok": "https://www.tiktok.com/@cyberserch.mx",
     "youtube": "https://www.youtube.com/@cyberserchmx",
     "telegram": null
