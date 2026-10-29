@@ -40,9 +40,30 @@
     return {kind,lines,total,upper:Math.ceil(total*1.25),currency:'MXN'};
   }
   function formEndpoint(value){return typeof value==='string'&&/^https:\/\/formspree\.io\/f\/[a-zA-Z0-9]{6,32}$/.test(value)?value:null;}
+  function web3formsKey(value){return typeof value==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(value)?value:null;}
+  // Only an affirmative provider response counts as accepted. No retries or redirects.
+  async function sendEnquiry(key, fields, {request=fetch,timeoutMs=20000}={}){
+    if(!web3formsKey(key)||!fields||fields.consent!=='yes'||fields.botcheck)return 'invalid';
+    for(const [name,max] of Object.entries({name:80,email:180,message:2000,estimate:12000})){
+      if(typeof fields[name]!=='string'||!fields[name].trim()||fields[name].length>max)return 'invalid';
+    }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email))return 'invalid';
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeoutMs);
+    try{
+      const response=await request('https://api.web3forms.com/submit',{
+        method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},
+        credentials:'omit',redirect:'error',signal:controller.signal,
+        body:JSON.stringify({access_key:key,name:fields.name,email:fields.email,message:fields.message,
+          estimate:fields.estimate,consent:'yes',botcheck:false,
+          subject:'CyberSerchMX · Consulta de proyecto',from_name:'CyberSerchMX'})
+      });
+      if(!response.ok)return response.status===429?'limit':'error';
+      const result=await response.json();return result.success===true?'accepted':'error';
+    }catch{return controller.signal.aborted?'timeout':'error';}finally{clearTimeout(timer);}
+  }
   function paymentLink(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&u.hostname==='www.paypal.com'&&/^\/ncp\/payment\/[A-Za-z0-9]+\/?$/.test(u.pathname)&&!u.search&&!u.hash?u.href:null;}catch{return null;}}
   function bookingLink(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&u.hostname==='cal.com'&&/^\/[a-z0-9_-]+\/[a-z0-9_-]+\/?$/i.test(u.pathname)&&!u.search&&!u.hash?u.href:null;}catch{return null;}}
-  const api={packages,explanations,estimate,formEndpoint,paymentLink,bookingLink};
+  const api={packages,explanations,estimate,formEndpoint,web3formsKey,sendEnquiry,paymentLink,bookingLink};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   if(typeof document==='undefined')return;
   const I=window.I18N,S=window.Site,C=window.COMMERCE,$=id=>document.getElementById(id),root=$('quote-builder');
@@ -54,7 +75,7 @@
   const en=()=>I.language==='en',label=arr=>arr[en()?1:0],money=n=>new Intl.NumberFormat(en()?'en-US':'es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0}).format(n)+' MXN';
   const tx=(es,english)=>en()?english:es;
   function tax(){return C.taxMode==='included'?tx('Precios con impuestos incluidos.','Prices include taxes.'):C.taxMode==='excluded'?tx('Importes antes de IVA; se detallará en la propuesta final.','Amounts before VAT; itemized in the final proposal.'):tx('Impuestos y facturación por confirmar antes de contratar.','Taxes and invoicing to be confirmed before purchase.');}
-  function brief(){const r=estimate(kind,selected);return ['CYBERSERCH · '+tx('Estimación orientativa','Indicative estimate'),label(packages[kind].label),label(packages[kind].scope),tx('Mi idea: ','My idea: ')+($('local-goal')?.value.trim().slice(0,2000)||tx('Por definir','To be defined')),...r.lines.map(l=>`${l.id==='base'?tx('Base','Base'):label(packages[kind].options[l.id][2])}: ${l.quantity} × ${money(l.unit)} = ${money(l.total)}`),tx('Subtotal estimado: ','Estimated subtotal: ')+money(r.total),tx('Rango orientativo: ','Indicative range: ')+money(r.total)+' – '+money(r.upper),tax(),I.t('quoteEvaluation'),I.t('quoteMargin'),tx('No es una oferta final. Dominio, hosting, licencias, consumo de APIs y recursos de voz/imagen se cotizan aparte. Alcance y plazo se confirman antes del pago.','Not a final offer. Domain, hosting, licenses, API usage and voice/image assets are separate. Scope and timeline confirmed before payment.')].join('\n');}
+  function brief(){const r=estimate(kind,selected);return ['CYBERSERCH · '+tx('Estimación orientativa','Indicative estimate'),label(packages[kind].label),label(packages[kind].scope),tx('Mi idea: ','My idea: ')+(($('quote-contact-form').hidden?$('local-goal'):$('contact-goal'))?.value.trim().slice(0,2000)||tx('Por definir','To be defined')),...r.lines.map(l=>`${l.id==='base'?tx('Base','Base'):label(packages[kind].options[l.id][2])}: ${l.quantity} × ${money(l.unit)} = ${money(l.total)}`),tx('Subtotal estimado: ','Estimated subtotal: ')+money(r.total),tx('Rango orientativo: ','Indicative range: ')+money(r.total)+' – '+money(r.upper),tax(),I.t('quoteEvaluation'),I.t('quoteMargin'),tx('No es una oferta final. Dominio, hosting, licencias, consumo de APIs y recursos de voz/imagen se cotizan aparte. Alcance y plazo se confirman antes del pago.','Not a final offer. Domain, hosting, licenses, API usage and voice/image assets are separate. Scope and timeline confirmed before payment.')].join('\n');}
   function update(){const r=estimate(kind,selected),lines=$('quote-lines');lines.replaceChildren();for(const l of r.lines){const li=S.el('li');li.append(S.el('span','',l.id==='base'?label(packages[kind].label):`${label(packages[kind].options[l.id][2])} × ${l.quantity}`),S.el('strong','',money(l.total)));lines.append(li);}$('quote-total').textContent=money(r.total);$('quote-range').textContent=tx('Rango orientativo: ','Indicative range: ')+money(r.total)+' – '+money(r.upper);$('quote-tax').textContent=tax();$('quote-summary').value=brief();$('quote-contact-summary').value=brief();}
   function render(){
     const choices=$('quote-packages');choices.replaceChildren();Object.entries(packages).forEach(([id,p])=>{const b=S.el('button','quote-package');b.type='button';b.setAttribute('aria-pressed',String(id===kind));b.append(S.el('strong','',label(p.label)),S.el('small','quote-help',label(explanations[id])),S.el('span','',tx('Desde ','From ')+money(p.price)));b.addEventListener('click',()=>{kind=id;selected={};render();$('quote-options-title').focus({preventScroll:true});});choices.append(b);});
@@ -68,9 +89,25 @@
     }$('quote-download').disabled=false;$('quote-error').textContent='';update();configureContact();
   }
   function download(){if($('quote-download').disabled){$('local-feedback').textContent=tx('Revisa las cantidades del cotizador antes de descargar.','Check estimate quantities before downloading.');return;}const blob=new Blob([brief()],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='cyberserch-estimacion.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('quote-feedback').textContent=tx('Resumen preparado para descargar. No se ha enviado a nadie.','Summary prepared for download. It has not been sent.');}
-  $('quote-download').addEventListener('click',download);$('local-download').addEventListener('click',()=>{download();$('local-feedback').textContent=$('quote-feedback').textContent;});$('local-goal').addEventListener('input',()=>{if(!$('quote-download').disabled)update();});
+  $('quote-download').addEventListener('click',download);$('local-download').addEventListener('click',()=>{download();$('local-feedback').textContent=$('quote-feedback').textContent;});for(const id of ['local-goal','contact-goal'])$(id).addEventListener('input',()=>{if(!$('quote-download').disabled)update();});
   $('quote-reset').addEventListener('click',()=>{kind='landing';selected={};render();$('quote-feedback').textContent='';});
-  function configureContact(){const endpoint=formEndpoint(C.formspreeEndpoint),form=$('quote-contact-form');form.hidden=!endpoint;$('local-enquiry').hidden=Boolean(endpoint);$('quote-contact-pending').hidden=Boolean(endpoint);if(endpoint)form.action=endpoint;else form.removeAttribute('action');$('quote-contact-ready').hidden=!endpoint;}
-  $('quote-contact-form').addEventListener('submit',event=>{const endpoint=formEndpoint(C.formspreeEndpoint);if(!endpoint||$('quote-download').disabled){event.preventDefault();return;}if($('contact-website').value){event.preventDefault();$('quote-contact-result').textContent=tx('No se pudo enviar. Revisa los campos.','Could not send. Check the fields.');return;}if(!event.currentTarget.reportValidity()){event.preventDefault();return;}$('quote-contact-summary').value=brief();});
+  let contactBusy=false;
+  function configureContact(){const active=Boolean(web3formsKey(C.web3formsAccessKey)),form=$('quote-contact-form');form.hidden=!active;$('local-enquiry').hidden=active;$('quote-contact-pending').hidden=active;form.removeAttribute('action');$('quote-contact-ready').hidden=!active;}
+  $('quote-contact-form').addEventListener('submit',async event=>{
+    event.preventDefault();const form=event.currentTarget,key=web3formsKey(C.web3formsAccessKey),status=$('quote-contact-result'),button=form.querySelector('[type=submit]');
+    if(contactBusy||!key)return;
+    if($('quote-download').disabled){status.textContent=tx('Revisa las cantidades del cotizador antes de enviar.','Check the estimate quantities before sending.');return;}
+    if($('contact-website').value||!form.reportValidity())return;
+    const fields={name:$('contact-name').value.trim(),email:$('contact-email').value.trim(),message:$('contact-goal').value.trim(),estimate:brief(),consent:$('contact-consent').checked?'yes':'no',botcheck:false};
+    contactBusy=true;button.disabled=true;form.setAttribute('aria-busy','true');status.textContent=tx('Enviando tu consulta…','Sending your enquiry…');
+    const result=await sendEnquiry(key,fields);
+    contactBusy=false;button.disabled=false;form.removeAttribute('aria-busy');
+    if(result==='accepted'){
+      form.reset();update();status.textContent=tx('Tu consulta fue recibida por Web3Forms. No se realizó ningún cobro. Serch revisará el contexto para responderte; este envío no reserva una cita.','Web3Forms received your enquiry. No payment was made. Serch will review it before replying; this does not book an appointment.');
+    }else{
+      const message=result==='timeout'?tx('La conexión tardó demasiado; no podemos confirmar el envío.','The connection timed out; we cannot confirm the submission.'):result==='limit'?tx('El proveedor ha limitado temporalmente los envíos.','The provider has temporarily limited submissions.'):result==='invalid'?tx('Revisa el nombre, correo y descripción de tu proyecto.','Check your name, email and project description.'):tx('No pudimos confirmar el envío.','We could not confirm the submission.');
+      status.textContent=message+' '+tx('Tus datos siguen en el formulario. Puedes descargar el resumen o volver a intentarlo más tarde.','Your entries remain in the form. Download the summary or try again later.');
+    }
+  });
   document.addEventListener('portfolio:language',render);render();
 })();
