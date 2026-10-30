@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; form-action 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#080f17">
+  <title>El laboratorio de Axiom · CyberSerchMX</title>
+  <meta name="description" content="Explora con Axiom un laboratorio interactivo. Resuelve tres misiones breves de seguridad, redes y automatización, y descubre una guía para tu próximo proyecto.">
+  <meta property="og:title" content="El laboratorio de Axiom · CyberSerchMX">
+  <meta property="og:description" content="Tres estaciones. Nueve decisiones. Un secreto por descubrir.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://sergioh-devsec.github.io/assets/social-card.png">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="laboratory.css?v=7861b74f0b95">
+  <script src="lab-missions.js?v=0a7d3886ac77" defer></script>
+  <script src="laboratory.js?v=4002a15e2a98" defer></script>
+<link rel="canonical" href="https://sergioh-devsec.github.io/laboratorio.html"><meta property="og:url" content="https://sergioh-devsec.github.io/laboratorio.html"></head>
+<body class="lab-page">
+<a class="lab-skip" href="#lab-stations" data-lab-copy="skip">Ir a las misiones</a>
+<div class="lab-shell">
+  <header class="lab-header">
+    <a class="lab-brand" href="index.html#soc-play"><span aria-hidden="true">✳</span> CYBERSERCH <small data-lab-copy="back">Volver al sitio</small></a>
+    <div class="lab-toolbar">
+      <button id="lab-motion" type="button" aria-pressed="false" data-lab-copy="pause">Pausar movimiento</button>
+      <button id="lab-help" type="button" data-lab-copy="help">Cómo jugar</button>
+      <label class="lab-language"><span class="lab-sr" data-lab-copy="language">Idioma</span><select id="lab-language"><option value="es">ES</option><option value="en">EN</option></select></label>
+    </div>
+  </header>
+  <main class="lab-layout">
+    <section class="lab-world" aria-label="Mapa interactivo del laboratorio" data-location="home">
+      <img class="lab-room-image" src="assets/lab-room.svg" width="1200" height="880" alt="" fetchpriority="high">
+      <div class="lab-atmosphere" aria-hidden="true"></div>
+      <div class="lab-orbit" aria-hidden="true"></div>
+      <div class="lab-character" data-location="home" aria-hidden="true"><img src="assets/axiom/img/axiom.png" width="1029" height="1183" alt=""></div>
+      <button class="lab-hotspot" data-station="security" type="button"><span class="hotspot-icon" aria-hidden="true">01</span><span class="hotspot-label" data-lab-copy="security">Seguridad</span><span class="hotspot-status" data-lab-copy="explore">Explorar</span></button>
+      <button class="lab-hotspot" data-station="network" type="button"><span class="hotspot-icon" aria-hidden="true">02</span><span class="hotspot-label" data-lab-copy="network">Redes</span><span class="hotspot-status" data-lab-copy="explore">Explorar</span></button>
+      <button class="lab-hotspot" data-station="automation" type="button"><span class="hotspot-icon" aria-hidden="true">03</span><span class="hotspot-label" data-lab-copy="automation">Automatización</span><span class="hotspot-status" data-lab-copy="explore">Explorar</span></button>
+      <button class="lab-secret" id="lab-secret" type="button" aria-label="Inspeccionar la señal misteriosa"><span aria-hidden="true">{ ? }</span></button>
+      <p class="lab-world-caption" data-lab-copy="caption">Toca una estación. Axiom te acompaña.</p>
+    </section>
+    <section class="lab-sidebar" aria-labelledby="lab-title">
+      <p class="lab-eyebrow" data-lab-copy="eyebrow">BIENVENIDO AL OTRO LADO</p>
+      <h1 id="lab-title" data-lab-copy="title">Aquí se viene<br>a curiosear.</h1>
+      <p class="lab-intro" data-lab-copy="intro">Soy Axiom, el ciberasistente de Serch. El laboratorio está abierto: elige una estación y resolvamos algo juntos.</p>
+      <button class="lab-voice-control" id="lab-voice" type="button" aria-pressed="false" data-lab-copy="voice">Escuchar a Axiom</button><audio id="lab-audio" src="assets/axiom/audio/32_bienvenida.mp3" preload="none" hidden></audio><p id="lab-voice-status" class="lab-tip" role="status"></p>
+      <div class="lab-progress"><div><span data-lab-copy="progress">Tu recorrido</span><strong id="lab-progress-text" role="status">0 / 3</strong></div><progress id="lab-progress" max="3" value="0" aria-label="Misiones completadas">0 / 3</progress></div>
+      <nav class="lab-station-list" id="lab-stations" aria-label="Misiones">
+        <button class="station-shortcut" data-station="security" type="button"><span>01</span><span><strong data-lab-copy="missionSecurity">Una alerta no lo dice todo</strong><small data-lab-copy="securityHint">Seguridad · observa, contrasta, decide</small></span><span class="station-mark" aria-hidden="true">+</span></button>
+        <button class="station-shortcut" data-station="network" type="button"><span>02</span><span><strong data-lab-copy="missionNetwork">Encuentra el camino</strong><small data-lab-copy="networkHint">Redes · conecta las piezas</small></span><span class="station-mark" aria-hidden="true">+</span></button>
+        <button class="station-shortcut" data-station="automation" type="button"><span>03</span><span><strong data-lab-copy="missionAutomation">Menos vueltas, más orden</strong><small data-lab-copy="automationHint">Automatización · diseña un flujo</small></span><span class="station-mark" aria-hidden="true">+</span></button>
+      </nav>
+      <div class="lab-discoveries"><span aria-hidden="true">✦</span><p id="lab-discovery-text" data-lab-copy="secretHint">Hay una señal fuera de lugar. No todo en este laboratorio es lo que parece.</p><button id="lab-reward" type="button" hidden data-lab-copy="download">Descargar mi checklist</button></div>
+      <p class="lab-tip" data-lab-copy="tip">Sin cronómetro. Puedes equivocarte, aprender y volver a intentar. Tu avance dura esta visita.</p>
+    </section>
+  </main>
+  <footer class="lab-footer"><span data-lab-copy="footer">Tres pequeñas simulaciones con datos ficticios. Ningún archivo se envía.</span><nav><a href="informacion.html#privacidad" data-lab-copy="privacy">Privacidad</a><a href="informacion.html#condiciones" data-lab-copy="terms">Condiciones</a><a href="cotizador.html" data-lab-copy="project">Tengo un proyecto</a></nav></footer>
+</div>
+<dialog class="mission-dialog" id="mission-dialog" aria-labelledby="mission-title">
+  <div class="mission-top"><span class="lab-eyebrow" id="mission-kicker">AXIOM / LAB</span><button type="button" data-lab-close data-lab-copy="close">Cerrar</button></div>
+  <p class="mission-progress" id="mission-progress"></p>
+  <h2 id="mission-title" tabindex="-1"></h2>
+  <p id="mission-body"></p>
+  <pre class="mission-evidence" id="mission-evidence"></pre>
+  <div class="mission-choices" id="mission-choices"></div>
+  <div class="mission-feedback" id="mission-feedback" role="status" hidden></div>
+  <div class="mission-actions" id="mission-actions"></div>
+</dialog>
+<dialog class="lab-help-dialog" id="lab-help-dialog" aria-labelledby="lab-help-title">
+  <div class="mission-top"><span class="lab-eyebrow">AXIOM / LAB</span><button type="button" data-lab-close data-lab-copy="close">Cerrar</button></div>
+  <h2 id="lab-help-title" data-lab-copy="helpTitle">La curiosidad es el control.</h2>
+  <p data-lab-copy="helpBody">Toca una estación en el mapa o elige una misión de la lista. Lee la situación, elige una respuesta y descubre por qué. Cada misión tiene tres decisiones.</p>
+  <p data-lab-copy="helpKeys">Con teclado: Tab para moverte, Enter o espacio para elegir y Escape para cerrar. Fuera de los campos, escribe AXIOM y observa qué pasa. En celular, toca la señal { ? }.</p>
+  <p data-lab-copy="helpMotion">Puedes pausar las animaciones. También respetamos la preferencia de movimiento reducido de tu dispositivo.</p>
+</dialog>
+<noscript><p>Activa JavaScript para recorrer el laboratorio. <a href="index.html">Volver al sitio</a>.</p></noscript>
+</body>
+</html>
