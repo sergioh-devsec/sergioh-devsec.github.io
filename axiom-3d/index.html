@@ -6,48 +6,80 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self' blob: data:; font-src 'self'; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; media-src 'none'; form-action 'none'; upgrade-insecure-requests">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="theme-color" content="#07131b">
-  <title>Axiom 3D · CyberSerchMX</title>
-  <meta name="description" content="Un prototipo 3D articulado de Axiom. Prueba su mirada, salta, gira y explora su modelo desde distintos ángulos.">
-  <link rel="stylesheet" href="style.css?v=59402984837d">
-  <script type="module" src="main.js?v=efb743702043"></script>
+  <title>Axiom y sus amigos · CyberSerchMX</title>
+  <meta name="description" content="Conoce a Axiom y sus amigos en el laboratorio de CyberSerchMX. Explora sus personajes en 3D e interactúa con ellos.">
+  <link rel="stylesheet" href="style.css?v=0e1ec21e7bd6">
+  <script type="module" src="main.js?v=ee28cbf30e8a"></script>
 <link rel="canonical" href="https://sergioh-devsec.github.io/axiom-3d/index.html"><meta property="og:url" content="https://sergioh-devsec.github.io/axiom-3d/index.html"></head>
 <body>
   <a class="skip" href="#viewer-controls">Ir a los controles</a>
-  <header class="header"><a class="brand" href="../laboratorio.html"><span aria-hidden="true">✳</span> CYBERSERCH <small>Volver al laboratorio</small></a><span class="edition">AXIOM / VOLUMEN 01</span></header>
+  <header class="header">
+    <a class="brand" href="../index.html"><span aria-hidden="true">✳</span><span>CYBERSERCH<small>EL LABORATORIO</small></span></a>
+    <nav aria-label="Navegación principal"><a href="../laboratorio.html">Jugar con Axiom</a><a href="#proximo-juego">Próximo juego</a><a href="../index.html">Volver al sitio</a></nav>
+  </header>
   <main>
     <section class="experience" aria-labelledby="title">
       <div class="intro">
-        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> EL SIGUIENTE ÁNGULO</p>
-        <h1 id="title">Hola, soy Axiom.<br><span>Ahora, con volumen.</span></h1>
-        <p class="lead">Mueve el cursor y te sigo con la mirada. Tócame para saltar, o explora cómo me veo desde otro lado.</p>
-        <div class="model-note"><strong id="model-label">Prototipo 3D articulado</strong><p id="model-description">Una interpretación estilizada para probar movimiento e interacción. Mi ilustración original sigue siendo la referencia del diseño definitivo.</p></div>
-        <p class="status" id="status" role="status" aria-live="polite">Preparando la escena…</p>
-        <div class="controls" id="viewer-controls" aria-label="Controles de Axiom">
-          <button id="jump" class="primary" type="button" disabled>¡Salta!</button>
-          <button id="spin" type="button" disabled>Dar una vuelta</button>
-          <button id="look" type="button" aria-pressed="true" disabled>Mirada activa</button>
-          <button id="pause" type="button" aria-pressed="false" disabled>Pausar movimiento</button>
+        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> DEL OTRO LADO DE LA PANTALLA</p>
+        <h1 id="title">Un laboratorio.<br><span>Muchas<br class="desktop-break"> personalidades.</span></h1>
+        <p class="lead">Axiom tiene compañía. Acércate, elige a quién conocer y dale una vuelta a la curiosidad.</p>
+        <div class="character-picker">
+          <div class="picker-heading"><h2 id="characters-title">Elige a tu compañía</h2><span aria-hidden="true">01 — 08</span></div>
+          <div class="character-list" role="group" aria-labelledby="characters-title">
+            <button class="character-option" type="button" data-character="axiom" aria-pressed="true"><span class="character-monogram" aria-hidden="true">AX</span><span>Axiom</span></button>
+            <button class="character-option" type="button" data-character="atlas" aria-pressed="false"><span class="character-monogram" aria-hidden="true">AT</span><span>Atlas</span></button>
+            <button class="character-option" type="button" data-character="iris" aria-pressed="false"><span class="character-monogram" aria-hidden="true">IR</span><span>Iris</span></button>
+            <button class="character-option" type="button" data-character="kernel" aria-pressed="false"><span class="character-monogram" aria-hidden="true">KR</span><span>Kernel</span></button>
+            <button class="character-option" type="button" data-character="luma" aria-pressed="false"><span class="character-monogram" aria-hidden="true">LU</span><span>Luma</span></button>
+            <button class="character-option" type="button" data-character="nexus" aria-pressed="false"><span class="character-monogram" aria-hidden="true">NX</span><span>Nexus</span></button>
+            <button class="character-option" type="button" data-character="nova" aria-pressed="false"><span class="character-monogram" aria-hidden="true">NV</span><span>Nova</span></button>
+            <button class="character-option" type="button" data-character="vector" aria-pressed="false"><span class="character-monogram" aria-hidden="true">VC</span><span>Vector</span></button>
+          </div>
         </div>
-        <p class="hint" id="interaction-hint">En celular, toca al personaje. Puedes usar todos los controles con teclado.</p>
-        <a class="text-link" href="models/axiom-prototype.glb" download>Descargar este modelo .glb</a>
+        <p class="intro-note">Mismo laboratorio. Ocho formas de habitarlo.</p>
       </div>
       <div class="stage-column">
-        <div id="axiom-container" class="stage" aria-label="Visor tridimensional de Axiom">
-          <div class="stage-label"><span>AXIOM / 3D STUDIO</span><span id="scene-state">CARGANDO</span></div>
-          <div class="stage-grid" aria-hidden="true"></div>
-          <img id="fallback" class="fallback" src="assets/axiom-reference.png" alt="Ilustración original de Axiom como alternativa al visor 3D" width="1029" height="1183">
-          <canvas id="axiom-canvas" tabindex="0" aria-label="Axiom en 3D. Enter o espacio para saltar. Usa los controles para girar la vista." aria-describedby="interaction-hint"></canvas>
-          <p class="stage-caption" id="stage-caption">Un nuevo cuerpo para la misma curiosidad.</p>
+        <div id="axiom-container" class="stage" data-character="axiom" aria-label="Estudio tridimensional de Axiom y sus amigos">
+          <div class="stage-label"><span>CYBERSERCH / CHARACTER STUDIO</span><span id="scene-state">CARGANDO</span></div>
+          <div class="stage-grid" aria-hidden="true"></div><div class="stage-orbit" aria-hidden="true"></div>
+          <img id="fallback" class="fallback" src="assets/axiom-reference.png" alt="Ilustración de Axiom mientras se prepara la vista 3D" width="1029" height="1183">
+          <canvas id="axiom-canvas" tabindex="0" aria-label="Personaje en 3D. Enter o espacio para saltar. Usa los controles para girar la vista." aria-describedby="interaction-hint"></canvas>
+          <div id="loading-indicator" class="loading-indicator" aria-hidden="true"><span class="loading-ring"></span><span>Abriendo el estudio</span></div>
+          <div class="character-plaque"><div><span class="plaque-label">CONOCE A</span><h2 id="character-name">Axiom</h2><p id="character-role">El ciberasistente de Serch</p></div><span class="dimension-badge" aria-hidden="true">3D</span></div>
+          <p class="stage-caption" id="stage-caption">Tu próxima idea ya tiene compañía.</p>
         </div>
-        <div class="view-controls"><button id="orbit" type="button" aria-pressed="false" disabled>Explorar 360°</button><button id="camera-left" type="button" disabled>Vista izquierda</button><button id="camera-right" type="button" disabled>Vista derecha</button><button id="reset" type="button" disabled>Vista inicial</button></div>
+        <div class="interaction-deck">
+          <div class="controls" id="viewer-controls" role="group" aria-label="Interactúa con el personaje">
+            <button id="wave" class="primary" type="button" disabled>Saludar</button>
+            <button id="jump" type="button" disabled>¡Salta!</button>
+            <button id="spin" type="button" disabled>Dar una vuelta</button>
+            <button id="look" type="button" aria-pressed="true" disabled>Mirada activa</button>
+            <button id="pause" type="button" aria-pressed="false" disabled>Pausar movimiento</button>
+          </div>
+          <div class="view-controls" role="group" aria-label="Punto de vista"><button id="orbit" type="button" aria-pressed="false" disabled>Explorar 360°</button><button id="camera-left" type="button" disabled>Vista izquierda</button><button id="camera-right" type="button" disabled>Vista derecha</button><button id="reset" type="button" disabled>Vista inicial</button></div>
+          <p class="hint" id="interaction-hint">Toca al personaje para interactuar. Activa la vista 360° para girarlo con el dedo o el mouse. Los controles también funcionan con teclado.</p>
+          <p class="status" id="status" role="status" aria-live="polite">Preparando a Axiom…</p>
+        </div>
       </div>
     </section>
+    <section class="studio-note" aria-labelledby="studio-note-title"><span class="studio-mark" aria-hidden="true">✳</span><div><h2 id="studio-note-title">La tecnología también puede tener personalidad.</h2><p>Este es un pequeño espacio para explorar la nuestra.</p></div><a class="text-link" href="../laboratorio.html">Seguir explorando</a></section>
+    <section id="proximo-juego" class="future-game" aria-labelledby="future-game-title">
+      <div class="future-game-emblem" aria-hidden="true"><span>AX</span><span class="future-game-cross">+</span></div>
+      <div><p class="eyebrow">EL LABORATORIO SIGUE CRECIENDO</p><h2 id="future-game-title">La próxima aventura</h2><p>Espacio reservado para el próximo juego de Axiom. Todavía no está disponible.</p></div>
+      <span class="future-game-status">PRÓXIMAMENTE</span>
+      <div id="game-mount" hidden></div>
+    </section>
     <section class="model-tools" aria-labelledby="models-title">
-      <div><p class="eyebrow">DEL PROTOTIPO AL PERSONAJE</p><h2 id="models-title">Listo para su próximo modelo.</h2><p>Abre un archivo con el rig de Axiom para probarlo aquí. Se procesa en tu navegador; no se sube a ningún servicio.</p></div>
-      <details><summary>Probar un modelo .glb o .gltf</summary><div class="model-import"><label for="model-file">Archivo 3D autocontenido (máximo 20 MB)</label><input type="file" id="model-file" accept=".glb,.gltf"><p class="small">El archivo debe incluir sus texturas y recursos. Para mover la cabeza y los ojos, configura los nombres de sus articulaciones en <code>main.js</code>.</p><div class="controls"><button type="button" id="restore-model" disabled>Volver al prototipo</button><button type="button" id="rig" aria-pressed="false" disabled>Ver articulaciones</button></div><p id="rig-status" class="small" role="status"></p></div></details>
+      <details>
+        <summary><span id="models-title">Detrás de la escena</span><span class="details-label">Modelo y opciones</span></summary>
+        <div class="model-tools-inner">
+          <div class="model-note"><strong id="model-label">Axiom · modelo del laboratorio</strong><p id="model-description">Los personajes de esta colección forman parte del universo visual de CyberSerchMX.</p><a class="text-link" id="model-download" href="models/axiom.glb" download>Descargar este modelo .glb</a><p id="rig-status" class="small" role="status"></p></div>
+          <div class="model-import"><label for="model-file">Probar un archivo .glb o .gltf (máximo 20 MB)</label><input type="file" id="model-file" accept=".glb,.gltf"><p class="small">El archivo debe incluir sus texturas y recursos. Se procesa en tu navegador; no se sube a ningún servicio.</p><div class="controls"><button type="button" id="restore-model" disabled>Volver a Axiom</button><button type="button" id="rig" aria-pressed="false" disabled>Ver articulaciones</button></div></div>
+        </div>
+      </details>
     </section>
   </main>
-  <footer><span>CYBERSERCH · AXIOM 3D</span><nav><a href="../informacion.html#privacidad">Privacidad</a><a href="../informacion.html#condiciones">Condiciones</a><a href="../index.html">Volver al sitio</a></nav></footer>
+  <footer><span>CYBERSERCH · UN LABORATORIO CON PERSONALIDAD</span><nav aria-label="Información del sitio"><a href="../informacion.html#privacidad">Privacidad</a><a href="../informacion.html#condiciones">Condiciones</a><a href="../index.html">Volver al sitio</a></nav></footer>
   <noscript><p class="no-script">Activa JavaScript para usar el visor. La ilustración sigue disponible.</p></noscript>
 </body>
 </html>
