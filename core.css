@@ -191,6 +191,12 @@
 .scene-bottom{margin-inline:0}.status-dot{display:inline-block;border-radius:50%;background:var(--cyan)}
 .core-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .core-controls button{min-height:44px;padding:9px 5px;font-size:12px;border-radius:8px}
+.core-controls button[data-core-mode]{--mode-ink:#7ff4e2;--mode-fill:#0d3237;--mode-bright:#74efdc;min-height:54px;padding:12px 7px;border:1px solid var(--mode-ink);border-bottom-width:3px;border-radius:12px;background:var(--mode-fill);color:var(--mode-ink);font-size:clamp(12px,1vw,14px);font-weight:700;box-shadow:0 5px 15px #0003;transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
+.core-controls button[data-core-mode="security"]{--mode-ink:#a6cfff;--mode-fill:#142e50;--mode-bright:#a6cfff}
+.core-controls button[data-core-mode="software"]{--mode-ink:#e2baff;--mode-fill:#332046;--mode-bright:#dfb2ff}
+.core-controls button[data-core-mode][aria-pressed="true"]{background:var(--mode-bright);color:#091720;border-color:var(--mode-bright);box-shadow:0 0 0 3px #07121d,0 0 0 5px var(--mode-bright),0 8px 20px #0004;transform:translateY(-2px);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
+.core-controls button[data-core-mode]:hover{transform:translateY(-4px);box-shadow:0 9px 24px #0006}
+.core-controls button[data-core-mode]:focus-visible{outline:3px solid #fff;outline-offset:6px}
 .core-description{font-size:12px;min-height:42px;margin:12px 4px 0}
 .core-scene.offscreen *,.page-hidden .core-scene *{animation-play-state:paused!important}
 .motion-paused .core-parallax{transform:none!important}

@@ -626,7 +626,16 @@ window.TRANSLATIONS = {
     "socLocal": "Ejercicio con datos ficticios. Para analizar tus archivos, abre las herramientas locales: sin grabación de sesiones ni envío de contenido.",
     "socTools": "Abrir herramientas gratuitas",
     "socSignal": "Inspeccionar señal de Axiom",
-    "socKeyboard": "Pista para teclado: escribe AXIOM fuera de los campos. También puedes tocar la señal."
+    "socKeyboard": "Pista para teclado: escribe AXIOM fuera de los campos. También puedes tocar la señal.",
+    "serviceDetails": "Ver detalles",
+    "sideMenuTitle": "Explora a tu ritmo",
+    "sideMenuIntro": "Elige lo que necesitas. Lo demás puede esperar.",
+    "sideHome": "Inicio",
+    "sideBusiness": "Hacer crecer mi negocio",
+    "sideAxiom": "Axiom y el estudio creativo",
+    "sideSocial": "Redes sociales",
+    "sideSupport": "Apoyar el laboratorio",
+    "sideTools": "Probar las herramientas"
   },
   "en": {
     "freeEnquiryTitle": "Tell me what you need.",
@@ -1404,6 +1413,15 @@ window.TRANSLATIONS = {
     "socLocal": "Fictional training data. Open the local tools for your own files: no session recording or content uploads.",
     "socTools": "Open the free tools",
     "socSignal": "Inspect Axiom’s signal",
-    "socKeyboard": "Keyboard hint: type AXIOM outside input fields. You can also tap the signal."
+    "socKeyboard": "Keyboard hint: type AXIOM outside input fields. You can also tap the signal.",
+    "serviceDetails": "View details",
+    "sideMenuTitle": "Explore at your pace",
+    "sideMenuIntro": "Choose what you need. Everything else can wait.",
+    "sideHome": "Home",
+    "sideBusiness": "Grow my business",
+    "sideAxiom": "Axiom and the creative studio",
+    "sideSocial": "Social channels",
+    "sideSupport": "Support the lab",
+    "sideTools": "Try the tools"
   }
 };

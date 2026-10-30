@@ -1,0 +1,22 @@
+/* Compact native disclosures: each visitor chooses how much detail to read. */
+#service-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:14px}
+#service-grid .service-disclosure{display:block;padding:0;min-width:0;overflow:hidden;transform:none}
+#service-grid .service-disclosure:first-child{grid-column:1/-1}
+#service-grid .service-summary{display:flex;align-items:center;gap:18px;padding:23px 26px;min-height:90px;cursor:pointer;list-style:none}
+.service-summary::-webkit-details-marker{display:none}
+#service-grid .service-summary::after{display:none}
+#service-grid .service-summary .icon{width:29px;height:29px;flex:none;margin:0;animation:none}
+#service-grid .service-summary h3,#service-grid .service-disclosure:first-child h3{font-size:1.15rem;line-height:1.35;margin:0;color:#e7f5f5}
+.service-disclosure-cue{display:flex;align-items:center;gap:12px;margin-left:auto;flex:none;font-size:.73rem;font-weight:500;color:#91d8d4}
+.service-disclosure-cue::after{content:'';width:9px;height:9px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .2s ease}
+.service-disclosure[open] .service-disclosure-cue::after{transform:rotate(225deg)}
+.service-summary:hover{background:#50d8cc0b}
+.service-summary:focus-visible{outline:3px solid var(--cyan);outline-offset:-4px;border-radius:14px}
+.service-disclosure[open]{border-color:#5bb1af}
+.service-disclosure[open] .service-summary{border-bottom:1px solid #33545c}
+.service-disclosure-body{padding:4px 26px 25px;display:flex;flex-direction:column;align-items:start;gap:9px}
+#service-grid .service-disclosure-body p{margin:12px 0 0;max-width:800px}
+#service-grid .service-disclosure-body .use-case{margin-top:10px}
+.service-disclosure-body .text-link,.service-disclosure-body .text-button{min-height:44px;display:inline-flex;align-items:center}
+@media(max-width:760px){#service-grid{grid-template-columns:1fr}.service-disclosure-cue{font-size:0;gap:0}.service-disclosure-cue::after{margin-inline:5px}#service-grid .service-summary{gap:14px;padding:19px 20px;min-height:78px}#service-grid .service-summary h3{font-size:1.05rem}.service-disclosure-body{padding:0 20px 20px}}
+@media(prefers-reduced-motion:reduce){.service-disclosure-cue::after{transition:none}}

@@ -4,7 +4,7 @@
   const routes = ['business', 'creator', 'lab'];
   const sources = ['instagram', 'youtube', 'tiktok', 'x', 'whatsapp', 'telegram', 'linkedin', 'compartir'];
   const resources = [
-    {id:'estimate', icon:'code', href:'cotizador.html', weights:[6,2,1], kind:'plan',
+    {id:'estimate', icon:'money', href:'cotizador.html', weights:[6,2,1], kind:'plan',
       es:['Ponle números a tu idea','Calcula una referencia para tu web o automatización, sin dejar datos personales.','Armar mi estimación →'],
       en:['Put numbers to your idea','Estimate a website or automation project without providing personal details.','Build my estimate →']},
     {id:'organizer', icon:'automation', href:'herramientas.html#csv', weights:[5,4,5], kind:'tool',
@@ -67,7 +67,12 @@
     const fragment=document.createDocumentFragment();
     current.forEach((item,index)=>{
       const [title,description,action]=item[I.language==='en'?'en':'es'];
-      const card=S.el('article','discovery-card');card.append(S.icon(item.icon));
+      const card=S.el('article','discovery-card');
+      if(item.id==='estimate'){
+        const money=S.el('span','discovery-money');money.setAttribute('aria-hidden','true');
+        for(let coin=0;coin<5;coin++)money.append(S.el('span','','$'));
+        card.classList.add('discovery-card-estimate');card.append(money);
+      }else card.append(S.icon(item.icon));
       card.append(S.el('span','discovery-step',String(index+1).padStart(2,'0')),S.el('h3','',title),S.el('p','',description));
       const link=S.link(action,item.href,'text-link');link.dataset.discoveryResource=item.id;card.append(link);fragment.append(card);
     });

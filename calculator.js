@@ -57,6 +57,46 @@
   };
   const wording=()=>copy[I.language==='en'?'en':'es'];
   const node=(tag,id,className)=>{const element=document.createElement(tag);if(id)element.id=id;if(className)element.className=className;return element;};
+  // A compact duplicate stays with the mobile controls; the full explanation remains below.
+  const calculator=document.querySelector('.calculator'),creatorDialog=calculator.closest('dialog');
+  const floating=node('div','creator-mobile-result','scenario-mobile-result');
+  floating.setAttribute('data-clarity-mask','true');
+  const floatingCaption=node('span',null,'scenario-mobile-caption');
+  const floatingAmount=node('strong','creator-mobile-amount');
+  floatingAmount.setAttribute('aria-hidden','true');
+  const floatingAccessible=node('span',null,'sr-only');
+  const floatingLabel=node('span',null,'scenario-mobile-label');
+  floating.append(floatingCaption,floatingAmount,floatingAccessible,floatingLabel);
+  calculator.querySelector('.calculator-layout').before(floating);
+  const mobileResult=matchMedia('(max-width:760px)'),reducedResult=matchMedia('(prefers-reduced-motion: reduce)');
+  let numberFrame=0,displayedGross=0,targetGross=0,lastCurrency='',lastLanguage='',formatGross=n=>String(n),hasGross=false;
+  function finishGross(){cancelAnimationFrame(numberFrame);numberFrame=0;floating.classList.remove('is-counting');if(hasGross){displayedGross=targetGross;floatingAmount.textContent=formatGross(targetGross);}}
+  function canAnimateGross(){return mobileResult.matches&&!reducedResult.matches&&!document.hidden&&!document.documentElement.classList.contains('motion-paused')&&creatorDialog?.open;}
+  function updateFloatingGross(value,currency,formatter){
+    const changedCurrency=lastCurrency!==currency||lastLanguage!==I.language;
+    cancelAnimationFrame(numberFrame);numberFrame=0;floating.classList.remove('is-counting');
+    floatingCaption.textContent=I.t('scenario');floatingLabel.textContent=I.t('gross');
+    lastCurrency=currency;lastLanguage=I.language;formatGross=formatter;
+    if(value===null){hasGross=false;floatingAmount.textContent='—';floatingAccessible.textContent=I.language==='en'?'Check the values below.':'Revisa los valores de abajo.';return;}
+    targetGross=value;floatingAccessible.textContent=formatter(value);hasGross=true;
+    if(changedCurrency||!canAnimateGross()||Math.abs(displayedGross-value)<.01){finishGross();return;}
+    const from=displayedGross,start=performance.now();floating.classList.add('is-counting');
+    const tick=now=>{
+      if(!canAnimateGross()){finishGross();return;}
+      const progress=Math.min(1,(now-start)/420),eased=1-Math.pow(1-progress,3);
+      displayedGross=from+(targetGross-from)*eased;floatingAmount.textContent=formatter(displayedGross);
+      if(progress<1)numberFrame=requestAnimationFrame(tick);else finishGross();
+    };
+    numberFrame=requestAnimationFrame(tick);
+  }
+  // The sticky summary leaves room for the dialog's close control, including wrapped text.
+  function positionFloating(){const header=creatorDialog?.querySelector('.dialog-top');if(header)floating.style.setProperty('--scenario-sticky-top',Math.ceil(header.getBoundingClientRect().height+8)+'px');}
+  if('ResizeObserver' in window){const header=creatorDialog?.querySelector('.dialog-top');if(header)new ResizeObserver(positionFloating).observe(header);}
+  creatorDialog?.addEventListener('close',finishGross);
+  document.addEventListener('portfolio:dialog-open',positionFloating);
+  document.addEventListener('portfolio:motion',finishGross);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)finishGross();});
+  reducedResult.addEventListener('change',finishGross);mobileResult.addEventListener('change',()=>{finishGross();positionFloating();});
   const translated=[];
   function textNode(tag,key,className,id){const element=node(tag,id,className);translated.push([element,key]);return element;}
   const details=node('details','creator-costs');details.setAttribute('data-clarity-mask','true');
@@ -87,9 +127,10 @@
     if(!result||!['USD','MXN'].includes(currency)||(currency==='MXN'&&(!$('exchange').value||!$('exchange').validity.valid))){
       for(const id of ['gross-result','creator-net',...['fees','refunds','costs'].map(key=>'creator-total-'+key)])$(id).textContent='—';
       for(const id of ['subscriber-result','conversion-uplift','creator-comparison','creator-break-even','calc-formula','scenario-current-label','scenario-plus-label'])$(id).textContent='';
-      $('scenario-current').style.width='0%';$('scenario-plus').style.width='0%';$('calc-error').textContent=t.error;return;
+      $('scenario-current').style.width='0%';$('scenario-plus').style.width='0%';$('calc-error').textContent=t.error;updateFloatingGross(null,currency,String);return;
     }
     const money=n=>new Intl.NumberFormat(I.language==='en'?'en-US':'es-MX',{style:'currency',currency,currencyDisplay:'code',maximumFractionDigits:2}).format(Object.is(n,-0)?0:n);
+    updateFloatingGross(result.gross,currency,money);
     $('calc-error').textContent='';$('scenario-current-label').textContent=nf.format(conversion)+'%';$('scenario-plus-label').textContent=nf.format(Math.min(5,conversion+1))+'%';$('calc-formula').textContent=I.t('calcFormula',{followers:nf.format(followers),percent:nf.format(conversion),subscribers:nf.format(result.subscribers),ticket:'US$'+nf.format(ticket)});$('gross-result').textContent=money(result.gross);$('subscriber-result').textContent=I.t('subscribers',{n:nf.format(result.subscribers),percent:nf.format(conversion)});$('conversion-uplift').textContent=I.t('uplift',{amount:money(result.improvedGross)});
     $('scenario-current').style.width=(conversion/5*100)+'%';$('scenario-plus').style.width=(Math.min(5,conversion+1)/5*100)+'%';
     $('creator-net').textContent=money(result.current.net);for(const key of ['fees','refunds','costs'])$('creator-total-'+key).textContent=money(result.current[key]);

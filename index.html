@@ -23,7 +23,7 @@
   <!-- URL de publicación preparada para el repositorio GitHub Pages verificado. -->
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css?v=e845d2180c6e">
-<link rel="stylesheet" href="core.css?v=e29d2ca43ed7">
+<link rel="stylesheet" href="core.css?v=b6761c1f8005">
 <link rel="stylesheet" href="showcase.css?v=1a85612e3491">
 <link rel="stylesheet" href="stage2.css?v=51b022e51543">
   
@@ -34,10 +34,11 @@
   
   <script type="application/ld+json" id="structured-data">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://sergioh-devsec.github.io/#sergio","name":"Sergio Hernández","jobTitle":"Ingeniero en diseño de software y redes","description":"Ingeniería de software, ciberseguridad e inteligencia artificial local.","sameAs":["https://www.linkedin.com/in/jose-sergio-hernandez-hernandez-a355a3227","https://github.com/sergioh-devsec"],"knowsAbout":["Ingeniería de software","Redes","Ciberseguridad","Python","Inteligencia artificial local"],"url":"https://sergioh-devsec.github.io/"},{"@type":"WebSite","@id":"https://sergioh-devsec.github.io/#website","name":"CYBERSERCH | Sergio Hernández","inLanguage":"es-MX","author":{"@id":"https://sergioh-devsec.github.io/#sergio"},"url":"https://sergioh-devsec.github.io/"},{"@type":"ProfessionalService","@id":"https://sergioh-devsec.github.io/#services","name":"Sergio Hernández — Servicios tecnológicos","description":"Desarrollo web, automatización, consultoría, análisis de redes y ciberseguridad.","url":"https://sergioh-devsec.github.io/"}]}</script>
   <script src="data/projects.js?v=0fb9e28251a3" defer></script>
-  <script src="translations.js?v=21a8878f0dd7" defer></script>
+  <script src="translations.js?v=5e6f264b4dbe" defer></script>
   <script src="i18n.js?v=21cf455f0c9c" defer></script>
   <script src="data/commerce.js?v=6a827d22717f" defer></script>
-<script src="main.js?v=b045998bb264" defer></script>
+<script src="main.js?v=a846acd54944" defer></script>
+<script src="navigation.js?v=13ecd5b9a741" defer></script>
 <script src="estimator.js?v=e6d9b1224803" defer></script>
 
 <script src="core.js?v=be0ce34895b1" defer></script>
@@ -46,27 +47,45 @@
   <script src="axiom-knowledge.js?v=b505169a785c" defer></script>
   <script src="axiom-idle.js?v=129e9041489b" defer></script>
 <script src="axiom.js?v=2dbd006cb41a" defer></script>
-  <script src="calculator.js?v=9f2b5d876538" defer></script>
+  <script src="calculator.js?v=65cb57f2dfb9" defer></script>
   <script src="cro.js?v=1582f52c4cc9" defer></script>
-  <script src="discovery.js?v=a47a8287beef" defer></script>
+  <script src="discovery.js?v=4296c884cc46" defer></script>
 <script src="lab-play.js?v=6b657323f3e0" defer></script>
 <link rel="stylesheet" href="lab-play.css?v=3a30a6b0fc6b">
-  <link rel="stylesheet" href="discovery.css?v=2a7204999101">
+  <link rel="stylesheet" href="discovery.css?v=2c405c3def1d">
   <link rel="stylesheet" href="personality.css?v=e7c363b96454">
 <link rel="stylesheet" href="analytics.css?v=e5d03f72dec5">
 <script src="analytics.js?v=948d3c569c17" defer></script>
 <link rel="stylesheet" href="mobile.css?v=868cd779cee5">
+<link rel="stylesheet" href="navigation.css?v=bddd01757772">
+<link rel="stylesheet" href="services.css?v=768a21f319b8">
+<link rel="stylesheet" href="scenario-mobile.css?v=7fea33f7affa">
 <link rel="canonical" href="https://sergioh-devsec.github.io/"><meta property="og:url" content="https://sergioh-devsec.github.io/"></head>
 <body data-clarity-mask="true">
 <canvas id="water-surface" aria-hidden="true"></canvas>
 <a href="#main" class="skip-link"><span data-i18n="skip" >Saltar al contenido</span></a>
 <header class="site-header"><div class="container header-inner">
 <a href="#home" class="brand"><span class="brand-mark">S.</span><span>CYBER<b>SERCH</b><small>SERGIO HERNÁNDEZ</small></span></a>
-<button type="button" class="menu-toggle" id="menu-toggle" aria-controls="primary-nav" aria-expanded="false" hidden><span data-i18n="menu" >Menú</span></button>
+<button type="button" class="menu-toggle" id="menu-toggle" aria-controls="site-menu-dialog" aria-haspopup="dialog" aria-expanded="false" hidden><span data-i18n="menu" >Menú</span></button>
 <nav id="primary-nav" aria-label="Navegación principal" data-i18n-aria-label="navLabel">
 <a href="#cases" class="text-link"><span data-i18n="navCases">Casos</span></a><a href="#services" class="text-link"><span data-i18n="navServices" >Servicios</span></a><a href="#creadoras" class="text-link"><span data-i18n="navCreators" >Creator Business</span></a><a href="#technical" class="text-link"><span data-i18n="navLab" >Laboratorio</span></a><a href="#contact" class="text-link"><span data-i18n="navContact" >Conectemos</span></a></nav>
 <div class="header-tools"><label class="sr-only" for="language">Language / Idioma</label><select id="language"><option value="es">ES</option><option value="en">EN</option></select>
 <button type="button" class="motion-toggle" id="motion-toggle" aria-pressed="false" data-i18n-aria-label="pauseMotion" aria-label="Pausar animaciones"><span data-i18n="effects" >Efectos</span></button></div></div></header>
+<dialog id="site-menu-dialog" aria-labelledby="site-menu-title">
+  <div class="side-menu-head"><h2 id="site-menu-title" data-i18n="sideMenuTitle">Explora a tu ritmo</h2><button type="button" data-close-menu data-i18n="close">Cerrar</button></div>
+  <p data-i18n="sideMenuIntro">Elige lo que necesitas. Lo demás puede esperar.</p>
+  <nav class="side-menu-links" aria-label="Navegación principal" data-i18n-aria-label="navLabel">
+    <a href="#home" data-i18n="sideHome">Inicio</a>
+    <a href="#descubrir" data-i18n="sideBusiness">Hacer crecer mi negocio</a>
+    <a href="#services" data-i18n="navServices">Servicios</a>
+    <a href="#cases" data-i18n="navCases">Casos</a>
+    <a href="#content" data-i18n="sideAxiom">Axiom y el estudio creativo</a>
+    <a href="#technical" data-i18n="navLab">Laboratorio</a>
+    <a href="#social" data-i18n="sideSocial">Redes sociales</a>
+    <a href="#apoyar" data-i18n="sideSupport">Apoyar el laboratorio</a>
+  </nav>
+  <div class="side-menu-actions"><a class="button primary" href="cotizador.html" data-i18n="quoteNav">Cotizar mi proyecto</a><a class="button secondary" href="herramientas.html" data-i18n="sideTools">Probar las herramientas</a></div>
+</dialog>
 <main id="main">
 <section class="hero container" id="home"><div class="hero-copy">
 <p data-i18n="heroTag" class=eyebrow>TECNOLOGÍA PARA TU SIGUIENTE PASO</p>
