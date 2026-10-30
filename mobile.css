@@ -1,0 +1,65 @@
+/* Shared phone/tablet refinements. Keep native zoom and scrolling available. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media screen and (max-width:900px){
+  body{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+  .site-header{padding-top:env(safe-area-inset-top,0px)}
+  .site-footer,.footer{padding-bottom:max(1.5rem,env(safe-area-inset-bottom,0px))}
+  .header-inner{padding-block:8px}
+  .header-tools select,.header-tools button,.menu-toggle{min-height:44px;min-width:44px}
+  .header-tools select{font-size:16px;padding:8px}
+  .header-tools button,.menu-toggle{font-size:12px;padding:8px 10px}
+  .brand{min-height:44px;align-items:center}
+  .header-inner nav{padding-block:4px;gap:4px 14px;max-height:45vh;max-height:45dvh;overflow:auto}
+  .header-inner nav a{display:flex;align-items:center;min-height:44px;font-size:14px}
+  .header-inner>a:not(.brand){display:inline-flex;align-items:center;min-height:44px}
+  input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea,
+  .share-dialog input,.drop-zone input,#quote-summary{font-size:16px}
+  button,.button,.chip,.close-button,.text-button{min-height:44px}
+  input[type=range]{height:44px;margin-top:5px;touch-action:pan-y}
+  .close-button{min-width:44px}
+  dialog,.creator-dialog,.glossary-dialog{max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));scroll-padding-top:70px}
+  .dialog-top{position:sticky;top:-20px;background:#0b1721;padding-block:8px;margin-top:-8px;z-index:5}
+  .creator-dialog .dialog-top{background:#231519}
+  .axiom-widget{right:max(10px,env(safe-area-inset-right,0px));bottom:max(8px,env(safe-area-inset-bottom,0px))}
+  .axiom-panel>header{flex-shrink:0}
+  .axiom-header-actions .close-button{font-size:12px;min-height:44px}
+  .axiom-chips button,.axiom-settings button{font-size:13px;min-height:44px}
+  .axiom-messages{font-size:14px}
+  .axiom-chips{max-height:190px}
+  .axiom-idle-bubble{max-height:55vh;max-height:55dvh;padding:14px 16px}
+  .axiom-idle-bubble .eyebrow{margin-bottom:8px}
+  .idle-controls{gap:8px;margin-top:6px;flex-wrap:wrap;position:sticky;bottom:-14px;background:#112d38;box-shadow:0 -8px 8px #112d38;z-index:1}
+  .idle-controls button{font-size:12px;min-height:44px}
+  .analytics-consent{bottom:max(.5rem,env(safe-area-inset-bottom,0px));left:max(.5rem,env(safe-area-inset-left,0px));right:max(.5rem,env(safe-area-inset-right,0px));max-height:60vh;max-height:60dvh}
+  .analytics-consent summary{min-height:44px;display:flex;align-items:center}
+  .analytics-consent summary:after{top:.7rem}
+  .footer-legal a,.footer a{display:inline-flex;align-items:center;min-height:44px}
+  .drop-zone input::file-selector-button{min-height:44px;font-size:16px}
+  .tool-card summary,.legal summary{min-height:44px}
+}
+@media screen and (max-width:600px){
+  .axiom-idle-bubble{display:grid;grid-template-rows:auto minmax(2.8em,1fr) auto auto auto;gap:6px;overflow:hidden}
+  .axiom-idle-bubble>p{margin:0}
+  #axiom-idle-text{overflow:auto;font-size:14px;line-height:1.45}
+  #axiom-idle-note{font-size:12px;line-height:1.4}
+  .idle-support{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .idle-support .button{font-size:11px;line-height:1.4;padding:8px;white-space:normal}
+  .idle-controls{position:static;display:grid;grid-template-columns:1fr 1fr;margin:0;box-shadow:none}
+  .idle-controls button{font-size:11px;white-space:normal;line-height:1.4}
+  .axiom-panel{bottom:calc(98px + env(safe-area-inset-bottom,0px));height:min(700px,calc(100vh - 114px));height:min(700px,calc(100dvh - 114px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px))}
+  .quote-packages{grid-template-columns:1fr}
+  .quote-package{padding:1rem}
+  .quote-guide{display:block}
+  .quote-guide>img{float:right;width:68px;height:82px;margin:0 0 .5rem .6rem}
+  .quote-guide-steps{clear:both}
+  .quote-result li{flex-wrap:wrap;gap:.25rem}
+  .quote-result li strong{margin-left:auto}
+  .tool-card th{overflow-wrap:normal;white-space:nowrap}
+  .tool-card td:last-child{white-space:nowrap}
+}
+@media screen and (max-height:500px) and (max-width:1000px){
+  .site-header{position:relative}
+  .axiom-panel{bottom:0;height:calc(100vh - 24px);height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+  .axiom-chips{max-height:106px}
+  .axiom-idle-bubble{bottom:0;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px - env(safe-area-inset-bottom,0px))}
+}
