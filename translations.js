@@ -123,7 +123,7 @@ window.TRANSLATIONS = {
     "exchangeNote": "Tipo de cambio editable para este ejemplo; no es una cotización vigente. Solo convierte el resultado de USD a MXN.",
     "scenario": "ESCENARIO HIPOTÉTICO",
     "gross": "Ingreso bruto mensual estimado",
-    "calcLimit": "Rangos elegidos para explorar supuestos, no promedios de la industria. No incluye comisiones, impuestos, devoluciones, costos ni cancelaciones. La retención y la automatización pueden ayudar a reducir pérdidas operativas; el resultado real depende de tu contexto.",
+    "calcLimit": "Simulación local para explorar supuestos. Incluye solo los costos que introduzcas; excluye impuestos y cargos no indicados. No predice ingresos.",
     "creatorContact": "Explorar opciones de contacto →",
     "cvTitle": "Sergio Hernández",
     "cvDescription": "Ingeniería de software y redes, investigación, formación en ciberseguridad y proyectos propios. Incluye el examen oficial SC-100 aprobado.",
@@ -619,7 +619,14 @@ window.TRANSLATIONS = {
     "scrollNight": "Sé que tienes sueño; por eso vas tan rápido. Si te nace, deja una donación y ve a descansar. Así también me dejan descansar a mí.",
     "idleNightNote": "Las ideas no tienen toque de queda. Tú sí puedes descansar cuando quieras.",
     "idleNightPaypal": "Apoyar por PayPal",
-    "idleNightPatreon": "Acompañar el laboratorio · Patreon"
+    "idleNightPatreon": "Acompañar el laboratorio · Patreon",
+    "socTag": "LAB / APRENDE HACIENDO",
+    "socTitle": "Una alerta.\nTu criterio.",
+    "socLead": "Ponte en el lugar de quien revisa una alerta. El código encuentra patrones; tú decides qué significan.",
+    "socLocal": "Ejercicio con datos ficticios. Para analizar tus archivos, abre las herramientas locales: sin grabación de sesiones ni envío de contenido.",
+    "socTools": "Abrir herramientas gratuitas",
+    "socSignal": "Inspeccionar señal de Axiom",
+    "socKeyboard": "Pista para teclado: escribe AXIOM fuera de los campos. También puedes tocar la señal."
   },
   "en": {
     "freeEnquiryTitle": "Tell me what you need.",
@@ -745,7 +752,7 @@ window.TRANSLATIONS = {
     "exchangeNote": "Editable exchange rate for this example; not a current quote. It only converts the result from USD to MXN.",
     "scenario": "HYPOTHETICAL SCENARIO",
     "gross": "Estimated monthly gross revenue",
-    "calcLimit": "Ranges are scenario assumptions, not industry averages. Excludes fees, taxes, refunds, costs and cancellations. Retention work and automation may help reduce operational losses; actual outcomes depend on your context.",
+    "calcLimit": "Local simulation for exploring assumptions. Includes only the costs you enter; excludes taxes and unlisted charges. It does not forecast earnings.",
     "creatorContact": "Explore contact options →",
     "cvTitle": "Sergio Hernández",
     "cvDescription": "Software and network engineering, research, cybersecurity education and personal projects. Includes the passed official SC-100 exam.",
@@ -1390,6 +1397,13 @@ window.TRANSLATIONS = {
     "scrollNight": "Sleepy? That explains the speed. If you feel like it, leave a voluntary tip and get some rest. Maybe they'll let me rest too.",
     "idleNightNote": "Ideas have no curfew. You can take a break whenever you like.",
     "idleNightPaypal": "Support via PayPal",
-    "idleNightPatreon": "Keep the lab company · Patreon"
+    "idleNightPatreon": "Keep the lab company · Patreon",
+    "socTag": "LAB / LEARN BY DOING",
+    "socTitle": "One alert.\nYour judgment.",
+    "socLead": "Step into an analyst’s decision. Code finds patterns; you decide what they mean.",
+    "socLocal": "Fictional training data. Open the local tools for your own files: no session recording or content uploads.",
+    "socTools": "Open the free tools",
+    "socSignal": "Inspect Axiom’s signal",
+    "socKeyboard": "Keyboard hint: type AXIOM outside input fields. You can also tap the signal."
   }
 };

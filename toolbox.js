@@ -31,16 +31,40 @@ function exportCSV(tasks){
 }
 function analyze(text,threshold=3){
  bounded(text,MAX_LOG);if(!Number.isInteger(threshold)||threshold<1||threshold>100000)throw Error('El umbral debe ser un entero de 1 a 100000.');
- const result={total:0,valid:0,accepted:0,denied:0,invalid:[],findings:[],threshold},ips=new Map();
+ const result={total:0,valid:0,accepted:0,denied:0,invalid:[],ignored:[],formats:{simple:0,ssh:0},findings:[],threshold},ips=new Map();
  text.split(/\r?\n/).forEach((raw,i)=>{const line=raw.trim();if(!line)return;result.total++;
- const m=/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d\s+(ACCEPT|DENY)\s+((?:\d{1,3}\.){3}\d{1,3})$/.exec(line);
- if(!m||!m[3].split('.').every(p=>Number(p)<=255&&String(Number(p))===p)){result.invalid.push(i+1);return;}result.valid++;if(m[2]==='DENY'){result.denied++;ips.set(m[3],(ips.get(m[3])||0)+1);}else result.accepted++;});
+ const parsed=parseAuthLine(line);
+ if(parsed.status!=='valid'){result[parsed.status].push(i+1);return;}
+ result.valid++;result.formats[parsed.format]++;if(parsed.action==='DENY'){result.denied++;ips.set(parsed.ip,(ips.get(parsed.ip)||0)+1);}else result.accepted++;});
  result.findings=[...ips].filter(([,n])=>n>=threshold).map(([ip,denials])=>({ip,denials})).sort((a,b)=>b.denials-a.denials||a.ip.localeCompare(b.ip));return result;
+}
+function parseAuthLine(line){
+ if(line.length>4096)return {status:'invalid'};
+ const ipOK=ip=>/^(?:\d{1,3}\.){3}\d{1,3}$/.test(ip)&&ip.split('.').every(p=>Number(p)<=255&&String(Number(p))===p);
+ const time='(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d';
+ const simple=new RegExp('^'+time+'\\s+(ACCEPT|DENY)\\s+(\\S+)$').exec(line);
+ if(simple)return ipOK(simple[2])?{status:'valid',format:'simple',action:simple[1],ip:simple[2]}:{status:'invalid'};
+ if(/^\S+\s+(ACCEPT|DENY)\b/.test(line))return {status:'invalid'};
+ // Only the actual sshd program field is recognized, never quoted text from another program.
+ const envelope=/^(.*?)\s+([^\s:]+)\s+sshd(?:-session)?\[\d+\]:\s+(.+)$/.exec(line);
+ if(!envelope)return {status:'ignored'};
+ const message=envelope[3];
+ if(!/^(?:Failed password|Accepted (?:password|publickey))\b/.test(message))return {status:'ignored'};
+ const syslog=new RegExp('^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+(0?[1-9]|[12]\\d|3[01])\\s+'+time+'$');
+ const iso=new RegExp('^(\\d{4}-\\d{2}-\\d{2})[T ]'+time+'(?:\\.\\d{1,9})?(?:Z|[+-](?:[01]\\d|2[0-3]):[0-5]\\d)?$');
+ const isoMatch=iso.exec(envelope[1]),syslogMatch=syslog.exec(envelope[1]);
+ const validIso=isoMatch&&Number.isFinite(Date.parse(isoMatch[1]+'T00:00:00Z'))&&new Date(isoMatch[1]+'T00:00:00Z').toISOString().slice(0,10)===isoMatch[1];
+ // Traditional syslog has no year; allow Feb 29 but reject impossible month/day pairs.
+ const days={Jan:31,Feb:29,Mar:31,Apr:30,May:31,Jun:30,Jul:31,Aug:31,Sep:30,Oct:31,Nov:30,Dec:31};
+ const validSyslog=syslogMatch&&Number(syslogMatch[2])<=days[syslogMatch[1]];
+ const event=/^(Failed password|Accepted (?:password|publickey)) for (?:invalid user )?\S{1,128} from (\S+) port (\d{1,5}) ssh2(?: \[preauth\]|: [^\r\n]{1,512})?$/.exec(message);
+ if(!event||!(validIso||validSyslog)||!ipOK(event[2])||Number(event[3])<1||Number(event[3])>65535)return {status:'invalid'};
+ return {status:'valid',format:'ssh',action:event[1]==='Failed password'?'DENY':'ACCEPT',ip:event[2]};
 }
 if(typeof module==='object'&&module.exports)module.exports={parseCSV,organize,exportCSV,analyze};
 if(typeof document==='undefined')return;
 const $=id=>document.getElementById(id),node=(tag,text)=>{const n=document.createElement(tag);n.textContent=text;return n;};
-const samples={csv:'tarea,responsable,prioridad,fecha,estado\nRevisar formulario,Equipo,alta,2026-11-04,pendiente\nRevisar formulario,Equipo,alta,2026-11-04,pendiente\nPublicar aviso,Equipo,media,2026-11-05,completada\nProbar móvil,Equipo,alta,2026-11-06,en curso',logs:'09:00:00 DENY 192.0.2.14\n09:01:00 DENY 192.0.2.14\n09:02:00 ACCEPT 198.51.100.5\n09:03:00 DENY 192.0.2.14\n09:04:00 DENY 203.0.113.7'};
+const samples={csv:'tarea,responsable,prioridad,fecha,estado\nRevisar formulario,Equipo,alta,2026-11-04,pendiente\nRevisar formulario,Equipo,alta,2026-11-04,pendiente\nPublicar aviso,Equipo,media,2026-11-05,completada\nProbar móvil,Equipo,alta,2026-11-06,en curso',logs:'Oct 30 09:00:00 demo sshd[120]: Failed password for invalid user prueba from 192.0.2.14 port 45231 ssh2\nOct 30 09:01:00 demo sshd[121]: Failed password for invalid user prueba from 192.0.2.14 port 45232 ssh2\nOct 30 09:02:00 demo sshd[122]: Accepted publickey for equipo from 198.51.100.5 port 45233 ssh2: ED25519 SHA256:EJEMPLO\n09:03:00 DENY 192.0.2.14\nOct 30 09:04:00 demo sshd[123]: Connection closed by 203.0.113.7 port 45234 [preauth]'};
 function download(content,name,type){const url=URL.createObjectURL(new Blob([content],{type})),a=node('a','');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 for(const kind of ['csv','logs']){
  const input=$(kind+'-input'),out=$(kind+'-result'),file=$(kind+'-file'),drop=$(kind+'-drop'),save=$(kind+'-save');let result=null,generation=0;
@@ -48,7 +72,14 @@ for(const kind of ['csv','logs']){
  function run(){generation++;result=null;save.disabled=true;out.replaceChildren();try{
  result=kind==='csv'?organize(input.value):analyze(input.value,Number($('threshold').value));
  out.append(node('strong',kind==='csv'?'Tareas listas: '+result.tasks.length:'Orígenes por revisar: '+result.findings.length));
- out.append(node('p',kind==='csv'?['Registros: '+result.total,'duplicados: '+result.duplicates,'terminados: '+result.completed,'inválidos: '+result.invalid.length].join(' · '):['Eventos válidos: '+result.valid,'rechazos: '+result.denied,'aceptados: '+result.accepted,'inválidos: '+result.invalid.length].join(' · ')));
+ if(kind==='csv')out.append(node('p',['Registros: '+result.total,'duplicados: '+result.duplicates,'terminados: '+result.completed,'inválidos: '+result.invalid.length].join(' · ')));
+ else{
+ const stats=node('dl','');stats.className='log-stats';
+ for(const [label,count] of [['Rechazos',result.denied],['Aceptados',result.accepted],['No interpretados',result.ignored.length],['Inválidos',result.invalid.length]]){const pair=node('div','');pair.append(node('dt',label),node('dd',String(count)));stats.append(pair);}out.append(stats);
+ out.append(node('p',result.total+' líneas · eventos SSH: '+result.formats.ssh+' · formato simple: '+result.formats.simple+'.'));
+ const guide=node('p',result.findings.length?'Una señal es el inicio de la investigación. Contrasta usuario, horario, MFA e inventario antes de escalar o bloquear. Los reintentos legítimos también producen rechazos.':'No hay orígenes que alcancen el umbral. Esto no descarta un incidente; revisa la cobertura y las líneas que no se interpretaron.');guide.className='hint';out.append(guide);
+ if(result.ignored.length)out.append(node('p','Líneas no interpretadas: '+result.ignored.slice(0,30).join(',')+(result.ignored.length>30?'…':'')));
+ }
  if(result.invalid.length)out.append(node('p','Revisa filas: '+result.invalid.slice(0,30).join(',')+(result.invalid.length>30?'…':'')));
  const table=node('table',''),head=node('tr','');(kind==='csv'?['Tarea','Responsable','Fecha']:['IP','Rechazos']).forEach(x=>{const th=node('th',x);th.scope='col';head.append(th);});const thead=node('thead','');thead.append(head);table.append(thead);const tbody=node('tbody','');
  const entries=kind==='csv'?result.tasks:result.findings;

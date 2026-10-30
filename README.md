@@ -13,6 +13,10 @@ Desde redes y seguridad trabajé en el despliegue HTTPS, restricciones de carga,
 - [Cotizador](https://sergioh-devsec.github.io/cotizador.html): referencia de alcance, tiempo e inversión; no es una contratación.
 - [Información del sitio](https://sergioh-devsec.github.io/informacion.html): privacidad, condiciones, seguridad y accesibilidad.
 
+Añadí un [reto SOC bilingüe](https://sergioh-devsec.github.io/#soc-play) para mostrar cómo razono: observar una señal, contrastarla y cuidar la evidencia. Utiliza datos ficticios; no presenta un resultado del ejercicio como una acreditación. Axiom guarda una pequeña sorpresa al escribir su nombre fuera de los campos o tocar su señal.
+
+El analizador web reconoce también eventos comunes de SSH y hace visibles las líneas que no pudo interpretar. Mantengo los archivos reales en una página sin analítica. En el simulador de Creator Business separé el ingreso bruto del resultado después de comisiones, devoluciones y costos introducidos; es una exploración de supuestos, no una predicción.
+
 ## Ejecución local
 Este repositorio contiene la versión publicable del sitio. Puedes servir su raíz:
 
