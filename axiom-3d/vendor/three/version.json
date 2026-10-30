@@ -1,0 +1,16 @@
+{
+  "version": "0.187.0",
+  "source": "https://registry.npmjs.org/three/-/three-0.187.0.tgz",
+  "integrity": "sha512-Qiu7R+Cmh8CstZsY1uJOSWnVlfo7ZtNLV7mF8Jltk3LB3AtDu9cRZlcnRKkAk8Y4z6KKw35z7Y7Urd7jWY8etA==",
+  "local_patch": "Addon bare imports rewritten to relative local build path.",
+  "files": [
+    "build/three.module.js",
+    "build/three.core.js",
+    "examples/jsm/loaders/GLTFLoader.js",
+    "examples/jsm/utils/BufferGeometryUtils.js",
+    "examples/jsm/utils/SkeletonUtils.js",
+    "examples/jsm/controls/OrbitControls.js",
+    "examples/jsm/exporters/GLTFExporter.js",
+    "LICENSE"
+  ]
+}

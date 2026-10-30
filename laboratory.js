@@ -6,6 +6,7 @@
   if (!api) return;
   const copy = {
     es: {
+      threeD:'Axiom en 3D',
       skip:'Ir a las misiones',back:'Volver al sitio',pause:'Pausar movimiento',resume:'Reanudar movimiento',help:'Cómo jugar',language:'Idioma',
       security:'Seguridad',network:'Redes',automation:'Automatización',explore:'Explorar',done:'Completada',caption:'Toca una estación. Axiom te acompaña.',
       eyebrow:'BIENVENIDO AL OTRO LADO',title:'Aquí se viene\na curiosear.',intro:'Soy Axiom, el ciberasistente de Serch. El laboratorio está abierto: elige una estación y resolvamos algo juntos.',
@@ -20,6 +21,7 @@
       voice:'Escuchar a Axiom',stopVoice:'Detener voz',voiceText:'«Bienvenido al laboratorio. Tú traes la curiosidad; yo pongo las ideas y algún chiste de dudosa rentabilidad.»',voiceError:'No se pudo reproducir. Puedes seguir explorando sin audio.',downloaded:'Checklist descargada. Puedes volver a guardarla cuando quieras.',moving:'Axiom se acerca a la estación…',map:'Mapa interactivo del laboratorio',signal:'Inspeccionar la señal misteriosa'
     },
     en: {
+      threeD:'Axiom in 3D',
       skip:'Skip to missions',back:'Back to the website',pause:'Pause motion',resume:'Resume motion',help:'How to play',language:'Language',
       security:'Security',network:'Networks',automation:'Automation',explore:'Explore',done:'Completed',caption:'Choose a station. Axiom will join you.',
       eyebrow:'WELCOME TO THE OTHER SIDE',title:'A little curiosity.\nA lot to discover.',intro:'I’m Axiom, Serch’s cyber assistant. The lab is open: choose a station and let’s work something out together.',

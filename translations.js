@@ -1,6 +1,7 @@
 window.TRANSLATIONS = {
   "es": {
     "labPortalNav": "Jugar con Axiom",
+    "axiom3DNav": "Conocer a Axiom en 3D",
     "labPortalTag": "EL LABORATORIO DE AXIOM / ABIERTO",
     "labPortalTitle": "Hay otro lado por explorar.",
     "labPortalBody": "Tres estaciones, nueve decisiones y un secreto. Entra al laboratorio y aprende jugando con Axiom.",
@@ -654,6 +655,7 @@ window.TRANSLATIONS = {
   },
   "en": {
     "labPortalNav": "Play with Axiom",
+    "axiom3DNav": "Meet Axiom in 3D",
     "labPortalTag": "AXIOM’S LAB / OPEN",
     "labPortalTitle": "There’s another side to explore.",
     "labPortalBody": "Three stations, nine decisions and one secret. Enter the lab and learn by playing with Axiom.",
