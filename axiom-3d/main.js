@@ -29,7 +29,7 @@ let renderer, scene, camera, controls, model, mixer, skeletonHelper;
 let head, chest, eyes = [], tracked = [], loadSequence = 0;
 let selectedCharacter = 'axiom', displayName = 'Axiom', loading = false, ring, fill;
 let pendingFetch;
-let paused = false, following = true, orbiting = false, visible = true, contextLost = false;
+let paused = false, following = true, orbiting = true, dragging = false, visible = true, contextLost = false;
 let frame = 0, previousTime = 0, elapsed = 0, action = null;
 let fitDistance = 6, modelHeight = 3.2, modelRadius = 2.13;
 const targetPointer = new THREE.Vector2();
@@ -126,8 +126,10 @@ function resetPose() {
 function updateState() {
   $('pause').textContent = paused ? 'Reanudar movimiento' : 'Pausar movimiento';
   $('pause').setAttribute('aria-pressed', String(paused));
-  $('look').textContent = following ? 'Te sigo: sí' : 'Te sigo: no';
+  $('look').textContent = following ? 'Seguir cursor: activo' : 'Seguir cursor: apagado';
   $('look').setAttribute('aria-pressed', String(following));
+  $('orbit').setAttribute('aria-pressed', String(orbiting));
+  $('orbit').textContent = orbiting ? 'Arrastre 360°: activo' : 'Activar arrastre 360°';
   $('scene-state').textContent = contextLost ? 'SIN WEBGL' : loading ? 'CARGANDO' : !model ? 'VISTA ORIGINAL' : paused || reducedMotion.matches ? 'EN REPOSO' : 'EN VIVO';
   if (frame) cancelAnimationFrame(frame);
   frame = 0;
@@ -144,9 +146,11 @@ function tick(time) {
   elapsed += delta;
   for (const entry of tracked) entry.node.quaternion.copy(entry.rest);
   mixer?.update(delta);
-  smoothPointer.lerp(following && !orbiting ? targetPointer : neutralPointer, 1 - Math.exp(-delta * 5));
+  // Orbit availability does not turn off the character's gaze. Only a live drag
+  // temporarily centres the pose so camera rotation and head movement do not fight.
+  smoothPointer.lerp(following && !dragging ? targetPointer : neutralPointer, 1 - Math.exp(-delta * 6));
   if (head) {
-    lookEuler.set(smoothPointer.y * 0.055, smoothPointer.x * 0.14, Math.sin(elapsed * 0.6) * 0.008);
+    lookEuler.set(smoothPointer.y * 0.085, smoothPointer.x * 0.24, Math.sin(elapsed * 0.6) * 0.008);
     head.quaternion.multiply(offsetQuaternion.setFromEuler(lookEuler));
   }
   for (const eye of eyes) {
@@ -156,7 +160,7 @@ function tick(time) {
   if (chest) chest.rotation.z += Math.sin(elapsed * 1.25) * 0.006;
   motionRoot.position.y = 0;
   motionRoot.scale.y = 1 + Math.sin(elapsed * 1.9) * 0.002;
-  motionRoot.rotation.set(0, smoothPointer.x * (head ? 0.045 : 0.14), 0);
+  motionRoot.rotation.set(smoothPointer.y * 0.025, smoothPointer.x * (head ? 0.18 : 0.32), 0);
   if (action) {
     action.time += delta;
     const progress = Math.min(action.time / action.duration, 1);
@@ -254,7 +258,7 @@ function adoptModel(gltf, imported, character = selectedCharacter) {
   displayName = imported ? 'Tu personaje' : CHARACTERS[character].name;
   $('character-name').textContent = displayName;
   $('character-role').textContent = imported ? 'Una visita al laboratorio' : CHARACTERS[character].role;
-  canvas.setAttribute('aria-label', `${displayName} en 3D. Enter o espacio para saltar. Flechas para girar la vista.`);
+  canvas.setAttribute('aria-label', `${displayName} en 3D. Arrastra o usa las cuatro flechas para girar la vista. Enter o espacio para saltar.`);
   document.querySelectorAll('[data-character].character-option').forEach(button => button.setAttribute('aria-pressed', String(!imported && button.dataset.character === character)));
   ring.material.color.set(imported ? 0x67e5de : CHARACTERS[character].color);
   fill.color.copy(ring.material.color);
@@ -271,7 +275,7 @@ function adoptModel(gltf, imported, character = selectedCharacter) {
   $('model-label').textContent = imported ? 'Tu modelo, en este navegador' : `${displayName} · modelo del laboratorio`;
   $('model-description').textContent = imported ? 'El archivo se procesa aquí, sin subirlo a un servidor. El seguimiento depende de los nombres de sus articulaciones.' : character === 'axiom' ? 'Malla y textura originales, con una articulación básica de cabeza y torso añadida para esta experiencia. El rostro y las manos no tienen articulaciones independientes.' : 'Malla y textura originales. El saludo, los giros y los saltos animan el personaje completo; este modelo aún no tiene un esqueleto para mover sus extremidades.';
   $('rig-status').textContent = `${summary.bones} articulaciones · ${summary.skins} mallas con rigging · ${Math.round(summary.triangles).toLocaleString('es-MX')} triángulos.${head ? ' Cabeza reconocida.' : ' No se encontró una articulación de cabeza compatible.'}`;
-  status(`${displayName} está listo. Mueve el cursor, toca al personaje o prueba «Saludar».`);
+  status(`${displayName} está listo. Mueve el cursor o arrastra el visor. Al seleccionarlo, las cuatro flechas giran la vista.`);
   $('stage-caption').textContent = 'Tu próxima idea ya tiene compañía.';
   resetPose();
   fitCamera(true);
@@ -387,25 +391,29 @@ function start() {
   ring = new THREE.Mesh(new THREE.RingGeometry(1.34, 1.35, 80), new THREE.MeshBasicMaterial({ color: 0x61d8d1, transparent: true, opacity: 0.34, side: THREE.DoubleSide }));
   ring.rotation.x = -Math.PI / 2; ring.position.y = -0.018; scene.add(ring, motionRoot);
   controls = new OrbitControls(camera, canvas);
-  controls.enabled = false;
+  controls.enabled = true;
   controls.enableZoom = false; controls.enablePan = false;
+  controls.rotateSpeed = 0.7;
   controls.minPolarAngle = Math.PI * 0.30; controls.maxPolarAngle = Math.PI * 0.58;
-  canvas.style.touchAction = 'pan-y';
+  canvas.style.touchAction = 'none';
+  controls.addEventListener('start', () => { dragging = true; });
+  controls.addEventListener('end', () => { dragging = false; targetPointer.set(0, 0); });
   controls.addEventListener('change', render);
   listen(window, 'pointermove', event => {
     if (event.pointerType === 'mouse') targetPointer.set((event.clientX / innerWidth - 0.5) * 2, (event.clientY / innerHeight - 0.5) * 2);
   }, { passive: true });
   listen(document.documentElement, 'pointerleave', () => targetPointer.set(0, 0));
-  listen(window, 'blur', () => targetPointer.set(0, 0));
+  listen(window, 'blur', () => { targetPointer.set(0, 0); dragging = false; });
   let pointerStart = null;
   listen(canvas, 'pointerdown', event => {
+    canvas.focus({ preventScroll: true });
     if (event.isPrimary && event.button === 0) pointerStart = { x: event.clientX, y: event.clientY, id: event.pointerId };
     if (event.pointerType !== 'mouse') {
       const box = canvas.getBoundingClientRect();
       targetPointer.set((event.clientX - box.left) / box.width * 2 - 1, (event.clientY - box.top) / box.height * 2 - 1);
     }
   }, { passive: true });
-  listen(canvas, 'pointercancel', () => { pointerStart = null; targetPointer.set(0, 0); });
+  listen(canvas, 'pointercancel', () => { pointerStart = null; dragging = false; targetPointer.set(0, 0); });
   listen(canvas, 'pointerup', event => {
     const startPoint = pointerStart;
     pointerStart = null;
@@ -415,8 +423,14 @@ function start() {
     if (raycaster.intersectObject(model, true).length) react('jump');
   });
   listen(canvas, 'keydown', event => {
-    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); react('jump'); }
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); controls.rotateLeft(event.key === 'ArrowLeft' ? 0.3 : -0.3); controls.update(); render(); }
+    if (!model || contextLost || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); if (!event.repeat) react('jump'); }
+    const step = event.repeat ? 0.085 : 0.23;
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault(); controls.rotateLeft(event.key === 'ArrowLeft' ? step : -step); render();
+    } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      event.preventDefault(); controls.rotateUp(event.key === 'ArrowUp' ? step * 0.6 : -step * 0.6); render();
+    }
   });
   listen($('jump'), 'click', () => react('jump'));
   listen($('spin'), 'click', () => react('spin'));
@@ -429,13 +443,15 @@ function start() {
   listen($('pause'), 'click', () => { paused = !paused; if (paused) resetPose(); updateState(); });
   listen($('orbit'), 'click', () => {
     orbiting = !orbiting; controls.enabled = orbiting;
+    dragging = false;
     canvas.style.touchAction = orbiting ? 'none' : 'pan-y';
-    $('orbit').setAttribute('aria-pressed', String(orbiting));
-    $('orbit').textContent = orbiting ? 'Terminar vista 360°' : 'Explorar 360°';
-    $('stage-caption').textContent = orbiting ? 'Arrastra para girar. Termina la vista 360° para deslizar la página.' : 'Tu ciberasistente, desde otro ángulo.';
+    $('stage-caption').textContent = orbiting ? 'Arrastra para girar. Desliza fuera del visor para seguir por la página.' : 'Puedes deslizar la página sobre el visor. La mirada sigue activa si la has elegido.';
+    updateState();
   });
   listen($('camera-left'), 'click', () => { controls.rotateLeft(0.35); controls.update(); render(); });
   listen($('camera-right'), 'click', () => { controls.rotateLeft(-0.35); controls.update(); render(); });
+  listen($('camera-up'), 'click', () => { controls.rotateUp(0.18); render(); });
+  listen($('camera-down'), 'click', () => { controls.rotateUp(-0.18); render(); });
   listen($('reset'), 'click', () => { resetPose(); fitCamera(true); render(); });
   listen($('model-file'), 'change', importFile);
   listen($('restore-model'), 'click', () => loadCharacter('axiom'));
