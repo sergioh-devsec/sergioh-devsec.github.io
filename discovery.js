@@ -1,4 +1,4 @@
-/* Local recommendations and user-initiated sharing. No analytics, identifiers or requests. */
+/* Local recommendations and user-initiated sharing. Optional site analytics lives in analytics.js. */
 (() => {
   'use strict';
   const routes = ['business', 'creator', 'lab'];
@@ -48,7 +48,7 @@
   if(typeof document==='undefined')return;
   const root=document.getElementById('descubrir');if(!root)return;
   const S=window.Site,I=window.I18N,history=Object.create(null);
-  let route=routeFromSearch(location.search),current=[],shareUrl='',shareText='',busy=false;
+  let route=new URLSearchParams(location.search).has('ruta')?routeFromSearch(location.search):'business',current=[],shareUrl='',shareText='',busy=false;
   const copy={
     es:{labels:['Hacer crecer mi negocio','Crear contenido','Explorar tecnología'], note:'Dos ideas elegidas para tu recorrido. Puedes cambiarlo cuando quieras.',
       share:['Encontré un cotizador para aterrizar una idea web y un laboratorio de automatización.','Un laboratorio creativo con Axiom, ideas de producción y canales para seguir el proyecto.','Código abierto, herramientas de Python y un ciberasistente: date una vuelta por CyberSerchMX.'],
@@ -104,4 +104,5 @@
   });
   document.addEventListener('portfolio:language',()=>{render();if(document.getElementById('share-dialog').open)prepareShare();});
   root.hidden=false;render();
+  if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>entries.forEach(e=>{root.dataset.visible=String(e.isIntersecting);}),{threshold:.2});observer.observe(root);}
 })();
