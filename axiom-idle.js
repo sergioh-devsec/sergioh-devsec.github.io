@@ -1,6 +1,20 @@
 /* No overlapping idle prompts; cancelled timers cannot revive themselves. */
 (() => {
   'use strict';
+  // Use the visitor's device clock at each interaction; no location or timezone is sent.
+  function getLocalPeriod(date=new Date()){
+    const hour=date.getHours();return hour>=20||hour<7?'night':'day';
+  }
+  function contextualKeys(kind,date=new Date()){
+    const night=getLocalPeriod(date)==='night';
+    if(kind==='return')return night?['idleReturnNight']:['idleReturn','idleReturnNote'];
+    if(kind==='scroll')return night?['scrollNight']:['scrollBrake','scrollRadar'];
+    return [];
+  }
+  const officeJokes=new Set(['trialJoke8','trialJoke12','trialJoke13','trialJoke14','trialJoke15','trialJoke17','trialJoke18','trialJoke19','trialJoke22']);
+  function filterJokesByTime(keys,date=new Date()){
+    return getLocalPeriod(date)==='night'?keys.filter(key=>!officeJokes.has(key)):[...keys];
+  }
   function createIdle({now=()=>performance.now(),schedule=setTimeout,cancel=clearTimeout,allowed=()=>true,present,delay=10000}){
     let enabled=true,visible=true,last=now(),timer=null,busy=false,generation=0;
     function clear(){if(timer!==null)cancel(timer);timer=null;}
@@ -39,6 +53,6 @@
       lastShown=time;samples=[];return true;
     },reset(){previous=null;samples=[];}};
   }
-  if(typeof module!=='undefined'&&module.exports)module.exports={createIdle,createReturnSequence,createScrollRadar};
-  if(typeof window!=='undefined')window.AxiomIdle={createIdle,createReturnSequence,createScrollRadar};
+  if(typeof module!=='undefined'&&module.exports)module.exports={createIdle,createReturnSequence,createScrollRadar,getLocalPeriod,contextualKeys,filterJokesByTime};
+  if(typeof window!=='undefined')window.AxiomIdle={createIdle,createReturnSequence,createScrollRadar,getLocalPeriod,contextualKeys,filterJokesByTime};
 })();

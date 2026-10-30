@@ -530,7 +530,9 @@ window.PORTFOLIO = {
       "idleReturnNote": "82_cafe_tactico.mp3",
       "axiomStoryVoice": "83_concepto.mp3",
       "scrollBrake": "84_frenos.mp3",
-      "scrollRadar": "85_radar.mp3"
+      "scrollRadar": "85_radar.mp3",
+      "idleReturnNight": "86_regreso_noche.mp3",
+      "scrollNight": "87_scroll_noche.mp3"
     },
     "en": {
       "welcome": "saludo_en.mp3",

@@ -67,7 +67,7 @@
       const card=el('article',`social-card social-${ic}`),top=el('div','social-card-top'),a=link('',url,'social-card-link');
       top.append(icon(ic),el('span','social-status',t(a?'activeChannel':'soon')));
       const content=a||card;content.append(top,el('h3','',name),el('p','social-description',t('social_'+ic)));
-      if(a){a.setAttribute('aria-label',t('openSocial',{name}));const arrow=el('span','social-open-arrow','↗');arrow.setAttribute('aria-hidden','true');a.append(arrow);card.append(a);}
+      if(a){a.setAttribute('aria-label',t('openSocial',{name}));card.append(a);}
       if(ic==='instagram'&&a){const qr=el('button','text-button instagram-qr-button',t('instagramQr'));qr.type='button';qr.dataset.openDialog='instagram-dialog';qr.setAttribute('aria-haspopup','dialog');card.append(qr);}frag.append(card);
     });$('#social-grid').replaceChildren(frag);
   }
