@@ -57,7 +57,7 @@ window.PORTFOLIO = {
     },
     {
       "id": "python-lab",
-      "name": "Organizador CSV · Python",
+      "name": "Ordena tareas CSV",
       "icon": "code",
       "categories": [
         "python",
@@ -86,7 +86,7 @@ window.PORTFOLIO = {
       "version": "1.0.0",
       "progress": null,
       "updated": "2026-10-28",
-      "github": "https://github.com/sergioh-devsec/csv-task-organizer",
+      "github": "https://github.com/sergioh-devsec/ordena-tareas-csv",
       "demo": "#automation",
       "docs": null,
       "screenshots": [],
@@ -96,7 +96,7 @@ window.PORTFOLIO = {
     },
     {
       "id": "cybersecurity-lab",
-      "name": "Analizador de eventos · Python",
+      "name": "Revisa accesos",
       "icon": "shield",
       "categories": [
         "cyber"
@@ -124,7 +124,7 @@ window.PORTFOLIO = {
       "version": "1.0.0",
       "progress": null,
       "updated": "2026-10-28",
-      "github": "https://github.com/sergioh-devsec/auth-log-analyzer",
+      "github": "https://github.com/sergioh-devsec/revisa-accesos",
       "demo": "#laboratory",
       "docs": null,
       "screenshots": [],

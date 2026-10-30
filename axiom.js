@@ -102,7 +102,7 @@
   function chooseRoute(route){activeRoute=route;chips.replaceChildren();document.dispatchEvent(new CustomEvent('portfolio:intent',{detail:{route}}));
     if(route==='creator'){answer('creatorAnswer');makeChip('creatorMore',()=>S.openDialog('creator-dialog',$('creators-open')));makeButton(chips,I.language==='es'?'Organizar publicaciones':'Organize publishing',()=>topic('contentTerm','#content'));}
     else if(route==='business'){answer('businessAnswer');[['webTerm','#services','Web'],['automationTerm','#automation',I.language==='es'?'Automatización':'Automation'],['aiTerm','#local-ai-platform','IA / AI'],['securityTerm','#services',I.language==='es'?'Seguridad':'Security']].forEach(([key,hash,label])=>makeButton(chips,label,()=>topic(key,hash)));}
-    else {answer('labAnswer');makeButton(chips,I.language==='es'?'Analizar eventos':'Analyze events',()=>topic('siemTerm','https://github.com/sergioh-devsec/auth-log-analyzer'));makeButton(chips,I.language==='es'?'Probar automatización':'Try automation',()=>topic('automationTerm','https://github.com/sergioh-devsec/csv-task-organizer'));makeButton(chips,I.language==='es'?'Explorar esta web':'Explore this website',()=>topic('webTerm','#cases'));}
+    else {answer('labAnswer');makeButton(chips,I.language==='es'?'Analizar eventos':'Analyze events',()=>topic('siemTerm','https://github.com/sergioh-devsec/revisa-accesos'));makeButton(chips,I.language==='es'?'Probar automatización':'Try automation',()=>topic('automationTerm','https://github.com/sergioh-devsec/ordena-tareas-csv'));makeButton(chips,I.language==='es'?'Explorar esta web':'Explore this website',()=>topic('webTerm','#cases'));}
     makeChip('finishRoute',wrapRoute);makeChip('showRoutes',showRoutes);
   }
   function open(source,withGreeting=true){stopTrial();visit.start();if(!panel.hidden)return;opener=source||document.activeElement;panel.hidden=false;$('axiom-launcher').setAttribute('aria-expanded','true');waveAt=performance.now();if(!messages.children.length){if(withGreeting)answer('welcome');showRoutes();}document.dispatchEvent(new CustomEvent('portfolio:axiom-open'));$('axiom-close').focus({preventScroll:true});}
@@ -166,13 +166,13 @@
     }}finally{if(voiceContext==='idle')idleSpeaking=false;}
   }
   const returnFlow=window.AxiomIdle.createReturnSequence({
-    allowed:()=>idle.enabled&&!document.hidden&&panel.hidden&&!document.querySelector('dialog[open]')&&!visit.has(phraseId('idleReturn')),
+    allowed:()=>idle.enabled&&!document.hidden&&panel.hidden&&!document.querySelector('dialog[open],.analytics-consent:not([hidden])')&&!visit.has(phraseId('idleReturn')),
     fade:fadeIdleVoice,
     show(){remember('idleReturn');showIdle('idleReturn');},
     speak:current=>playIdleSpeech(['idleReturn','idleReturnNote'],current),
     finish(){idle.activity();}
   });
-  const idle=window.AxiomIdle.createIdle({allowed:()=>!document.hidden&&tone.value==='playful'&&!trial.active&&!speaking&&!returnFlow.busy&&!document.querySelector('dialog[open]')&&panel.hidden&&!document.activeElement?.matches('input,textarea,select,[contenteditable=true]')&&fresh(window.PORTFOLIO.axiomJokes).length>0,
+  const idle=window.AxiomIdle.createIdle({allowed:()=>!document.hidden&&tone.value==='playful'&&!trial.active&&!speaking&&!returnFlow.busy&&!document.querySelector('dialog[open],.analytics-consent:not([hidden])')&&panel.hidden&&!document.activeElement?.matches('input,textarea,select,[contenteditable=true]')&&fresh(window.PORTFOLIO.axiomJokes).length>0,
     async present(){const available=fresh(window.PORTFOLIO.axiomJokes);if(!available.length)return;
       const key=available[Math.floor(Math.random()*available.length)];remember(key);returnFlow.begin();showIdle(key);await playIdleSpeech([key]);
     }
@@ -199,7 +199,7 @@
   },{passive:true,capture:true});
   document.addEventListener('click',event=>{if(event.target?.closest?.('a,button,summary')){scrollIntentAt=-Infinity;radar.reset();}},{capture:true});
   window.addEventListener('scroll',()=>{
-    const allowed=idle.enabled&&!document.hidden&&panel.hidden&&!speaking&&!idleSpeaking&&!returnFlow.busy&&idleBubble.hidden&&!document.querySelector('dialog[open]')&&!visit.has(phraseId('scrollBrake'));
+    const allowed=idle.enabled&&!document.hidden&&panel.hidden&&!speaking&&!idleSpeaking&&!returnFlow.busy&&idleBubble.hidden&&!document.querySelector('dialog[open],.analytics-consent:not([hidden])')&&!visit.has(phraseId('scrollBrake'));
     if(!radar.observe(window.scrollY,{intent:performance.now()-scrollIntentAt<500,allowed,viewport:window.innerHeight}))return;
     returnFlow.cancel();remember('scrollBrake');remember('scrollRadar');showIdle('scrollBrake');
     void playIdleSpeech(['scrollBrake','scrollRadar']).finally(()=>idle.activity());

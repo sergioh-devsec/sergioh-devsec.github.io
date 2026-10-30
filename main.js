@@ -5,7 +5,7 @@
 
   function safeUrl(value) {
     if (typeof value !== 'string' || !value || /[\u0000-\u0020\\]/.test(value)) return null;
-    if (value==='cotizador.html') return value;
+    if (value==='cotizador.html'||/^herramientas\.html#(csv|logs)$/.test(value)) return value;
     if (/^#[a-z][a-z0-9-]*$/i.test(value)) return value;
     try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password ? url.href : null; } catch { return null; }
   }

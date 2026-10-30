@@ -2,12 +2,16 @@
 (() => {
   'use strict';
   const KEY='cyberserch-analytics-v1', AGE=90*24*60*60*1000, PROJECT='z5jal39enl';
-  const EVENTS=new Set(['visit_portfolio','open_estimator','estimate_download','enquiry_accepted','support_paypal_click','support_patreon_click','project_repository_click','profile_open','axiom_open']);
+  const HOSTS=["sergioh-devsec.github.io"]; // Replaced from the canonical URL during publication.
+  const REFERRALS=new Set(['fbclid','gclid','igshid','utm_source','utm_medium','utm_campaign','utm_content','utm_term']);
+  const EVENTS=new Set(['visit_portfolio','open_estimator','estimate_download','enquiry_accepted','support_paypal_click','support_patreon_click','project_repository_click','profile_open','axiom_open','open_local_tools']);
   function readChoice(raw,now=Date.now()){
     try{const x=JSON.parse(raw);return x.version===1&&['accepted','denied'].includes(x.choice)&&Number.isFinite(x.expires)&&x.expires>now&&x.expires<=now+AGE?x.choice:null;}catch{return null;}
   }
-  function allowedPage(location,privacySignal=false){
-    return !privacySignal&&location.protocol==='https:'&&location.hostname==='sergioh-devsec.github.io'&&['/','/index.html','/cotizador.html'].includes(location.pathname)&&!location.search;
+  function allowedPage(location,privacySignal=false,hosts=HOSTS){
+    const params=new URLSearchParams(location.search||'');
+    const safe=[...params].every(([key,value])=>REFERRALS.has(key)||(key==='ruta'&&['business','creator','lab'].includes(value)));
+    return !privacySignal&&location.protocol==='https:'&&hosts.includes(location.hostname)&&['/','/index.html','/cotizador.html'].includes(location.pathname)&&safe;
   }
   function createConsent({initial=null,eligible=true,load,stop,save,event,reload}){
     let choice=initial,started=false,stopped=false;
@@ -29,6 +33,9 @@
   }
   function stop(){revoked=true;call('consentv2',{ad_Storage:'denied',analytics_Storage:'denied'});call('stop');clearCookies();document.documentElement.dataset.analytics='off';}
   function load(){
+    // Remove tracking identifiers before the SDK can read the document URL.
+    const clean=new URL(location.href);for(const key of REFERRALS)clean.searchParams.delete(key);
+    if(clean.href!==location.href)history.replaceState(history.state,'',clean.pathname+clean.search+clean.hash);
     window.clarity=window.clarity||function(){(window.clarity.q=window.clarity.q||[]).push(arguments);};
     call('consentv2',{ad_Storage:'denied',analytics_Storage:'granted'});
     script=document.createElement('script');script.async=true;script.src=`https://www.clarity.ms/tag/${PROJECT}`;script.referrerPolicy='no-referrer';script.id='clarity-opt-in';
@@ -51,13 +58,13 @@
   actions.append(accept,decline,close);panel.append(heading,description,detail,actions,state);document.body.append(panel);
   const preferences=create('button','text-button');preferences.type='button';preferences.setAttribute('aria-controls',panel.id);document.querySelector('.site-footer')?.append(preferences);
   function render(){
-    heading.textContent=tx('¿Nos ayudas a mejorar esta web?','Help us improve this website?');
-    description.textContent=tx('Solo si lo permites, Microsoft Clarity registra clics, desplazamientos y reproducciones de tu navegación para entender qué funciona. Los textos y campos del formulario se enmascaran. Puedes usar toda la web sin aceptar.','Only with your permission, Microsoft Clarity records clicks, scrolling and session replays to understand what works. Text and form fields are masked. You can use the entire site without accepting.');
-    summary.textContent=tx('Cómo usamos estos datos','How we use this data');
+    heading.textContent=tx('Tú decides sobre la analítica.','You choose whether to allow analytics.');
+    description.textContent=tx('Clarity registra clics y sesiones con textos enmascarados, solo si aceptas.','Clarity records clicks and sessions with masked text, only if you accept.');
+    summary.textContent=tx('Ver detalles','Details');
     explanation.textContent=tx('Microsoft procesa los datos de uso y del dispositivo. No enviamos nombres, correos, mensajes ni importes como eventos. Las cookies analíticas se habilitan después de aceptar; la publicidad permanece desactivada. Guardamos tu elección durante 90 días. Puedes retirarla aquí: detendremos nuevas grabaciones, sin borrar retroactivamente las ya recogidas.','Microsoft processes usage and device data. We do not send names, emails, messages or amounts as events. Analytics cookies are enabled after accepting; advertising stays disabled. We remember your choice for 90 days. You can withdraw it here to stop new recording; this does not retroactively delete previous data.');
     privacy.textContent=tx('Privacidad de Microsoft ↗','Microsoft privacy ↗');
     preferences.textContent=tx('Privacidad y analítica','Privacy and analytics');accept.textContent=tx('Permitir analítica','Allow analytics');decline.textContent=tx('Rechazar analítica','Reject analytics');close.textContent=tx('Cerrar','Close');close.hidden=!controller.choice;accept.disabled=signal;
-    state.textContent=signal?tx('Respetamos la señal de privacidad de tu navegador: analítica desactivada.','We respect your browser privacy signal: analytics disabled.'):!eligible?tx('En vistas locales o direcciones con parámetros no se recogen datos de Clarity.','Clarity does not collect data on local previews or URLs with query parameters.'):controller.choice==='accepted'?tx('Has permitido la analítica. Puedes cambiarlo cuando quieras.','You have allowed analytics. You can change this at any time.'):controller.choice==='denied'?tx('Analítica rechazada. Clarity no se carga en nuevas visitas.','Analytics rejected. Clarity will not load on new visits.'):tx('La analítica está apagada hasta que decidas.','Analytics stays off until you decide.');
+    state.textContent=signal?tx('Respetamos la señal de privacidad de tu navegador: analítica desactivada.','We respect your browser privacy signal: analytics disabled.'):!eligible?tx('No registramos herramientas con archivos, vistas locales ni parámetros desconocidos.','File tools, local previews and unknown URL parameters are not recorded.'):controller.choice==='accepted'?tx('Has permitido la analítica. Puedes cambiarlo cuando quieras.','You have allowed analytics. You can change this at any time.'):controller.choice==='denied'?tx('Analítica rechazada. Clarity no se carga en nuevas visitas.','Analytics rejected. Clarity will not load on new visits.'):tx('La analítica está apagada hasta que decidas.','Analytics stays off until you decide.');
   }
   function hide(){panel.hidden=true;preferences.setAttribute('aria-expanded','false');}
   function choose(value){controller.choose(value);render();hide();}
@@ -72,10 +79,11 @@
     if(element.matches('[data-open-axiom]'))controller.track('axiom_open');
     if(element.tagName==='A'){
       let url;try{url=new URL(element.href,location.href);}catch{return;}
+      if(url.origin===location.origin&&url.pathname.endsWith('/herramientas.html'))controller.track('open_local_tools');
       if(url.origin===location.origin&&url.pathname.endsWith('/cotizador.html'))controller.track('open_estimator');
       if(url.hostname==='www.paypal.com'&&url.pathname==='/donate/')controller.track('support_paypal_click');
       if(url.hostname==='www.patreon.com')controller.track('support_patreon_click');
-      if(url.hostname==='github.com'&&/^\/sergioh-devsec\/(auth-log-analyzer|csv-task-organizer|web-design-showcase)(\/|$)/.test(url.pathname))controller.track('project_repository_click');
+      if(url.hostname==='github.com'&&/^\/sergioh-devsec\/(revisa-accesos|ordena-tareas-csv|paginas-para-negocios)(\/|$)/.test(url.pathname))controller.track('project_repository_click');
     }
   });
   document.addEventListener('portfolio:measurement',e=>controller.track(e.detail));
