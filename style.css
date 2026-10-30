@@ -55,3 +55,24 @@ dialog{border:1px solid #42626f;border-radius:20px;background:#0b1721;color:var(
 .instagram-dialog{width:min(480px,calc(100% - 24px));text-align:center;padding:26px}.instagram-dialog h2{font-size:1.3rem}.instagram-dialog img{display:block;width:min(100%,300px);height:auto;margin:22px auto;border-radius:18px}.instagram-qr-button{align-self:start;margin-top:9px;font-size:.8rem}
 .adult-axiom{position:relative;z-index:1;padding:20px 24px;margin:24px 0;border:1px solid #814b39;border-radius:18px;background:linear-gradient(120deg,#3a201bba,#180e15aa);max-width:680px}.adult-axiom .eyebrow{font-size:.65rem;color:#ffad80;margin-bottom:9px}.adult-axiom>p:not(.eyebrow){font-size:1.05rem;line-height:1.65;color:#ffe1cc}.adult-axiom .chip{margin-top:12px;border-color:#8f5138;color:#ffd4bc}
 @media(max-width:620px){.glossary-dialog{max-height:calc(100dvh - 24px)}.axiom-panel{height:min(700px,calc(100dvh - 110px))}.axiom-counters{padding:5px 12px;gap:12px}.axiom-trial-controls small{font-size:.65rem}.axiom-messages{min-height:80px}.glossary-results{max-height:150px}.adult-axiom{padding:16px}.instagram-dialog{padding:20px}}
+
+/* Compact, visit-only acceptance for the local Axiom guide. */
+.axiom-panel[data-access="pending"]{height:auto;max-height:calc(100dvh - 150px)}
+.axiom-consent{padding:18px;overflow-y:auto;overscroll-behavior:contain}
+.axiom-consent-title{margin:0 0 8px;color:var(--text);font-size:.95rem;font-weight:700}
+.axiom-consent-links{margin:0 0 10px;font-size:.83rem;line-height:1.8;color:var(--muted)}
+.axiom-consent-links a,.axiom-privacy-footer a{text-decoration:underline;text-underline-offset:3px;color:var(--cyan)}
+.axiom-consent-copy{margin:0 0 14px;font-size:.76rem;line-height:1.5;color:var(--muted)}
+.axiom-analytics-option{display:flex;align-items:center;gap:10px;font-size:.78rem;line-height:1.5;color:var(--text);margin:0 0 5px;min-height:44px;cursor:pointer}
+.axiom-analytics-option input{width:19px;height:19px;flex:0 0 19px;accent-color:var(--cyan);margin:0}
+#axiom-analytics-status:empty{display:none}
+.axiom-consent-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.axiom-consent-actions .button{min-height:44px;padding:10px 16px;font-size:.8rem}
+.axiom-consent-actions .text-button{min-height:44px;font-size:.78rem}
+.axiom-chat-content{display:flex;flex:1;flex-direction:column;min-height:0}
+.axiom-privacy-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:5px 15px;border-top:1px solid var(--line);flex-shrink:0}
+.axiom-privacy-footer a,.axiom-privacy-footer button{font-size:.64rem;line-height:1.5}
+.axiom-privacy-footer a{padding-block:8px}
+.axiom-privacy-footer button{min-height:36px;padding:6px 0}
+@media(max-width:620px){.axiom-panel[data-access="pending"]{height:auto;max-height:calc(100dvh - 130px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}.axiom-consent{padding:16px}.axiom-privacy-footer a,.axiom-privacy-footer button{font-size:.68rem}}
+@media(max-height:650px){.axiom-panel[data-access="pending"]{max-height:calc(100dvh - 28px - env(safe-area-inset-top,0px))}}

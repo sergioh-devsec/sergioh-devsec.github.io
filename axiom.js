@@ -52,6 +52,9 @@
   const I=window.I18N,S=window.Site,K=window.AxiomKnowledge,$=id=>document.getElementById(id),panel=$('axiom-panel'),messages=$('axiom-messages'),chips=$('axiom-chips');
   const catalog=window.PORTFOLIO.axiomAudio,variants=window.PORTFOLIO.axiomVariants||{},glossary=window.AXIOM_GLOSSARY||[];
   let opener=null,lastResponse={key:'welcome'},voiceEnabled=true,turn=0,speaking=false,waveAt=-10000,playbackDone=null,voiceContext=null,manualJokes=0,activeRoute='lab',activeTerm=null,adultKey=null;
+  // This permission covers only the current local guide, for this page visit.
+  // Never reuse it as consent for a future remote model or for analytics.
+  let guideAccepted=false,pendingGuideAction=null;
   const audio=$('axiom-audio'),tone={value:'playful'};
   tone.value='playful';
   const visit=K.createVisit({onReset(){stopTrial();manualJokes=0;}});
@@ -79,7 +82,7 @@
   ['pause','ended'].forEach(event=>audio.addEventListener(event,()=>{if(!audio.paused&&!audio.ended)return;speaking=false;syncVoice();settlePlayback(audio.ended);}));
   audio.addEventListener('emptied',()=>{if(!audio.hasAttribute('src')){speaking=false;syncVoice();}});
   audio.addEventListener('error',()=>{if(!audio.hasAttribute('src')||!audio.error)return;speaking=false;syncVoice();setVoiceStatus('voiceFailed');settlePlayback();});
-  function clearConversation(){stopTrial();messages.replaceChildren();chips.replaceChildren();lastResponse={key:null};showRoutes();setVoiceStatus('chatCleared');chips.querySelector('button')?.focus({preventScroll:true});}
+  function clearConversation(){if(!guideAccepted)return;stopTrial();messages.replaceChildren();chips.replaceChildren();lastResponse={key:null};showRoutes();setVoiceStatus('chatCleared');chips.querySelector('button')?.focus({preventScroll:true});}
   const trial={active:false};
   function stopTrial(){stopVoice();}
   function addMessage(text,user=false){const n=S.el('div','axiom-message'+(user?' user':''));n.append(S.el('p','',text));messages.append(n);while(messages.children.length>14)messages.firstElementChild.remove();messages.scrollTop=messages.scrollHeight;return n;}
@@ -106,8 +109,24 @@
     else {answer('labAnswer');makeButton(chips,I.language==='es'?'Analizar eventos':'Analyze events',()=>topic('siemTerm','herramientas.html#logs'));makeButton(chips,I.language==='es'?'Probar automatización':'Try automation',()=>topic('automationTerm','herramientas.html#csv'));makeButton(chips,I.language==='es'?'Explorar esta web':'Explore this website',()=>topic('webTerm','#cases'));}
     makeChip('finishRoute',wrapRoute);makeChip('showRoutes',showRoutes);
   }
-  function open(source,withGreeting=true){stopTrial();visit.start();if(!panel.hidden)return;opener=source||document.activeElement;panel.hidden=false;$('axiom-launcher').setAttribute('aria-expanded','true');waveAt=performance.now();if(!messages.children.length){if(withGreeting)answer('welcome');showRoutes();}document.dispatchEvent(new CustomEvent('portfolio:axiom-open'));$('axiom-close').focus({preventScroll:true});}
-  function close(restore=true,keepTrial=false){if(!keepTrial)stopTrial();if(panel.hidden){stopVoice();return;}panel.hidden=true;$('axiom-launcher').setAttribute('aria-expanded','false');resetVoice();if(restore&&opener?.isConnected)opener.focus({preventScroll:true});}
+  function syncGuideAccess(){
+    $('axiom-consent').hidden=guideAccepted;$('axiom-chat-content').hidden=!guideAccepted;
+    $('axiom-clear').hidden=!guideAccepted;panel.dataset.access=guideAccepted?'accepted':'pending';
+  }
+  function syncAnalyticsOption(){
+    const analytics=window.SiteAnalytics,option=$('axiom-analytics'),status=$('axiom-analytics-status');
+    option.checked=Boolean(analytics?.choice==='accepted'&&!analytics?.privacySignal);option.disabled=!analytics?.eligible;
+    status.textContent=analytics?.privacySignal?I.t('axiomAnalyticsSignal'):!analytics?.eligible?I.t('axiomAnalyticsUnavailable'):'';
+  }
+  function beginGuide(withGreeting=true){visit.start();if(!messages.children.length){if(withGreeting)answer('welcome');showRoutes();}}
+  function open(source,withGreeting=true){
+    stopTrial();if(!panel.hidden)return;opener=source||document.activeElement;panel.hidden=false;
+    $('axiom-launcher').setAttribute('aria-expanded','true');waveAt=performance.now();syncGuideAccess();syncAnalyticsOption();
+    if(guideAccepted)beginGuide(withGreeting);else pendingGuideAction=()=>beginGuide(withGreeting);
+    document.dispatchEvent(new CustomEvent('portfolio:axiom-open'));
+    $(guideAccepted?'axiom-close':'axiom-accept').focus({preventScroll:true});
+  }
+  function close(restore=true,keepTrial=false){pendingGuideAction=null;if(!keepTrial)stopTrial();if(panel.hidden){stopVoice();return;}panel.hidden=true;$('axiom-launcher').setAttribute('aria-expanded','false');document.dispatchEvent(new CustomEvent('portfolio:axiom-close'));resetVoice();if(restore&&opener?.isConnected)opener.focus({preventScroll:true});}
   function renderTerm(entry,target,chat=false){
     activeTerm=entry;const key=entry.key,isNew=remember(key);lastResponse={key};target.replaceChildren();target.append(S.el('h3','',entry.label[I.language]),S.el('p','',I.t(key)),S.el('strong','small',I.t('glossaryExample')),S.el('p','small',entry.example[I.language]));
     const source=S.link(I.t('glossarySource'),entry.source);if(source)target.append(source);
@@ -121,6 +140,11 @@
   function openGlossary(){S.openDialog('glossary-dialog',document.activeElement);$('glossary-query').value='';$('glossary-detail').replaceChildren();renderGlossary();$('glossary-query').focus({preventScroll:true});if(!visit.has(phraseId('glossaryIntro'))){remember('glossaryIntro');lastResponse={key:'glossaryIntro'};$('glossary-detail').append(S.el('p','muted',I.t('glossaryIntro')));playResponse();}}
   $('glossary-query').addEventListener('input',()=>{stopVoice();activeTerm=null;$('glossary-detail').replaceChildren();renderGlossary();});
   $('axiom-launcher').addEventListener('click',e=>panel.hidden?open(e.currentTarget):close());$('axiom-close').addEventListener('click',()=>close());
+  $('axiom-accept').addEventListener('click',()=>{if(window.SiteAnalytics?.eligible)window.SiteAnalytics.choose($('axiom-analytics').checked?'accepted':'denied');guideAccepted=true;syncGuideAccess();const proceed=pendingGuideAction;pendingGuideAction=null;if(proceed)proceed();else beginGuide();chips.querySelector('button')?.focus({preventScroll:true});});
+  $('axiom-decline').addEventListener('click',()=>close());
+  function openPreferences(source){open(source,false);stopTrial();guideAccepted=false;messages.replaceChildren();chips.replaceChildren();lastResponse={key:null};pendingGuideAction=()=>beginGuide();syncGuideAccess();syncAnalyticsOption();$('axiom-accept').focus({preventScroll:true});}
+  $('axiom-revoke').addEventListener('click',()=>openPreferences($('axiom-launcher')));
+  ['portfolio:analytics-ready','portfolio:analytics-choice','portfolio:language'].forEach(event=>document.addEventListener(event,syncAnalyticsOption));
   document.querySelectorAll('[data-open-axiom]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('dialog[open]').forEach(d=>d.close());open(b);}));
   panel.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();close();}});
   $('axiom-voice').addEventListener('click',()=>{voiceEnabled=!voiceEnabled;if(voiceEnabled)playResponse();else{stopVoice();setVoiceStatus('voiceMuted');}syncVoice();});
@@ -128,10 +152,10 @@
   $('adult-listen').addEventListener('click',()=>{if(adultKey)listenKey(adultKey);});
   document.addEventListener('portfolio:dialog-open',event=>{if(event.detail.id==='creator-dialog'){const key=chooseKey('adultWelcome');adultKey=key||'adultWelcome';$('adult-axiom-line').textContent=I.t(adultKey);$('adult-listen').dataset.listenKey=adultKey;$('adult-listen').dataset.listenLabel='adultListen';$('adult-listen').hidden=!resolveAudio(adultKey,I.language,catalog);if(key){remember(key);lastResponse={key};playResponse();}syncVoice();}});
   document.addEventListener('portfolio:dialog-close',event=>{if(voiceContext===event.detail.id)stopVoice();});
-  document.addEventListener('portfolio:language',()=>{stopTrial();manualJokes=0;messages.replaceChildren();lastResponse={key:null};if(!panel.hidden)showRoutes();if($('glossary-dialog').open){renderGlossary();if(activeTerm)renderTerm(activeTerm,$('glossary-detail'));}if($('creator-dialog').open&&adultKey){$('adult-axiom-line').textContent=I.t(adultKey);$('adult-listen').hidden=!resolveAudio(adultKey,I.language,catalog);}});
+  document.addEventListener('portfolio:language',()=>{stopTrial();manualJokes=0;messages.replaceChildren();lastResponse={key:null};if(!panel.hidden&&guideAccepted)showRoutes();if($('glossary-dialog').open){renderGlossary();if(activeTerm)renderTerm(activeTerm,$('glossary-detail'));}if($('creator-dialog').open&&adultKey){$('adult-axiom-line').textContent=I.t(adultKey);$('adult-listen').hidden=!resolveAudio(adultKey,I.language,catalog);}});
   document.addEventListener('visibilitychange',()=>{visit.setVisible(!document.hidden);if(document.hidden)stopTrial();});
-  window.AXIOM={open,close,get trialActive(){return trial.active;},startService(index,source){open(source,false);activeRoute=index===6?'creator':'business';const keys=['webTerm','automationTerm','aiTerm','securityTerm','consultingTerm','networkTerm','contentTerm'];topic(keys[index]||'businessAnswer',index===1?'#automation':'#contact');}};
-  syncVoice();syncCounters();setVoiceStatus('voiceReady');
+  window.AXIOM={open,close,openPreferences,get trialActive(){return trial.active;},startService(index,source){open(source,false);const proceed=()=>{visit.start();activeRoute=index===6?'creator':'business';const keys=['webTerm','automationTerm','aiTerm','securityTerm','consultingTerm','networkTerm','contentTerm'];topic(keys[index]||'businessAnswer',index===1?'#automation':'#contact');};if(guideAccepted)proceed();else pendingGuideAction=proceed;}};
+  syncGuideAccess();syncVoice();syncCounters();setVoiceStatus('voiceReady');
 
   // Return to a break gently; ordinary movement never abruptly cuts the voice.
   let gestureSeen=false,idleSpeaking=false,idleKey=null,lastPointer=0;

@@ -56,7 +56,8 @@
   const actions=create('div','analytics-actions'),accept=create('button','button secondary'),decline=create('button','button secondary'),close=create('button','text-button'),state=create('p','small muted');state.setAttribute('role','status');
   for(const button of [accept,decline,close])button.type='button';
   actions.append(accept,decline,close);panel.append(heading,description,detail,actions,state);document.body.append(panel);
-  const preferences=create('button','text-button');preferences.type='button';preferences.setAttribute('aria-controls',panel.id);document.querySelector('.site-footer')?.append(preferences);
+  const sharedNotice=Boolean(document.getElementById('axiom-consent'));
+  const preferences=create('button','text-button');preferences.type='button';preferences.setAttribute('aria-controls',sharedNotice?'axiom-panel':panel.id);document.querySelector('.site-footer')?.append(preferences);
   function render(){
     heading.textContent=tx('Tú decides sobre la analítica.','You choose whether to allow analytics.');
     description.textContent=tx('Clarity registra clics y sesiones con textos enmascarados, solo si aceptas.','Clarity records clicks and sessions with masked text, only if you accept.');
@@ -66,13 +67,17 @@
     preferences.textContent=tx('Privacidad y analítica','Privacy and analytics');accept.textContent=tx('Permitir analítica','Allow analytics');decline.textContent=tx('Rechazar analítica','Reject analytics');close.textContent=tx('Cerrar','Close');close.hidden=!controller.choice;accept.disabled=signal;
     state.textContent=signal?tx('Respetamos la señal de privacidad de tu navegador: analítica desactivada.','We respect your browser privacy signal: analytics disabled.'):!eligible?tx('No registramos herramientas con archivos, vistas locales ni parámetros desconocidos.','File tools, local previews and unknown URL parameters are not recorded.'):controller.choice==='accepted'?tx('Has permitido la analítica. Puedes cambiarlo cuando quieras.','You have allowed analytics. You can change this at any time.'):controller.choice==='denied'?tx('Analítica rechazada. Clarity no se carga en nuevas visitas.','Analytics rejected. Clarity will not load on new visits.'):tx('La analítica está apagada hasta que decidas.','Analytics stays off until you decide.');
   }
-  function hide(){panel.hidden=true;preferences.setAttribute('aria-expanded','false');}
-  function choose(value){controller.choose(value);render();hide();}
-  accept.addEventListener('click',()=>{choose('accepted');controller.track(location.pathname.endsWith('cotizador.html')?'open_estimator':'visit_portfolio');});
+  function syncExpanded(){preferences.setAttribute('aria-expanded',String(sharedNotice?!document.getElementById('axiom-panel').hidden:!panel.hidden));}
+  function hide(){panel.hidden=true;syncExpanded();}
+  function choose(value){const previous=controller.choice;controller.choose(signal?'denied':value);if(previous!=='accepted'&&controller.choice==='accepted')controller.track(location.pathname.endsWith('cotizador.html')?'open_estimator':'visit_portfolio');render();hide();document.dispatchEvent(new CustomEvent('portfolio:analytics-choice'));}
+  accept.addEventListener('click',()=>choose('accepted'));
   decline.addEventListener('click',()=>choose('denied'));close.addEventListener('click',hide);
-  preferences.addEventListener('click',()=>{panel.hidden=false;preferences.setAttribute('aria-expanded','true');render();heading.focus({preventScroll:true});});
-  document.addEventListener('portfolio:language',render);render();panel.hidden=Boolean(controller.choice);preferences.setAttribute('aria-expanded',String(!panel.hidden));
-  window.addEventListener('storage',e=>{if(e.key===KEY){const next=readChoice(e.newValue);if(next!=='accepted'&&controller.choice!=='denied'){controller.choose('denied');render();hide();}}});
+  preferences.addEventListener('click',()=>{if(sharedNotice&&window.AXIOM?.openPreferences){window.AXIOM.openPreferences(preferences);return;}panel.hidden=false;preferences.setAttribute('aria-expanded','true');render();heading.focus({preventScroll:true});});
+  document.addEventListener('portfolio:language',render);render();panel.hidden=sharedNotice||Boolean(controller.choice);preferences.setAttribute('aria-expanded',String(!panel.hidden));
+  ['portfolio:axiom-open','portfolio:axiom-close'].forEach(name=>document.addEventListener(name,syncExpanded));
+  window.SiteAnalytics={get choice(){return controller.choice;},get eligible(){return eligible;},get privacySignal(){return signal;},choose};
+  document.dispatchEvent(new CustomEvent('portfolio:analytics-ready'));
+  window.addEventListener('storage',e=>{if(e.key===KEY){const next=readChoice(e.newValue);if(next!=='accepted'&&controller.choice!=='denied')choose('denied');}});
   document.addEventListener('click',e=>{
     const element=e.target.closest?.('a,button');if(!element||element.closest('#analytics-preferences'))return;
     if(element.matches('[data-open-dialog="cv-dialog"]'))controller.track('profile_open');
