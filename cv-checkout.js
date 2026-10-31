@@ -16,9 +16,8 @@ export const SUPPORT_COPY = 'Archivo .txt descargado. Si el diagnóstico de Axio
 export function supportUrl(amount) {
   if (![2,5].includes(amount)) throw new TypeError('Importe de apoyo inválido');
   const url = new URL('https://www.paypal.com/donate/');
-  url.searchParams.set('hosted_button_id','D587QCAYURRYG');
-  // Hosted donations let the visitor confirm the final amount in PayPal.
-  url.searchParams.set('currency_code','USD'); url.searchParams.set('amount',String(amount));
+  url.searchParams.set('hosted_button_id',amount===2?'48HL47SR9QHQ2':'GCF536PNYJ9RE');
+  // Each hosted page has its own exact USD amount and one-time frequency.
   return url.href;
 }
 export function checkoutUrl(value) {
@@ -90,6 +89,6 @@ export async function verifyCheckout(session, { licenseKey, plan, config = CV_CH
   // Return no personal purchase fields. Neither a URL flag nor a donation grants access.
   return data?.success === true && purchase?.product_id === product.productId && purchase.license_key === licenseKey
     && purchase.refunded === false && purchase.disputed === false && purchase.chargebacked === false
-    && purchase.currency === 'usd' && purchase.price === CV_PLANS[plan].amount * 100
-    && purchase.subscription_id === null && purchase.test !== true ? { plan } : null;
+    && purchase.currency === 'usd' && Number.isSafeInteger(purchase.price) && purchase.price >= CV_PLANS[plan].amount * 100
+    && (purchase.subscription_id === null || purchase.subscription_id === undefined) ? (purchase.test===true?{plan,test:true}:{plan}) : null;
 }

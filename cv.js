@@ -93,7 +93,7 @@ function paidFiles(plan){
 }
 function exportPaid(p,tpl,format,name){try{if(!entitlement)throw new Error('Comprueba tu compra antes de descargar.');const data=format==='pdf'?buildCvPdf(p,{template:tpl}):buildDocx(p,{template:tpl});download(data,name+'.'+format,format==='pdf'?'application/pdf':'application/vnd.openxmlformats-officedocument.wordprocessingml.document');$('checkout-status').textContent='Archivo preparado. Revisa tu carpeta de descargas.';}catch(e){$('checkout-status').textContent=e.message;}}
 async function buy(plan){
- if(paymentBusy)return;paymentBusy=true;const request=++paymentRevision;
+ if(paymentBusy)return;try{buildCvPdf(profile(),{template});}catch(e){$('checkout-status').textContent='Antes de comprar, revisa el PDF: '+e.message;return;}paymentBusy=true;const request=++paymentRevision;
  $('checkout-status').textContent='Preparando la compra…';$('buy-pro').disabled=true;$('buy-plus').disabled=true;
  try{const result=await beginCheckout(plan);if(request!==paymentRevision)return;checkout=result;const a=document.createElement('a');a.href=checkout.url;a.target='_blank';a.rel='noopener noreferrer';document.body.append(a);a.click();a.remove();$('license-access').open=true;$('license-plan').value=plan;$('checkout-status').textContent='Completa la compra en Gumroad y pega aquí la clave de tu recibo. Si no se abrió otra pestaña, usa el enlace de compra.';const reopen=node('a','secondary','Abrir compra en Gumroad');reopen.href=checkout.url;reopen.target='_blank';reopen.rel='noopener noreferrer';$('checkout-status').append(document.createTextNode(' '),reopen);}
  catch(e){if(request===paymentRevision)$('checkout-status').textContent=e.message;}finally{if(request===paymentRevision){paymentBusy=false;$('buy-pro').disabled=false;$('buy-plus').disabled=false;}}
@@ -125,7 +125,7 @@ $('verify-payment').addEventListener('click',async()=>{
  paymentBusy=true;const request=++paymentRevision;$('verify-payment').disabled=true;$('checkout-status').textContent='Comprobando tu licencia con Gumroad…';
  try{const active=await beginCheckout(plan);if(request!==paymentRevision)return;checkout=active;const result=await verifyCheckout(active.session,{licenseKey,plan});if(request!==paymentRevision||checkout!==active)return;entitlement=result;
  if(!entitlement){$('checkout-status').textContent='La licencia no confirma una compra activa de este paquete. Revisa la clave y el paquete de tu recibo.';return;}
- $('license-key').value='';$('checkout-status').textContent='Compra confirmada. Tus archivos están listos para preparar.';paidFiles(entitlement.plan);
+ $('license-key').value='';$('checkout-status').textContent=entitlement.test?'Licencia de prueba del creador confirmada. Puedes comprobar los archivos; no se realizó un cobro.':'Compra confirmada. Tus archivos están listos para preparar.';paidFiles(entitlement.plan);
  }catch(e){if(request===paymentRevision)$('checkout-status').textContent=e.message;}finally{if(request===paymentRevision){paymentBusy=false;$('verify-payment').disabled=false;}}
 });
 $('confirm-keyword').addEventListener('click',()=>{if(!pendingKeyword)return;const skills=$('cv-skills'),next=[skills.value.trim(),pendingKeyword].filter(Boolean).join(', ');if(next.length>skills.maxLength){closeModal($('keyword-modal'));setStep('profile');skills.focus();say('El campo de habilidades está completo. Acórtalo antes de añadir otra.');return;}skills.value=next;pendingKeyword='';closeModal($('keyword-modal'));changed();say('Habilidad añadida. Ahora aparece en tu perfil y en la comparación.');});
