@@ -8,8 +8,8 @@
   <meta name="theme-color" content="#07131b">
   <title>Encuentra tu ciber-compañero ideal · CyberSerchMX</title>
   <meta name="description" content="Encuentra tu ciber-compañero ideal. Conoce a Axiom y sus amigos, mueve el cursor, gira sus modelos 3D y descubre su personalidad.">
-  <link rel="stylesheet" href="style.css?v=a868350b93c6">
-  <script type="module" src="main.js?v=90b3168eabde"></script>
+  <link rel="stylesheet" href="style.css?v=035cab81eb95">
+  <script type="module" src="main.js?v=ddf9f003d51c"></script>
 <link rel="canonical" href="https://sergioh-devsec.github.io/axiom-3d/index.html"><meta property="og:url" content="https://sergioh-devsec.github.io/axiom-3d/index.html"></head>
 <body>
   <a class="skip" href="#viewer-controls">Ir a los controles</a>
@@ -43,21 +43,25 @@
           <div class="stage-label"><span>CYBERSERCH / CHARACTER STUDIO</span><span id="scene-state">CARGANDO</span></div>
           <div class="stage-grid" aria-hidden="true"></div><div class="stage-orbit" aria-hidden="true"></div>
           <img id="fallback" class="fallback" src="assets/axiom-reference.png" alt="Ilustración de Axiom mientras se prepara la vista 3D" width="1029" height="1183">
-          <canvas id="axiom-canvas" tabindex="0" aria-label="Personaje en 3D. Arrastra o usa las cuatro flechas para girar la vista. Enter o espacio para saltar." aria-describedby="interaction-hint"></canvas>
+          <canvas id="axiom-canvas" tabindex="0" aria-label="Personaje en 3D. Arrastra o usa las cuatro flechas para girar la vista. Enter o espacio para saltar." aria-describedby="interaction-hint motion-note"></canvas>
           <div id="loading-indicator" class="loading-indicator" aria-hidden="true"><span class="loading-ring"></span><span>Abriendo el estudio</span></div>
           <div class="character-plaque"><div><span class="plaque-label">CONOCE A</span><h2 id="character-name">Axiom</h2><p id="character-role">El ciberasistente de Serch</p></div><span class="dimension-badge" aria-hidden="true">3D</span></div>
           <p class="stage-caption" id="stage-caption">Tu próxima idea ya tiene compañía.</p>
         </div>
         <div class="interaction-deck">
+          <p id="motion-note" class="motion-note" data-state="loading" aria-live="polite">Preparando sus movimientos…</p>
           <div class="controls" id="viewer-controls" role="group" aria-label="Interactúa con el personaje">
             <button id="wave" class="primary" type="button" disabled>Saludar</button>
             <button id="jump" type="button" disabled>¡Salta!</button>
             <button id="spin" type="button" disabled>Dar una vuelta</button>
-            <button id="look" type="button" aria-pressed="true" disabled>Seguir cursor: activo</button>
             <button id="pause" type="button" aria-pressed="false" disabled>Pausar movimiento</button>
           </div>
-          <div class="view-controls" role="group" aria-label="Punto de vista"><button id="orbit" type="button" aria-pressed="true" disabled>Arrastre 360°: activo</button><button id="camera-left" type="button" disabled>Vista izquierda</button><button id="camera-right" type="button" disabled>Vista derecha</button><button id="camera-up" type="button" disabled>Mirar desde arriba</button><button id="camera-down" type="button" disabled>Bajar la vista</button><button id="reset" type="button" disabled>Vista inicial</button></div>
-          <p class="hint" id="interaction-hint"><strong>Muévelo a tu manera.</strong> Arrastra con el mouse o el dedo. Selecciona el visor y usa las cuatro flechas del teclado; Enter o espacio lo hace saltar. En el celular, desliza fuera del visor para continuar por la página.</p>
+          <p class="hint" id="interaction-hint">Arrastra para mirar alrededor. Con el visor seleccionado, usa las flechas para cambiar la vista y Enter para saltar.</p>
+          <details class="camera-options">
+            <summary>Cambiar el ángulo <span class="camera-options-note">Cámara y seguimiento</span></summary>
+            <div class="view-controls" role="group" aria-label="Punto de vista"><button id="look" type="button" aria-pressed="true" disabled>Seguir cursor: activo</button><button id="orbit" type="button" aria-pressed="true" disabled>Arrastre 360°: activo</button><button id="camera-left" type="button" disabled>Vista izquierda</button><button id="camera-right" type="button" disabled>Vista derecha</button><button id="camera-up" type="button" disabled>Mirar desde arriba</button><button id="camera-down" type="button" disabled>Bajar la vista</button><button id="reset" type="button" disabled>Vista inicial</button></div>
+            <p class="hint">La cámara cambia desde dónde lo ves. El movimiento del personaje se pausa por separado. En el celular, desliza fuera del visor para continuar por la página.</p>
+          </details>
           <p class="status" id="status" role="status" aria-live="polite">Preparando a Axiom…</p>
         </div>
       </div>

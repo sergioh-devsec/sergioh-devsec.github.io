@@ -2,6 +2,8 @@ import * as THREE from './vendor/three/build/three.module.js';
 import { GLTFLoader } from './vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from './vendor/three/examples/jsm/controls/OrbitControls.js';
 import { validateGLB, validateGLTF, MAX_MODEL_BYTES } from './model-policy.js';
+import { createLivingRig } from './living-rig.js';
+import { sampleLivingPose, ACTION_DURATIONS } from './living-motion.js';
 
 // Locally converted user-supplied models. Only the selected character is fetched.
 const CHARACTERS = Object.freeze({
@@ -25,7 +27,7 @@ const canvas = $('axiom-canvas');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const buttons = [...document.querySelectorAll('#viewer-controls button, .view-controls button, #rig')];
 const status = text => { $('status').textContent = text; };
-let renderer, scene, camera, controls, model, mixer, skeletonHelper;
+let renderer, scene, camera, controls, model, mixer, skeletonHelper, livingRig;
 let head, chest, eyes = [], tracked = [], loadSequence = 0;
 let selectedCharacter = 'axiom', displayName = 'Axiom', loading = false, ring, fill;
 let pendingFetch;
@@ -113,6 +115,7 @@ function render() {
 }
 
 function resetPose() {
+  livingRig?.reset();
   for (const entry of tracked) entry.node.quaternion.copy(entry.rest);
   motionRoot.position.set(0, 0, 0);
   motionRoot.rotation.set(0, 0, 0);
@@ -131,6 +134,13 @@ function updateState() {
   $('orbit').setAttribute('aria-pressed', String(orbiting));
   $('orbit').textContent = orbiting ? 'Arrastre 360°: activo' : 'Activar arrastre 360°';
   $('scene-state').textContent = contextLost ? 'SIN WEBGL' : loading ? 'CARGANDO' : !model ? 'VISTA ORIGINAL' : paused || reducedMotion.matches ? 'EN REPOSO' : 'EN VIVO';
+  const state = loading ? 'loading' : contextLost || !model ? 'unavailable' : paused ? 'paused' : reducedMotion.matches ? 'reduced' : 'active';
+  $('motion-note').dataset.state = state;
+  $('motion-note').textContent = state === 'paused' ? 'Movimiento pausado. Pulsa «Reanudar movimiento» para verlo cobrar vida.'
+    : state === 'reduced' ? 'Movimiento reducido según tu dispositivo. Puedes cambiar el ángulo manualmente.'
+    : state === 'loading' ? 'Preparando a tu compañero…'
+    : state === 'unavailable' ? 'Preparando la vista del personaje.'
+    : `${displayName} está despierto. Observa sus gestos o invítalo a saludar.`;
   if (frame) cancelAnimationFrame(frame);
   frame = 0;
   previousTime = 0;
@@ -149,35 +159,28 @@ function tick(time) {
   // Orbit availability does not turn off the character's gaze. Only a live drag
   // temporarily centres the pose so camera rotation and head movement do not fight.
   smoothPointer.lerp(following && !dragging ? targetPointer : neutralPointer, 1 - Math.exp(-delta * 6));
-  if (head) {
-    lookEuler.set(smoothPointer.y * 0.085, smoothPointer.x * 0.24, Math.sin(elapsed * 0.6) * 0.008);
-    head.quaternion.multiply(offsetQuaternion.setFromEuler(lookEuler));
-  }
-  for (const eye of eyes) {
-    lookEuler.set(smoothPointer.y * 0.055, smoothPointer.x * 0.10, 0);
-    eye.quaternion.multiply(offsetQuaternion.setFromEuler(lookEuler));
-  }
-  if (chest) chest.rotation.z += Math.sin(elapsed * 1.25) * 0.006;
-  motionRoot.position.y = 0;
-  motionRoot.scale.y = 1 + Math.sin(elapsed * 1.9) * 0.002;
-  motionRoot.rotation.set(smoothPointer.y * 0.025, smoothPointer.x * (head ? 0.18 : 0.32), 0);
-  if (action) {
-    action.time += delta;
-    const progress = Math.min(action.time / action.duration, 1);
-    if (action.type === 'jump') motionRoot.position.y += Math.sin(progress * Math.PI) * 0.43;
-    else if (action.type === 'spin') motionRoot.rotation.y = (progress * progress * (3 - 2 * progress)) * Math.PI * 2;
-    else {
-      const envelope = Math.sin(progress * Math.PI);
-      motionRoot.rotation.z = Math.sin(progress * Math.PI * 4) * 0.045 * envelope;
-      motionRoot.rotation.x = envelope * 0.065;
-      if (head) head.rotation.z += Math.sin(progress * Math.PI * 3) * 0.075 * envelope;
+  if (action) action.time += delta;
+  const pose = sampleLivingPose(elapsed, selectedCharacter, smoothPointer, action);
+  if (livingRig) livingRig.apply(pose);
+  else {
+    // Imported models keep their own rig and animation tracks.
+    if (head) {
+      lookEuler.set(pose.headPitch, pose.headYaw, pose.headRoll);
+      head.quaternion.multiply(offsetQuaternion.setFromEuler(lookEuler));
     }
-    if (progress === 1) {
-      action = null;
-      motionRoot.rotation.y = 0;
-      canvas.dataset.action = 'idle';
-      $('stage-caption').textContent = 'Tu próxima idea ya tiene compañía.';
+    if (chest) chest.rotation.z += pose.bodySway;
+    for (const eye of eyes) {
+      lookEuler.set(smoothPointer.y * 0.055, smoothPointer.x * 0.10, 0);
+      eye.quaternion.multiply(offsetQuaternion.setFromEuler(lookEuler));
     }
+  }
+  motionRoot.position.y = pose.rootY;
+  motionRoot.scale.set(pose.rootScaleXZ, pose.rootScaleY, pose.rootScaleXZ);
+  motionRoot.rotation.set(pose.rootPitch, pose.rootYaw, pose.rootRoll);
+  if (action && action.time >= action.duration) {
+    action = null;
+    canvas.dataset.action = 'idle';
+    $('stage-caption').textContent = 'Tu próxima idea ya tiene compañía.';
   }
   render();
   frame = requestAnimationFrame(tick);
@@ -190,16 +193,16 @@ function react(type) {
     return;
   }
   if (action) return;
-  action = { type, time: 0, duration: type === 'jump' ? 0.8 : type === 'wave' ? 1.65 : 1.25 };
+  action = { type, time: 0, duration: ACTION_DURATIONS[type] };
   canvas.dataset.action = type;
   $('stage-caption').textContent = type === 'jump' ? '¡Una idea que despega!' : type === 'wave' ? '¡Qué bueno verte por aquí!' : 'Un giro para ver las cosas de otra forma.';
-  status(type === 'jump' ? `¡Salto recibido! ${displayName} responde a tu toque.` : type === 'wave' ? `${displayName} te saluda con una pequeña reverencia.` : `${displayName} da una vuelta completa.`);
+  status(type === 'jump' ? `¡Salto recibido! ${displayName} responde a tu toque.` : type === 'wave' ? `${displayName} te saluda.` : `${displayName} da una vuelta completa.`);
   updateState();
 }
 
 function adoptModel(gltf, imported, character = selectedCharacter) {
   const next = gltf.scene;
-  const summary = sceneSummary(next);
+  let summary = sceneSummary(next);
   if (!summary.triangles || summary.triangles > 500000) {
     disposeModel(next);
     throw new Error('El modelo debe tener geometría y menos de 500 000 triángulos para este visor.');
@@ -211,6 +214,9 @@ function adoptModel(gltf, imported, character = selectedCharacter) {
     disposeModel(next);
     throw new Error('El modelo no tiene dimensiones válidas.');
   }
+  // These eight meshes have known proportions. Unknown imports retain their rig.
+  const nextLivingRig = imported ? null : createLivingRig(next, character);
+  summary = sceneSummary(next);
   const scale = 3.2 / Math.max(size.y, size.x * 1.05, size.z * 1.05);
   const center = bounds.getCenter(new THREE.Vector3());
   const vertex = new THREE.Vector3();
@@ -238,13 +244,15 @@ function adoptModel(gltf, imported, character = selectedCharacter) {
     skeletonHelper = null;
   }
   motionRoot.clear();
+  livingRig?.dispose();
   disposeModel(model);
+  livingRig = nextLivingRig;
   model = wrapper;
   motionRoot.add(model);
   head = findPart(next, BONE_NAMES.head);
   chest = findPart(next, ['Chest']);
   eyes = [findPart(next, BONE_NAMES.left), findPart(next, BONE_NAMES.right)].filter(Boolean);
-  tracked = [head, chest, ...eyes].filter(Boolean).map(node => ({ node, rest: node.quaternion.clone() }));
+  tracked = livingRig ? [] : [head, chest, ...eyes].filter(Boolean).map(node => ({ node, rest: node.quaternion.clone() }));
   next.traverse(node => {
     if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; }
   });
@@ -273,8 +281,8 @@ function adoptModel(gltf, imported, character = selectedCharacter) {
   $('rig').setAttribute('aria-pressed', 'false');
   $('rig').textContent = 'Ver articulaciones';
   $('model-label').textContent = imported ? 'Tu modelo, en este navegador' : `${displayName} · modelo del laboratorio`;
-  $('model-description').textContent = imported ? 'El archivo se procesa aquí, sin subirlo a un servidor. El seguimiento depende de los nombres de sus articulaciones.' : character === 'axiom' ? 'Malla y textura originales, con una articulación básica de cabeza y torso añadida para esta experiencia. El rostro y las manos no tienen articulaciones independientes.' : 'Malla y textura originales. El saludo, los giros y los saltos animan el personaje completo; este modelo aún no tiene un esqueleto para mover sus extremidades.';
-  $('rig-status').textContent = `${summary.bones} articulaciones · ${summary.skins} mallas con rigging · ${Math.round(summary.triangles).toLocaleString('es-MX')} triángulos.${head ? ' Cabeza reconocida.' : ' No se encontró una articulación de cabeza compatible.'}`;
+  $('model-description').textContent = imported ? 'El archivo se procesa aquí, sin subirlo a un servidor. El seguimiento depende de los nombres de sus articulaciones.' : 'Malla y textura originales con articulaciones añadidas en este visor: cabeza, torso, brazo y cola. Respiración, miradas y gestos se combinan en tiempo real. El archivo descargable conserva el modelo base.';
+  $('rig-status').textContent = `${summary.bones} articulaciones · ${summary.skins} mallas con rigging · ${Math.round(summary.triangles).toLocaleString('es-MX')} triángulos.${livingRig || head ? ' Cabeza articulada.' : ' No se encontró una articulación de cabeza compatible.'}`;
   status(`${displayName} está listo. Mueve el cursor o arrastra el visor. Al seleccionarlo, las cuatro flechas giran la vista.`);
   $('stage-caption').textContent = 'Tu próxima idea ya tiene compañía.';
   resetPose();
@@ -439,8 +447,9 @@ function start() {
     loadCharacter(button.dataset.character);
     if (matchMedia('(max-width: 760px)').matches) stage.scrollIntoView({ behavior: reducedMotion.matches ? 'auto' : 'smooth', block: 'start' });
   }));
-  listen($('look'), 'click', () => { following = !following; if (!following) resetPose(); updateState(); });
-  listen($('pause'), 'click', () => { paused = !paused; if (paused) resetPose(); updateState(); });
+  listen($('look'), 'click', () => { following = !following; updateState(); });
+  // Pause freezes the current pose rather than abruptly snapping to a statue.
+  listen($('pause'), 'click', () => { paused = !paused; updateState(); });
   listen($('orbit'), 'click', () => {
     orbiting = !orbiting; controls.enabled = orbiting;
     dragging = false;
@@ -483,7 +492,7 @@ function start() {
     loadSequence++;
     pendingFetch?.abort();
     listenerController.abort(); resizeObserver.disconnect(); visibilityObserver.disconnect();
-    controls.dispose(); mixer?.stopAllAction(); disposeModel(scene); renderer.dispose();
+    controls.dispose(); mixer?.stopAllAction(); livingRig?.dispose(); disposeModel(scene); renderer.dispose();
   });
   listen(window, 'pageshow', () => updateState());
   resize();
