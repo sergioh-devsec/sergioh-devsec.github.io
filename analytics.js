@@ -11,7 +11,7 @@
   function allowedPage(location,privacySignal=false,hosts=HOSTS){
     const params=new URLSearchParams(location.search||'');
     const safe=[...params].every(([key,value])=>REFERRALS.has(key)||(key==='ruta'&&['business','creator','lab'].includes(value)));
-    return !privacySignal&&location.protocol==='https:'&&hosts.includes(location.hostname)&&['/','/index.html','/cotizador.html'].includes(location.pathname)&&safe;
+    return !privacySignal&&location.protocol==='https:'&&hosts.includes(location.hostname)&&['/portafolio.html','/cotizador.html'].includes(location.pathname)&&safe;
   }
   function createConsent({initial=null,eligible=true,load,stop,save,event,reload}){
     let choice=initial,started=false,stopped=false;

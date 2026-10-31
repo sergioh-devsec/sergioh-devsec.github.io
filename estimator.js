@@ -71,7 +71,17 @@
   }
   function paymentLink(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&u.hostname==='www.paypal.com'&&/^\/ncp\/payment\/[A-Za-z0-9]+\/?$/.test(u.pathname)&&!u.search&&!u.hash?u.href:null;}catch{return null;}}
   function bookingLink(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&u.hostname==='cal.com'&&/^\/[a-z0-9_-]+\/[a-z0-9_-]+\/?$/i.test(u.pathname)&&!u.search&&!u.hash?u.href:null;}catch{return null;}}
-  const api={packages,explanations,estimate,timeEstimate,formEndpoint,web3formsKey,sendEnquiry,paymentLink,bookingLink};
+  function enquiryContext(search,language='es'){
+    const params=new URLSearchParams(search),en=language==='en';
+    const professions={dentista:['consultorio dental','dental practice'],psicologia:['psicología','psychology practice'],medicina:['consultorio médico','medical practice'],abogacia:['despacho jurídico','law firm'],contabilidad:['despacho contable','accounting practice']};
+    const giro=params.get('giro'),interest=params.get('interes');
+    if(giro==='dentista'&&interest==='paquete_pro')return en?'I would like a proposal for an automated dental practice: branded documents, a dental website with appointments, reminders and treatment estimates. Please confirm scope, delivery time, third-party costs and taxes.':'Quiero una propuesta para mi consultorio dental automatizado: documentos con mi marca, web dental con citas, recordatorios y presupuestos de tratamiento. Confirmemos alcance, plazo, costos externos e impuestos.';
+    if(Object.hasOwn(professions,giro)&&interest==='documentos')return (en?'I need a document workflow for my ':'Necesito un flujo de documentos para mi ')+professions[giro][en?1:0]+'.';
+    if(interest==='seguridad')return en?'I would like to discuss a security and backup review.':'Quiero revisar una solución de seguridad y respaldos.';
+    if(interest==='tablero')return en?'I would like a dashboard for my business.':'Quiero un tablero de seguimiento para mi negocio.';
+    return '';
+  }
+  const api={packages,explanations,estimate,timeEstimate,formEndpoint,web3formsKey,sendEnquiry,paymentLink,bookingLink,enquiryContext};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   if(typeof document==='undefined')return;
   const I=window.I18N,S=window.Site,C=window.COMMERCE,$=id=>document.getElementById(id),root=$('quote-builder');
@@ -119,5 +129,7 @@
       status.textContent=message+' '+tx('Tus datos siguen en el formulario. Puedes descargar el resumen o volver a intentarlo más tarde.','Your entries remain in the form. Download the summary or try again later.');
     }
   });
+  const requestedContext=enquiryContext(location.search,I.language);
+  if(requestedContext)for(const id of ['local-goal','contact-goal'])if(!$(id).value)$(id).value=requestedContext;
   document.addEventListener('portfolio:language',render);render();
 })();
