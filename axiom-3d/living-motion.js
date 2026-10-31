@@ -48,6 +48,9 @@ export function sampleLivingPose(elapsedSeconds, characterId = 'axiom', pointer 
   const clock = t + profile.phase;
   const e = profile.energy;
   const x = clamp(finite(pointer?.x), -1, 1), y = clamp(finite(pointer?.y), -1, 1);
+  // Deliberate attention wins over autonomous glances. Keep breathing active.
+  const focus = clamp(finite(pointer?.attention), 0, 1);
+  const wander = 1 - focus;
   const cycle = clock % 19;
 
   // Look, pause to notice something, then return. The quiet intervals prevent a
@@ -58,9 +61,9 @@ export function sampleLivingPose(elapsedSeconds, characterId = 'axiom', pointer 
   const nod = attention * Math.sin((cycle - 14.9) * 3.1);
   const breath = Math.sin(clock * profile.breathRate);
   const pose = {
-    headYaw: x * 0.16 + (lookRight * 0.09 - lookLeft * 0.10) * e,
-    headPitch: y * 0.065 + nod * 0.04 - breath * 0.009,
-    headRoll: (lookRight * -0.025 + lookLeft * 0.025) * e + Math.sin(clock * 0.69) * 0.009,
+    headYaw: x * 0.22 + (lookRight * 0.09 - lookLeft * 0.10) * e * wander,
+    headPitch: y * 0.085 + nod * 0.04 * wander - breath * 0.009,
+    headRoll: (lookRight * -0.025 + lookLeft * 0.025) * e * wander + Math.sin(clock * 0.69) * 0.009,
     breath,
     bodySway: (Math.sin(clock * 0.73) * 0.017 + Math.sin(clock * 0.37 + 0.8) * 0.006) * e,
     wave: 0.018 + (Math.sin(clock * 1.07) + 1) * 0.012,

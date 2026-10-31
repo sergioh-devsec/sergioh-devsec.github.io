@@ -3,7 +3,8 @@ import { GLTFLoader } from './vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from './vendor/three/examples/jsm/controls/OrbitControls.js';
 import { validateGLB, validateGLTF, MAX_MODEL_BYTES } from './model-policy.js';
 import { createLivingRig } from './living-rig.js';
-import { sampleLivingPose, ACTION_DURATIONS } from './living-motion.js';
+import { sampleLivingPose, ACTION_DURATIONS } from './living-motion.js?v=attention-1';
+import { createGazeTarget } from './gaze-target.js';
 
 // Locally converted user-supplied models. Only the selected character is fetched.
 const CHARACTERS = Object.freeze({
@@ -17,7 +18,7 @@ const CHARACTERS = Object.freeze({
   vector: { name: 'Vector', role: 'Parte de la familia del laboratorio', color: 0xa8d9a9 },
 });
 const BONE_NAMES = {
-  head: ['Head', 'head', 'mixamorigHead', 'CC_Base_Head'],
+  head: ['LivingHead', 'Head', 'head', 'mixamorigHead', 'CC_Base_Head'],
   left: ['Eye_L', 'LeftEye', 'EyeLeft', 'mixamorigLeftEye'],
   right: ['Eye_R', 'RightEye', 'EyeRight', 'mixamorigRightEye'],
 };
@@ -36,7 +37,12 @@ let frame = 0, previousTime = 0, elapsed = 0, action = null;
 let fitDistance = 6, modelHeight = 3.2, modelRadius = 2.13;
 const targetPointer = new THREE.Vector2();
 const smoothPointer = new THREE.Vector2();
-const neutralPointer = new THREE.Vector2();
+const pointerNDC = new THREE.Vector2();
+const headAnchor = new THREE.Vector3();
+const headWorld = new THREE.Vector3();
+const gazeTarget = createGazeTarget();
+const pointerSample = { x: 0, y: 0, until: 0 };
+let attention = 0;
 const raycaster = new THREE.Raycaster();
 const offsetQuaternion = new THREE.Quaternion();
 const lookEuler = new THREE.Euler(0, 0, 0, 'YXZ');
@@ -123,7 +129,15 @@ function resetPose() {
   action = null;
   canvas.dataset.action = 'idle';
   smoothPointer.set(0, 0);
+  pointerSample.until = 0;
+  attention = 0;
   render();
+}
+
+function rememberPointer(event) {
+  pointerSample.x = event.clientX;
+  pointerSample.y = event.clientY;
+  pointerSample.until = performance.now() + (event.pointerType === 'mouse' ? 5000 : 3500);
 }
 
 function updateState() {
@@ -156,9 +170,25 @@ function tick(time) {
   elapsed += delta;
   for (const entry of tracked) entry.node.quaternion.copy(entry.rest);
   mixer?.update(delta);
-  // Orbit availability does not turn off the character's gaze. Only a live drag
-  // temporarily centres the pose so camera rotation and head movement do not fight.
-  smoothPointer.lerp(following && !dragging ? targetPointer : neutralPointer, 1 - Math.exp(-delta * 6));
+  // Resolve a ray against the head's viewing plane, then into the model's local
+  // frame. A camera orbit changes the mapping; a quiet pointer eases back to idle.
+  const focus = following && !dragging && action?.type !== 'spin'
+    ? THREE.MathUtils.clamp((pointerSample.until - time) / 700, 0, 1) : 0;
+  targetPointer.set(0, 0);
+  if (focus) {
+    const box = canvas.getBoundingClientRect();
+    pointerNDC.set((pointerSample.x - box.left) / Math.max(box.width, 1) * 2 - 1,
+      1 - (pointerSample.y - box.top) / Math.max(box.height, 1) * 2);
+    model.updateWorldMatrix(true, false);
+    headWorld.copy(headAnchor).applyMatrix4(model.matrixWorld);
+    gazeTarget.resolve(camera, model, headWorld, pointerNDC, targetPointer);
+    targetPointer.multiplyScalar(focus);
+  }
+  const ease = 1 - Math.exp(-delta * 6);
+  smoothPointer.lerp(targetPointer, ease);
+  attention += (focus - attention) * ease;
+  smoothPointer.attention = attention;
+  canvas.dataset.attention = focus ? 'following' : 'idle';
   if (action) action.time += delta;
   const pose = sampleLivingPose(elapsed, selectedCharacter, smoothPointer, action);
   if (livingRig) livingRig.apply(pose);
@@ -250,6 +280,12 @@ function adoptModel(gltf, imported, character = selectedCharacter) {
   model = wrapper;
   motionRoot.add(model);
   head = findPart(next, BONE_NAMES.head);
+  model.updateWorldMatrix(true, true);
+  if (head) {
+    head.getWorldPosition(headAnchor);
+    model.worldToLocal(headAnchor);
+    headAnchor.y += size.y * 0.10;
+  } else headAnchor.set(center.x, bounds.min.y + size.y * 0.75, center.z);
   chest = findPart(next, ['Chest']);
   eyes = [findPart(next, BONE_NAMES.left), findPart(next, BONE_NAMES.right)].filter(Boolean);
   tracked = livingRig ? [] : [head, chest, ...eyes].filter(Boolean).map(node => ({ node, rest: node.quaternion.clone() }));
@@ -405,27 +441,30 @@ function start() {
   controls.minPolarAngle = Math.PI * 0.30; controls.maxPolarAngle = Math.PI * 0.58;
   canvas.style.touchAction = 'none';
   controls.addEventListener('start', () => { dragging = true; });
-  controls.addEventListener('end', () => { dragging = false; targetPointer.set(0, 0); });
+  controls.addEventListener('end', () => { dragging = false; });
   controls.addEventListener('change', render);
   listen(window, 'pointermove', event => {
-    if (event.pointerType === 'mouse') targetPointer.set((event.clientX / innerWidth - 0.5) * 2, (event.clientY / innerHeight - 0.5) * 2);
+    if (event.pointerType === 'mouse' && !dragging) rememberPointer(event);
+    else if (event.isPrimary && pointerStart && !orbiting) rememberPointer(event);
   }, { passive: true });
-  listen(document.documentElement, 'pointerleave', () => targetPointer.set(0, 0));
-  listen(window, 'blur', () => { targetPointer.set(0, 0); dragging = false; });
+  listen(document.documentElement, 'pointerleave', () => { pointerSample.until = 0; });
+  listen(window, 'blur', () => { pointerSample.until = 0; dragging = false; });
   let pointerStart = null;
   listen(canvas, 'pointerdown', event => {
     canvas.focus({ preventScroll: true });
     if (event.isPrimary && event.button === 0) pointerStart = { x: event.clientX, y: event.clientY, id: event.pointerId };
-    if (event.pointerType !== 'mouse') {
-      const box = canvas.getBoundingClientRect();
-      targetPointer.set((event.clientX - box.left) / box.width * 2 - 1, (event.clientY - box.top) / box.height * 2 - 1);
-    }
+    if (event.isPrimary) rememberPointer(event);
   }, { passive: true });
-  listen(canvas, 'pointercancel', () => { pointerStart = null; dragging = false; targetPointer.set(0, 0); });
+  listen(canvas, 'pointercancel', () => { pointerStart = null; dragging = false; pointerSample.until = 0; });
   listen(canvas, 'pointerup', event => {
     const startPoint = pointerStart;
     pointerStart = null;
-    if (!model || !startPoint || startPoint.id !== event.pointerId || Math.hypot(event.clientX - startPoint.x, event.clientY - startPoint.y) > 8) return;
+    if (!model || !startPoint || startPoint.id !== event.pointerId) return;
+    if (Math.hypot(event.clientX - startPoint.x, event.clientY - startPoint.y) > 8) {
+      if (orbiting) pointerSample.until = 0;
+      return;
+    }
+    rememberPointer(event);
     const box = canvas.getBoundingClientRect();
     raycaster.setFromCamera(new THREE.Vector2((event.clientX - box.left) / box.width * 2 - 1, -((event.clientY - box.top) / box.height) * 2 + 1), camera);
     if (raycaster.intersectObject(model, true).length) react('jump');
@@ -454,7 +493,7 @@ function start() {
     orbiting = !orbiting; controls.enabled = orbiting;
     dragging = false;
     canvas.style.touchAction = orbiting ? 'none' : 'pan-y';
-    $('stage-caption').textContent = orbiting ? 'Arrastra para girar. Desliza fuera del visor para seguir por la página.' : 'Puedes deslizar la página sobre el visor. La mirada sigue activa si la has elegido.';
+    $('stage-caption').textContent = orbiting ? 'Arrastra para girar; un toque atrae su mirada.' : 'Toca un punto del visor para que mire hacia ahí. Puedes deslizar para seguir por la página.';
     updateState();
   });
   listen($('camera-left'), 'click', () => { controls.rotateLeft(0.35); controls.update(); render(); });
