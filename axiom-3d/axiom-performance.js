@@ -88,6 +88,8 @@ export function sampleAxiomPerformance(elapsedSeconds, options = {}) {
   Object.assign(pose, {
     shoulderLX: .012 * Math.sin(t * 1.1) + mood.arm * .35,
     shoulderRX: .018 * Math.sin(t * 1.1 + .6) + mood.arm,
+    shoulderLY: 0,
+    shoulderRY: 0,
     shoulderLZ: -.012 - breath * .006,
     shoulderRZ: pose.wave + mood.anger * .065,
     elbowL: .035 + (breath + 1) * .008,
@@ -161,19 +163,21 @@ export function sampleAxiomPerformance(elapsedSeconds, options = {}) {
       pose.shoulderLZ -= gesture * .015;
       pose.face.smile += gesture * .12;
     } else if (action.type === 'attack') {
-      // A playful, single air punch: wind up, extend the free arm, recover.
-      // The tablet arm stays close; no projectiles or target are implied.
-      const windup = curve(p, [[0, 0], [.24, 1], [.34, .9], [.48, 0], [1, 0]]);
-      const punch = curve(p, [[0, 0], [.28, 0], [.43, 1], [.56, .82], [1, 0]]);
-      const active = Math.max(windup, punch);
-      pose.shoulderRX = mix(pose.shoulderRX, .18 * windup - .58 * punch, active);
-      pose.shoulderRZ += .06 * windup + .12 * punch;
+      // The source hand is open: perform a palm strike, not a pretend fist.
+      // Turn the free arm toward the model's oblique front before extending.
+      // Positive torso pitch / negative pelvis yaw drive this rig forward.
+      const windup = curve(p, [[0, 0], [.24, 1], [.30, 1], [.44, 0], [1, 0]]);
+      const punch = curve(p, [[0, 0], [.26, 0], [.46, 1], [.56, 1], [1, 0]]);
+      const active = curve(p, [[0, 0], [.24, 1], [.56, 1], [1, 0]]);
+      pose.shoulderRX = mix(pose.shoulderRX, mix(.09, -.25, punch), active);
+      pose.shoulderRY = mix(pose.shoulderRY, mix(.12, -.65, punch), active);
+      pose.shoulderRZ = mix(pose.shoulderRZ, mix(.035, .025, punch), active);
       pose.elbowR = mix(pose.elbowR, mix(.78, .07, punch), active);
-      pose.wristR -= punch * .06;
+      pose.wristR = mix(pose.wristR, mix(.035, -.06, punch), active);
       pose.shoulderLX += windup * .018;
       pose.elbowL += windup * .025;
-      pose.pelvisYaw += -.10 * windup + .13 * punch;
-      pose.torsoPitch += .025 * windup - .06 * punch;
+      pose.pelvisYaw = mix(pose.pelvisYaw, mix(.065, -.10, punch), active);
+      pose.torsoPitch = mix(pose.torsoPitch, mix(-.025, .10, punch), active);
       pose.headYaw += -.03 * windup + .035 * punch;
       pose.headPitch += .012 * windup - .01 * punch;
       pose.kneeL += windup * .045;
@@ -204,6 +208,8 @@ export function sampleAxiomPerformance(elapsedSeconds, options = {}) {
   pose.rootY += grounding + flight;
   pose.shoulderLX = clamp(pose.shoulderLX, -.35, .35);
   pose.shoulderRX = clamp(pose.shoulderRX, -.65, .65);
+  pose.shoulderLY = clamp(pose.shoulderLY, -.25, .25);
+  pose.shoulderRY = clamp(pose.shoulderRY, -.95, .95);
   pose.shoulderLZ = clamp(pose.shoulderLZ, -.30, .30);
   pose.shoulderRZ = clamp(pose.shoulderRZ, -.65, .65);
   pose.headYaw = clamp(pose.headYaw, -.28, .28);
@@ -212,7 +218,7 @@ export function sampleAxiomPerformance(elapsedSeconds, options = {}) {
   pose.tail = clamp(pose.tail, -.13, .13);
   pose.pelvisYaw = clamp(pose.pelvisYaw, -.20, .20);
   pose.pelvisRoll = clamp(pose.pelvisRoll, -.05, .05);
-  pose.torsoPitch = clamp(pose.torsoPitch, -.18, .08);
+  pose.torsoPitch = clamp(pose.torsoPitch, -.18, .16);
   for (const key of Object.keys(pose.face)) {
     pose.face[key] = clamp(pose.face[key], key.startsWith('gaze') ? -1 : 0, 1);
   }

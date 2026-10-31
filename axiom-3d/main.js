@@ -5,9 +5,9 @@ import { validateGLB, validateGLTF, MAX_MODEL_BYTES } from './model-policy.js';
 import { createLivingRig } from './living-rig.js';
 import { sampleLivingPose, ACTION_DURATIONS } from './living-motion.js?v=attention-1';
 import { createGazeTarget } from './gaze-target.js';
-import { createAxiomBodyRig } from './axiom-body-rig.js';
+import { createAxiomBodyRig } from './axiom-body-rig.js?v=articulation-2';
 import { createAxiomFace } from './axiom-face.js';
-import { sampleAxiomPerformance, AXIOM_ACTION_DURATIONS } from './axiom-performance.js';
+import { sampleAxiomPerformance, AXIOM_ACTION_DURATIONS } from './axiom-performance.js?v=articulation-2';
 
 // Locally converted user-supplied models. Only the selected character is fetched.
 const CHARACTERS = Object.freeze({
@@ -71,6 +71,7 @@ const JOINT_CONTROLS = [
   ['headYaw', 'Girar la cabeza', -24, 24], ['headPitch', 'Inclinar la cabeza', -14, 14],
   ['torsoPitch', 'Inclinar el torso', -11, 13], ['pelvisYaw', 'Girar la cintura', -12, 12],
   ['shoulderLX', 'Hombro de la tablet', -25, 25], ['shoulderRX', 'Hombro libre', -35, 35],
+  ['shoulderLY', 'Rotar brazo de la tablet', -14, 14], ['shoulderRY', 'Rotar brazo libre', -54, 54],
   ['shoulderLZ', 'Abrir brazo de la tablet', -18, 18], ['shoulderRZ', 'Abrir brazo libre', -30, 30],
   ['elbowL', 'Codo de la tablet', -10, 40], ['elbowR', 'Codo libre', -10, 45],
   ['wristL', 'Muñeca de la tablet', -10, 10], ['wristR', 'Muñeca libre', -22, 22],

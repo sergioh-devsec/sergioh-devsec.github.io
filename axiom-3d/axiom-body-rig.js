@@ -243,10 +243,13 @@ export function createAxiomBodyRig(root) {
     for (const suffix of ['L', 'R']) {
       const left = suffix === 'L';
       const shoulderX = clamp(pose[`shoulder${suffix}X`], left ? -.4 : -.85, left ? .4 : .85);
+      const shoulderY = clamp(pose[`shoulder${suffix}Y`], left ? -.25 : -.95, left ? .25 : .95);
       const shoulderZValue = suffix === 'R' && !Number.isFinite(pose.shoulderRZ) ? pose.wave : pose[`shoulder${suffix}Z`];
       const shoulderZ = clamp(shoulderZValue, left ? -.35 : -.75, left ? .35 : .75);
       rotate(bones[`Shoulder${suffix}`], LATERAL, shoulderX * .25);
       rotate(bones[`UpperArm${suffix}`], LATERAL, shoulderX * .75);
+      rotate(bones[`Shoulder${suffix}`], UP, shoulderY * .25);
+      rotate(bones[`UpperArm${suffix}`], UP, shoulderY * .75);
       rotate(bones[`Shoulder${suffix}`], FORWARD, shoulderZ * .25);
       rotate(bones[`UpperArm${suffix}`], FORWARD, shoulderZ * .75);
       rotate(bones[`Elbow${suffix}`], LATERAL, -clamp(pose[`elbow${suffix}`], -.18, left ? .7 : 1.0));
