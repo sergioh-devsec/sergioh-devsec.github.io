@@ -27,6 +27,7 @@ function link(value, href, cls = 'button primary') {
 const UI = {
   skip: ['Ir a las estaciones', 'Skip to stations'], brandLine: ['Ideas que trabajan contigo.', 'Ideas that work with you.'],
   portfolio: ['Portafolio', 'Portfolio'], hint: ['Toca un objeto o elige una estación. Axiom te acompaña.', 'Tap an object or choose a station. Axiom will guide you.'],
+  cvBuilder: ['Crear mi CV', 'Build my CV'],
   stationCount: ['12 estaciones · un solo espacio', '12 stations · one shared space'], hoverHint: ['Cada objeto tiene algo para ti.', 'Every object has something for you.'],
   companion: ['/ TU CIBERASISTENTE', '/ YOUR CYBER ASSISTANT'], meet3d: ['Conoce mis gestos en 3D', 'Meet my 3D personality'],
   guidePrivacy: ['Explora sin registro. Tus documentos se generan en este navegador.', 'Explore without signing up. Documents are generated in this browser.'],
@@ -165,6 +166,7 @@ function renderStation(preserve = false) {
       for (const [path, es, english] of [['dental','Consultorio dental','Dental practice'],['psicologia','Psicología','Psychology'],['unas','Estudio de uñas','Nail studio']]) samples.append(link(text(es, english), `https://sergioh-devsec.github.io/paginas-para-negocios/${path}/`, 'sample-link'));
       body.append(el('p', 'small', text('Muestras de diseño con marcas ficticias.', 'Design samples with fictional brands.')), samples);
     }
+    if (station.id === 'library' || station.id === 'showcase') body.append(link(text('Crear mi CV con Axiom', 'Build my CV with Axiom'), 'cv.html'));
     body.append(link(data.cta, station.href));
     if (['comms','clock'].includes(station.id)) body.append(el('p', 'tool-notice', text('Diseñamos esta integración después de revisar tus herramientas y permisos. Esta demo no envía mensajes ni agenda citas.', 'We scope this integration after reviewing your tools and permissions. This demo does not send messages or book appointments.')));
   }
