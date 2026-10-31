@@ -5,6 +5,9 @@ import { validateGLB, validateGLTF, MAX_MODEL_BYTES } from './model-policy.js';
 import { createLivingRig } from './living-rig.js';
 import { sampleLivingPose, ACTION_DURATIONS } from './living-motion.js?v=attention-1';
 import { createGazeTarget } from './gaze-target.js';
+import { createAxiomBodyRig } from './axiom-body-rig.js';
+import { createAxiomFace } from './axiom-face.js';
+import { sampleAxiomPerformance, AXIOM_ACTION_DURATIONS } from './axiom-performance.js';
 
 // Locally converted user-supplied models. Only the selected character is fetched.
 const CHARACTERS = Object.freeze({
@@ -28,7 +31,10 @@ const canvas = $('axiom-canvas');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const buttons = [...document.querySelectorAll('#viewer-controls button, .view-controls button, #rig')];
 const status = text => { $('status').textContent = text; };
-let renderer, scene, camera, controls, model, mixer, skeletonHelper, livingRig;
+let renderer, scene, camera, controls, model, mixer, skeletonHelper, livingRig, axiomFace;
+let axiomActive = false, mood = 'neutral', locomotion = 'idle', blendedPose = null;
+let closeUp = false;
+const manualPose = new Map();
 let head, chest, eyes = [], tracked = [], loadSequence = 0;
 let selectedCharacter = 'axiom', displayName = 'Axiom', loading = false, ring, fill;
 let pendingFetch;
@@ -50,6 +56,38 @@ const motionRoot = new THREE.Group();
 const listenerController = new AbortController();
 const listen = (node, type, handler, options = {}) => node.addEventListener(type, handler, { ...options, signal: listenerController.signal });
 const mayAnimate = () => model && !paused && !reducedMotion.matches && visible && !document.hidden && !contextLost;
+const narrowView = matchMedia('(max-width: 760px)');
+function placePerformancePanel() {
+  const panel = $('axiom-performance');
+  if (narrowView.matches) document.querySelector('.interaction-deck').insertBefore(panel, $('interaction-hint'));
+  else document.querySelector('.intro').insertBefore(panel, document.querySelector('.intro-note'));
+}
+placePerformancePanel();
+listen(narrowView, 'change', placePerformancePanel);
+
+// Fixed, bounded controls; no visitor-provided code or model instructions.
+const JOINT_CONTROLS = [
+  ['face.blink', 'Cerrar los ojos', 0, 100], ['face.jawOpen', 'Abrir la boca', 0, 100],
+  ['headYaw', 'Girar la cabeza', -24, 24], ['headPitch', 'Inclinar la cabeza', -14, 14],
+  ['torsoPitch', 'Inclinar el torso', -11, 13], ['pelvisYaw', 'Girar la cintura', -12, 12],
+  ['shoulderLX', 'Hombro de la tablet', -25, 25], ['shoulderRX', 'Hombro libre', -35, 35],
+  ['shoulderLZ', 'Abrir brazo de la tablet', -18, 18], ['shoulderRZ', 'Abrir brazo libre', -30, 30],
+  ['elbowL', 'Codo de la tablet', -10, 40], ['elbowR', 'Codo libre', -10, 45],
+  ['wristL', 'Muñeca de la tablet', -10, 10], ['wristR', 'Muñeca libre', -22, 22],
+  ['hipL', 'Cadera izquierda', -40, 40], ['hipR', 'Cadera derecha', -40, 40],
+  ['kneeL', 'Rodilla izquierda', 0, 75], ['kneeR', 'Rodilla derecha', 0, 75],
+  ['ankleL', 'Tobillo izquierdo', -25, 25], ['ankleR', 'Tobillo derecho', -25, 25],
+  ['tail', 'Cola', -10, 10],
+];
+for (const [key, text, min, max] of JOINT_CONTROLS) {
+  const label = document.createElement('label');
+  const title = document.createElement('span'); title.textContent = text;
+  const input = document.createElement('input');
+  input.type = 'range'; input.min = String(min); input.max = String(max); input.step = '1'; input.value = '0';
+  input.dataset.joint = key; input.id = `joint-${key.replace('.', '-')}`;
+  const output = document.createElement('output'); output.htmlFor = input.id; output.value = '0';
+  label.append(title, input, output); $('joint-controls').append(label);
+}
 
 function disposeModel(object) {
   if (!object) return;
@@ -97,8 +135,8 @@ function fitCamera(reset = false) {
   // A sphere is rotation-independent: even the narrow mobile view fits the tail.
   fitDistance = modelRadius / Math.sin(Math.min(vFov, hFov) / 2);
   const direction = reset ? new THREE.Vector3(0.1, 0.06, 1).normalize() : camera.position.clone().sub(controls.target).normalize();
-  controls.target.set(0, modelHeight * 0.49, 0);
-  camera.position.copy(controls.target).addScaledVector(direction, fitDistance);
+  controls.target.set(0, modelHeight * (closeUp ? 0.69 : 0.49), 0);
+  camera.position.copy(controls.target).addScaledVector(direction, fitDistance * (closeUp ? 0.56 : 1));
   camera.near = 0.05;
   camera.far = Math.max(50, fitDistance * 5);
   camera.updateProjectionMatrix();
@@ -122,6 +160,8 @@ function render() {
 
 function resetPose() {
   livingRig?.reset();
+  axiomFace?.reset();
+  blendedPose = null;
   for (const entry of tracked) entry.node.quaternion.copy(entry.rest);
   motionRoot.position.set(0, 0, 0);
   motionRoot.rotation.set(0, 0, 0);
@@ -132,6 +172,46 @@ function resetPose() {
   pointerSample.until = 0;
   attention = 0;
   render();
+}
+
+function applyPerformance(pose, delta = 0, immediate = false) {
+  // Blend mode changes without damping footsteps or short blinks into a blur.
+  const blend = immediate || !blendedPose ? 1 : 1 - Math.exp(-Math.max(delta, 0) * 16);
+  if (!blendedPose) blendedPose = { ...pose, face: { ...pose.face } };
+  for (const [key, value] of Object.entries(pose)) {
+    if (typeof value === 'number') blendedPose[key] = (blendedPose[key] ?? value) + (value - (blendedPose[key] ?? value)) * blend;
+  }
+  blendedPose.face ||= {};
+  for (const [key, value] of Object.entries(pose.face || {})) {
+    const old = blendedPose.face[key] ?? value;
+    blendedPose.face[key] = key === 'blink' ? value : old + (value - old) * blend;
+  }
+  const output = { ...blendedPose, face: { ...blendedPose.face } };
+  for (const [key, value] of manualPose) {
+    if (key.startsWith('face.')) output.face[key.slice(5)] = value;
+    else output[key] = value;
+  }
+  livingRig.apply(output);
+  axiomFace?.apply(output.face);
+  motionRoot.position.y = output.rootY + livingRig.groundLift(output.rootY);
+  motionRoot.scale.set(output.rootScaleXZ, output.rootScaleY, output.rootScaleXZ);
+  motionRoot.rotation.set(output.rootPitch, output.rootYaw, output.rootRoll);
+}
+
+function previewPerformance() {
+  if (!axiomActive || !model) return;
+  const pose = sampleAxiomPerformance(elapsed || 0.8, { mood, locomotion, pointer: smoothPointer, action: null });
+  applyPerformance(pose, 0, true);
+  render();
+}
+
+function updatePerformanceControls() {
+  $('axiom-performance').hidden = !axiomActive;
+  $('attack').hidden = !axiomActive;
+  document.querySelectorAll('[data-mood]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.mood === mood)));
+  document.querySelectorAll('[data-locomotion]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.locomotion === locomotion)));
+  canvas.dataset.mood = axiomActive ? mood : '';
+  canvas.dataset.locomotion = axiomActive ? locomotion : '';
 }
 
 function rememberPointer(event) {
@@ -147,6 +227,8 @@ function updateState() {
   $('look').setAttribute('aria-pressed', String(following));
   $('orbit').setAttribute('aria-pressed', String(orbiting));
   $('orbit').textContent = orbiting ? 'Arrastre 360°: activo' : 'Activar arrastre 360°';
+  $('face-view').textContent = closeUp ? 'Ver cuerpo completo' : 'Ver rostro';
+  $('face-view').setAttribute('aria-pressed', String(closeUp));
   $('scene-state').textContent = contextLost ? 'SIN WEBGL' : loading ? 'CARGANDO' : !model ? 'VISTA ORIGINAL' : paused || reducedMotion.matches ? 'EN REPOSO' : 'EN VIVO';
   const state = loading ? 'loading' : contextLost || !model ? 'unavailable' : paused ? 'paused' : reducedMotion.matches ? 'reduced' : 'active';
   $('motion-note').dataset.state = state;
@@ -190,8 +272,11 @@ function tick(time) {
   smoothPointer.attention = attention;
   canvas.dataset.attention = focus ? 'following' : 'idle';
   if (action) action.time += delta;
-  const pose = sampleLivingPose(elapsed, selectedCharacter, smoothPointer, action);
-  if (livingRig) livingRig.apply(pose);
+  const pose = axiomActive
+    ? sampleAxiomPerformance(elapsed, { mood, locomotion, pointer: smoothPointer, action })
+    : sampleLivingPose(elapsed, selectedCharacter, smoothPointer, action);
+  if (axiomActive) applyPerformance(pose, delta);
+  else if (livingRig) livingRig.apply(pose);
   else {
     // Imported models keep their own rig and animation tracks.
     if (head) {
@@ -204,9 +289,11 @@ function tick(time) {
       eye.quaternion.multiply(offsetQuaternion.setFromEuler(lookEuler));
     }
   }
-  motionRoot.position.y = pose.rootY;
-  motionRoot.scale.set(pose.rootScaleXZ, pose.rootScaleY, pose.rootScaleXZ);
-  motionRoot.rotation.set(pose.rootPitch, pose.rootYaw, pose.rootRoll);
+  if (!axiomActive) {
+    motionRoot.position.y = pose.rootY;
+    motionRoot.scale.set(pose.rootScaleXZ, pose.rootScaleY, pose.rootScaleXZ);
+    motionRoot.rotation.set(pose.rootPitch, pose.rootYaw, pose.rootRoll);
+  }
   if (action && action.time >= action.duration) {
     action = null;
     canvas.dataset.action = 'idle';
@@ -223,10 +310,12 @@ function react(type) {
     return;
   }
   if (action) return;
-  action = { type, time: 0, duration: ACTION_DURATIONS[type] };
+  manualPose.clear();
+  document.querySelectorAll('[data-joint]').forEach(input => { input.value = '0'; input.nextElementSibling.value = '0'; });
+  action = { type, time: 0, duration: (axiomActive ? AXIOM_ACTION_DURATIONS : ACTION_DURATIONS)[type] };
   canvas.dataset.action = type;
-  $('stage-caption').textContent = type === 'jump' ? '¡Una idea que despega!' : type === 'wave' ? '¡Qué bueno verte por aquí!' : 'Un giro para ver las cosas de otra forma.';
-  status(type === 'jump' ? `¡Salto recibido! ${displayName} responde a tu toque.` : type === 'wave' ? `${displayName} te saluda.` : `${displayName} da una vuelta completa.`);
+  $('stage-caption').textContent = type === 'attack' ? '¡Preparado! Un golpe de práctica y vuelta a la calma.' : type === 'jump' ? '¡Una idea que despega!' : type === 'wave' ? '¡Qué bueno verte por aquí!' : 'Un giro para ver las cosas de otra forma.';
+  status(type === 'attack' ? 'Axiom practica un ataque en el sitio.' : type === 'jump' ? `¡Salto recibido! ${displayName} responde a tu toque.` : type === 'wave' ? `${displayName} te saluda.` : `${displayName} da una vuelta completa.`);
   updateState();
 }
 
@@ -245,7 +334,9 @@ function adoptModel(gltf, imported, character = selectedCharacter) {
     throw new Error('El modelo no tiene dimensiones válidas.');
   }
   // These eight meshes have known proportions. Unknown imports retain their rig.
-  const nextLivingRig = imported ? null : createLivingRig(next, character);
+  const isAxiom = !imported && character === 'axiom';
+  const nextLivingRig = imported ? null : isAxiom ? createAxiomBodyRig(next) : createLivingRig(next, character);
+  const nextFace = isAxiom ? createAxiomFace(next, nextLivingRig) : null;
   summary = sceneSummary(next);
   const scale = 3.2 / Math.max(size.y, size.x * 1.05, size.z * 1.05);
   const center = bounds.getCenter(new THREE.Vector3());
@@ -274,9 +365,15 @@ function adoptModel(gltf, imported, character = selectedCharacter) {
     skeletonHelper = null;
   }
   motionRoot.clear();
+  axiomFace?.dispose();
   livingRig?.dispose();
   disposeModel(model);
   livingRig = nextLivingRig;
+  axiomFace = nextFace;
+  axiomActive = isAxiom;
+  closeUp = false;
+  manualPose.clear();
+  document.querySelectorAll('[data-joint]').forEach(input => { input.value = '0'; input.nextElementSibling.value = '0'; });
   model = wrapper;
   motionRoot.add(model);
   head = findPart(next, BONE_NAMES.head);
@@ -317,11 +414,13 @@ function adoptModel(gltf, imported, character = selectedCharacter) {
   $('rig').setAttribute('aria-pressed', 'false');
   $('rig').textContent = 'Ver articulaciones';
   $('model-label').textContent = imported ? 'Tu modelo, en este navegador' : `${displayName} · modelo del laboratorio`;
-  $('model-description').textContent = imported ? 'El archivo se procesa aquí, sin subirlo a un servidor. El seguimiento depende de los nombres de sus articulaciones.' : 'Malla y textura originales con articulaciones añadidas en este visor: cabeza, torso, brazo y cola. Respiración, miradas y gestos se combinan en tiempo real. El archivo descargable conserva el modelo base.';
+  $('model-description').textContent = imported ? 'El archivo se procesa aquí, sin subirlo a un servidor. El seguimiento depende de los nombres de sus articulaciones.' : isAxiom ? 'Axiom conserva su malla y textura originales. Este visor añade articulaciones de cuerpo y extremidades, expresiones faciales y ciclos en el sitio. El archivo descargable conserva el modelo base.' : 'Malla y textura originales con articulaciones añadidas en este visor: cabeza, torso, brazo y cola. Respiración, miradas y gestos se combinan en tiempo real. El archivo descargable conserva el modelo base.';
   $('rig-status').textContent = `${summary.bones} articulaciones · ${summary.skins} mallas con rigging · ${Math.round(summary.triangles).toLocaleString('es-MX')} triángulos.${livingRig || head ? ' Cabeza articulada.' : ' No se encontró una articulación de cabeza compatible.'}`;
   status(`${displayName} está listo. Mueve el cursor o arrastra el visor. Al seleccionarlo, las cuatro flechas giran la vista.`);
   $('stage-caption').textContent = 'Tu próxima idea ya tiene compañía.';
   resetPose();
+  updatePerformanceControls();
+  if (isAxiom && (paused || reducedMotion.matches)) previewPerformance();
   fitCamera(true);
   resize();
   updateState();
@@ -482,6 +581,33 @@ function start() {
   listen($('jump'), 'click', () => react('jump'));
   listen($('spin'), 'click', () => react('spin'));
   listen($('wave'), 'click', () => react('wave'));
+  listen($('attack'), 'click', () => react('attack'));
+  listen($('face-view'), 'click', () => { closeUp = !closeUp; fitCamera(true); updateState(); render(); });
+  document.querySelectorAll('[data-mood], [data-locomotion]').forEach(button => listen(button, 'click', () => {
+    if (!axiomActive) return;
+    if (button.dataset.mood) mood = button.dataset.mood;
+    if (button.dataset.locomotion) locomotion = button.dataset.locomotion;
+    action = null; canvas.dataset.action = 'idle';
+    manualPose.clear();
+    document.querySelectorAll('[data-joint]').forEach(input => { input.value = '0'; input.nextElementSibling.value = '0'; });
+    updatePerformanceControls();
+    if (paused || reducedMotion.matches) previewPerformance();
+    status(`${button.textContent.trim()}. ${paused || reducedMotion.matches ? 'Vista de la pose; el movimiento continuo está desactivado.' : 'Puedes combinar una emoción con caminar o correr en el sitio.'}`);
+  }));
+  document.querySelectorAll('[data-joint]').forEach(input => listen(input, 'input', () => {
+    if (!axiomActive) return;
+    locomotion = 'idle'; action = null; canvas.dataset.action = 'idle';
+    const value = Number(input.value);
+    manualPose.set(input.dataset.joint, input.dataset.joint.startsWith('face.') ? value / 100 : THREE.MathUtils.degToRad(value));
+    input.nextElementSibling.value = input.dataset.joint.startsWith('face.') ? `${value}%` : `${value}°`;
+    updatePerformanceControls();
+    previewPerformance();
+  }));
+  listen($('clear-pose'), 'click', () => {
+    manualPose.clear();
+    document.querySelectorAll('[data-joint]').forEach(input => { input.value = '0'; input.nextElementSibling.value = '0'; });
+    previewPerformance(); status('Articulaciones de vuelta a la animación elegida.');
+  });
   document.querySelectorAll('.character-option').forEach(button => listen(button, 'click', () => {
     loadCharacter(button.dataset.character);
     if (matchMedia('(max-width: 760px)').matches) stage.scrollIntoView({ behavior: reducedMotion.matches ? 'auto' : 'smooth', block: 'start' });
@@ -531,7 +657,7 @@ function start() {
     loadSequence++;
     pendingFetch?.abort();
     listenerController.abort(); resizeObserver.disconnect(); visibilityObserver.disconnect();
-    controls.dispose(); mixer?.stopAllAction(); livingRig?.dispose(); disposeModel(scene); renderer.dispose();
+    controls.dispose(); mixer?.stopAllAction(); axiomFace?.dispose(); livingRig?.dispose(); disposeModel(scene); renderer.dispose();
   });
   listen(window, 'pageshow', () => updateState());
   resize();

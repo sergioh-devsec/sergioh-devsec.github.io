@@ -8,8 +8,8 @@
   <meta name="theme-color" content="#07131b">
   <title>Encuentra tu ciber-compañero ideal · CyberSerchMX</title>
   <meta name="description" content="Encuentra tu ciber-compañero ideal. Conoce a Axiom y sus amigos, mueve el cursor, gira sus modelos 3D y descubre su personalidad.">
-  <link rel="stylesheet" href="style.css?v=035cab81eb95">
-  <script type="module" src="main.js?v=9c50d1229df1"></script>
+  <link rel="stylesheet" href="style.css?v=3fcac0b2fbce">
+  <script type="module" src="main.js?v=a9a031c85b50"></script>
 <link rel="canonical" href="https://sergioh-devsec.github.io/axiom-3d/index.html"><meta property="og:url" content="https://sergioh-devsec.github.io/axiom-3d/index.html"></head>
 <body>
   <a class="skip" href="#viewer-controls">Ir a los controles</a>
@@ -54,8 +54,32 @@
             <button id="wave" class="primary" type="button" disabled>Saludar</button>
             <button id="jump" type="button" disabled>¡Salta!</button>
             <button id="spin" type="button" disabled>Dar una vuelta</button>
+            <button id="attack" type="button" hidden disabled>Atacar</button>
+            <button id="face-view" type="button" aria-pressed="false" disabled>Ver rostro</button>
             <button id="pause" type="button" aria-pressed="false" disabled>Pausar movimiento</button>
           </div>
+          <section id="axiom-performance" class="performance-panel" aria-labelledby="performance-title" hidden>
+            <div class="performance-heading"><h2 id="performance-title">El ánimo de Axiom</h2><span>PRUÉBALO</span></div>
+            <div class="expression-controls" role="group" aria-label="Emoción de Axiom">
+              <button type="button" data-mood="neutral" aria-pressed="true">Curioso</button>
+              <button type="button" data-mood="happy" aria-pressed="false">Feliz</button>
+              <button type="button" data-mood="calm" aria-pressed="false">Tranquilo</button>
+              <button type="button" data-mood="angry" aria-pressed="false">Enojado</button>
+              <button type="button" data-mood="furious" aria-pressed="false">Furioso</button>
+            </div>
+            <div class="locomotion-controls" role="group" aria-label="Movimiento en el sitio">
+              <button type="button" data-locomotion="idle" aria-pressed="true">En reposo</button>
+              <button type="button" data-locomotion="walk" aria-pressed="false">Caminar</button>
+              <button type="button" data-locomotion="run" aria-pressed="false">Correr</button>
+            </div>
+            <p class="hint">Combina una emoción y un movimiento. Camina y corre en el mismo lugar.</p>
+            <details class="joint-options">
+              <summary>Articula a Axiom <span>Ojos, boca y cuerpo</span></summary>
+              <p class="hint">Mueve una articulación con las barras. Al elegir un gesto o movimiento, vuelve a su animación.</p>
+              <div id="joint-controls" class="joint-controls"></div>
+              <button type="button" id="clear-pose">Soltar la pose</button>
+            </details>
+          </section>
           <p class="hint" id="interaction-hint">Mueve el cursor o toca un punto del visor para atraer su mirada. Arrastra para girar la vista; con el visor seleccionado, usa las flechas o Enter para saltar.</p>
           <details class="camera-options">
             <summary>Cambiar el ángulo <span class="camera-options-note">Cámara y seguimiento</span></summary>
