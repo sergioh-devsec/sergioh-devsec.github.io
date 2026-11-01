@@ -26,3 +26,10 @@
 @media(max-width:760px){.stage{position:sticky;top:8px;height:38svh;min-height:255px;max-height:350px;background-color:#0b1c26}.interaction-deck button,.joint-controls input,.joint-options summary,.camera-options summary{scroll-margin-top:calc(38svh + 24px);scroll-margin-bottom:40px}.stage:after{height:80px}.character-plaque{bottom:28px}.character-plaque h2{font-size:21px}.character-plaque p{display:none}.stage-caption{font-size:6px;bottom:8px}.stage-label{font-size:6px}}
 @media(min-width:761px){.stage-column{position:sticky;top:16px}.stage{height:55svh;min-height:360px;max-height:620px}.intro>.performance-panel{margin-top:26px}.stage-column .interaction-deck{padding-top:10px}.stage-column .motion-note{margin-bottom:8px}.stage-column .hint{font-size:10px;line-height:1.5;margin-top:8px}.stage-column .camera-options{margin-top:9px}.stage-column .camera-options summary{min-height:38px}.stage-column .status{font-size:10px}.character-plaque{bottom:32px}.character-plaque h2{font-size:26px}.stage-caption{bottom:9px}.stage:after{height:85px}#viewer-controls{grid-template-columns:repeat(3,minmax(0,1fr))}.intro>.performance-panel .expression-controls{grid-template-columns:repeat(3,minmax(0,1fr))}.intro>.performance-panel .joint-controls{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){#viewer-controls #pause{grid-column:auto}}
+/* The original motion library is available on demand, including on touch screens. */
+.native-gestures{margin-top:14px;border-top:1px solid var(--line,#294653);padding-top:12px}
+.native-gestures>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:650}
+.native-gestures>summary span{font-size:.7rem;font-weight:400;color:var(--muted,#a3bdc7)}
+.native-gesture-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:12px 0 4px}
+.native-gesture-list button{min-height:44px;padding:10px 12px;font-size:.84rem;white-space:normal}
+.joint-controls label[hidden]{display:none!important}

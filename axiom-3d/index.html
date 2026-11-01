@@ -8,8 +8,8 @@
   <meta name="theme-color" content="#07131b">
   <title>Encuentra tu ciber-compañero ideal · CyberSerchMX</title>
   <meta name="description" content="Encuentra tu ciber-compañero ideal. Conoce a Axiom y sus amigos, mueve el cursor, gira sus modelos 3D y descubre su personalidad.">
-  <link rel="stylesheet" href="style.css?v=3fcac0b2fbce">
-  <script type="module" src="main.js?v=a8c0543283c8"></script>
+  <link rel="stylesheet" href="style.css?v=e54f14a732d9">
+  <script type="module" src="main.js?v=e62c07e45b07"></script>
   <link rel="icon" href="../assets/favicon.ico" sizes="any"><link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../brand.css?v=39c22e89c601">
 <script src="../brand.js?v=1e40c99cdf4f" defer></script>
@@ -77,6 +77,10 @@
               <button type="button" data-locomotion="run" aria-pressed="false">Correr</button>
             </div>
             <p class="hint">Combina una emoción y un movimiento. Camina y corre en el mismo lugar.</p>
+            <details id="native-gestures" class="native-gestures" hidden>
+              <summary>Descubre todos sus gestos <span>11 animaciones</span></summary>
+              <div id="native-gesture-list" class="native-gesture-list" role="group" aria-label="Animaciones originales de Axiom"></div>
+            </details>
             <details class="joint-options">
               <summary>Articula a Axiom <span>Ojos, boca y cuerpo</span></summary>
               <p class="hint">Mueve una articulación con las barras. Al elegir un gesto o movimiento, vuelve a su animación.</p>
@@ -105,7 +109,7 @@
       <details>
         <summary><span id="models-title">Detrás de la escena</span><span class="details-label">Modelo y opciones</span></summary>
         <div class="model-tools-inner">
-          <div class="model-note"><strong id="model-label">Axiom · modelo del laboratorio</strong><p id="model-description">Los personajes de esta colección forman parte del universo visual de CyberSerchMX.</p><a class="text-link" id="model-download" href="models/axiom.glb" download>Descargar este modelo .glb</a><p id="rig-status" class="small" role="status"></p></div>
+          <div class="model-note"><strong id="model-label">Axiom · modelo del laboratorio</strong><p id="model-description">Los personajes de esta colección forman parte del universo visual de CyberSerchMX.</p><a class="text-link" id="model-download" href="models/axiom-animated.glb" download>Descargar este modelo .glb</a><p id="rig-status" class="small" role="status"></p></div>
           <div class="model-import"><label for="model-file">Probar un archivo .glb o .gltf (máximo 20 MB)</label><input type="file" id="model-file" accept=".glb,.gltf"><p class="small">El archivo debe incluir sus texturas y recursos. Se procesa en tu navegador; no se sube a ningún servicio.</p><div class="controls"><button type="button" id="restore-model" disabled>Volver a Axiom</button><button type="button" id="rig" aria-pressed="false" disabled>Ver articulaciones</button></div></div>
         </div>
       </details>
