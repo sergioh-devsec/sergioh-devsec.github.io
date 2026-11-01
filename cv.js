@@ -2,9 +2,9 @@ import { analyzeCv, improveActionText, extractJobKeywords, findingPresentation }
 import { buildPlainText, buildCvPdf, buildDocx, buildCoverLetterDocx, normalizeCvProfile } from './cv-exports.js';
 import { readCvFile } from './cv-import.js';
 import { beginCheckout, verifyCheckout, supportUrl } from './cv-checkout.js';
-import { mountPageVoice } from './page-voice.js?v=voice-5';
+import { mountPageVoice } from './page-voice.js?v=voice-9';
 
-const cvVoice=mountPageVoice({initialKey:'welcome2'});
+const cvVoice=mountPageVoice({page:'cv',initialKey:'welcome2'});
 
 const $=id=>document.getElementById(id);
 // Shared dictionaries contain all new UI copy. No visitor text leaves this page
@@ -84,7 +84,7 @@ function fixFinding(finding){
 }
 function renderFindings(){
  const target=$('findings');target.replaceChildren();const old=Number($('friction-count').textContent),count=analysis.findings.length;
- $('friction-count').textContent=String(count);if(count<old){$('friction-count').classList.remove('improved');requestAnimationFrame(()=>$('friction-count').classList.add('improved'));}
+ $('friction-count').textContent=String(count);if(count<old){if(started&&profile().name)void cvVoice.react('thanks',{priority:1,maxAge:2500,cooldown:45000});$('friction-count').classList.remove('improved');requestAnimationFrame(()=>$('friction-count').classList.add('improved'));}
  $('keyword-summary').textContent=analysis.keywords.length?t('cvF_keywordSummary',{matched:analysis.matchedKeywords.length,count:analysis.keywords.length}):t($('job-text').value.trim()?'cvF_keywordNone':'cvF_keywordAdd');
  if(!count){target.append(node('p','no-findings',profile().name?t('cvF_noFindings'):t('cvF_startEditing')));return;}
  const labels={keyword:t('cvF_type_keyword'),date:t('cvF_type_date'),description:t('cvF_type_description'),extraction:t('cvF_type_extraction'),profile:t('cvF_profileType')};
@@ -98,7 +98,7 @@ let modalOpener;
 function openModal(dialog){modalOpener=document.activeElement;if(!dialog.open)dialog.showModal();document.body.classList.add('modal-open');}
 function closeModal(dialog){dialog.close();document.body.classList.remove('modal-open');modalOpener?.focus();}
 function validateForExport(){try{normalizeCvProfile(profile());if(!$('cv-email').validity.valid)throw new Error(t('cvF_validEmail'));return true;}catch(error){sayKey('cvF_exportError');status(t('cvF_exportError'));setStep('profile');$('cv-name').focus();return false;}}
-function finish(){clearTimeout(updateTimer);update();if(!validateForExport())return;afterTxt=false;$('checkout-dialogue').textContent=t('cvF_conversion');$('checkout-status').textContent='';$('support-after-download').hidden=true;openModal($('export-modal'));track('cv_paywall_seen');void cvVoice.cue('businessWrap');}
+function finish(){clearTimeout(updateTimer);update();if(!validateForExport())return;afterTxt=false;$('checkout-dialogue').textContent=t('cvF_conversion');$('checkout-status').textContent='';$('support-after-download').hidden=true;openModal($('export-modal'));track('cv_paywall_seen');void cvVoice.react('finish',{priority:3,maxAge:6000});}
 function letterText(){const p=profile(),title=$('job-title').value.trim()||p.headline;return [t('cvF_letterSalutation'),title?t('cvF_letterInterest',{title}):t('cvF_letterGeneral'),p.summary||[p.headline,p.skills?t('cvF_letterSkills',{skills:p.skills}):''].filter(Boolean).join('. '),t('cvF_letterBody'),t('cvF_letterClosing'),p.name].filter(Boolean).join('\n\n');}
 function tailored(p,job){const keywords=extractJobKeywords(job),norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();const skills=p.skills.split(/[,;\n]/).map(s=>s.trim()).filter(Boolean);skills.sort((a,b)=>Number(keywords.some(k=>norm(b).includes(norm(k))))-Number(keywords.some(k=>norm(a).includes(norm(k)))));return {...p,skills:skills.join(', ')};}
 function paidFiles(plan){
