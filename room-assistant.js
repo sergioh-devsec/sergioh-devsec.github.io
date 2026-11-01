@@ -1,12 +1,12 @@
-import { createRoomVoice } from './room-voice.js';
+import { getPageVoice, voiceText } from './page-voice.js?v=voice-5';
 
 // A single fixed service endpoint. No keys and no visitor-selected URLs.
 export const AI_ENDPOINT = 'https://axiom-services.cyberserch-mx.workers.dev/chat';
 const STATION_VOICE = Object.freeze({ axiom:'welcome', workstation:'webTerm', security:'securityTerm',
   comms:'automationTerm', printer:'automationTerm', board:'automationTerm', clock:'automationTerm',
-  register:'automationTerm', vault:'securityTerm', library:'aiTerm', showcase:'cvAnswer', coffee:'supportAnswer' });
+  register:'automationTerm', vault:'securityTerm', library:'aiTerm', showcase:'welcome2', coffee:'supportAnswer2' });
 const TOPIC_VOICE = Object.freeze({ services:'welcome', landing:'webTerm', information:'webTerm', custom:'webTerm', automation:'automationTerm',
-  security:'securityTerm', privacy:'securityTerm', localai:'aiTerm', cv:'cvAnswer',
+  security:'securityTerm', privacy:'securityTerm', localai:'aiTerm', cv:'welcome2',
   contact:'contactAnswer', support:'supportAnswer' });
 const SAFE_HOSTS = new Set(['cyberserch.com','www.patreon.com','www.paypal.com']);
 export function safeServiceLink(value) {
@@ -48,18 +48,18 @@ export function initRoomAssistant({ language = () => 'es' } = {}) {
       $('axiom-3d-status').textContent = t('La vista ligera sigue disponible. Puedes volver a intentar el 3D.','The lightweight view is still available. You can retry 3D.');
     } finally { viewerLoading = false; if (!destroyed) viewerLabel(); }
   });
-  const voice = createRoomVoice({
-    onCaption(value) { $('axiom-caption').textContent = value; $('axiom-caption').hidden = false; },
-    onState(state) {
-      $('axiom-voice').setAttribute('aria-pressed', String(state.enabled));
-      $('axiom-voice').textContent = state.enabled ? t('Voz activada · silenciar','Voice on · mute') : t('Escuchar a Axiom','Listen to Axiom');
-      $('axiom-voice-status').textContent = state.error ? t('Toca de nuevo para escuchar.','Tap again to listen.') : state.playing ? t('Voz original · español','Original voice · Spanish') : '';
-    },
+  const voice = getPageVoice();
+  voice.subscribe(state => {
+    if(state.caption){$('axiom-caption').textContent=state.caption;$('axiom-caption').hidden=false;}
+    $('axiom-voice').setAttribute('aria-pressed',String(state.preferred&&!state.error));
+    $('axiom-voice').setAttribute('aria-busy',String(state.loading));
+    $('axiom-voice').textContent=voiceText(state.loading?'voice_loading':state.error?'voice_retry':state.preferred?'voice_mute':'voice_listen');
+    $('axiom-voice-status').textContent=voiceText(state.error?'voice_error':state.loading?'voice_loading':state.playing?'voice_playing':state.preferred?'voice_ready':'voice_off');
   });
-  function speak(key = currentKey) { return voice.play(key, window.TRANSLATIONS?.es?.[key]); }
-  $('axiom-voice').addEventListener('click', () => { if (voice.enabled) voice.disable(); else speak(); });
+  function speak(key = currentKey) { return voice.play(key); }
+  $('axiom-voice').addEventListener('click', () => { void voice.toggle(currentKey); });
   $('axiom-replay').addEventListener('click', () => speak());
-  $('axiom-greet').addEventListener('click', () => { viewer?.gesture('wave'); currentKey = 'welcome'; if (voice.enabled) speak(); });
+  $('axiom-greet').addEventListener('click', () => { viewer?.gesture('wave'); currentKey = 'welcome'; speak(); });
   $('axiom-story').addEventListener('click', () => { currentKey = 'axiomStoryVoice'; speak(); });
   function resetChat() {
     chatEnabled = false; busy = false; requestId++; controller?.abort(); history = [];
@@ -119,17 +119,17 @@ export function initRoomAssistant({ language = () => 'es' } = {}) {
     'axiom-chat-label':['¿Qué necesitas resolver?','What do you need help with?'], 'axiom-chat-send':['Preguntar','Ask'],
   };
   function render() {
-    voice.stop(); resetChat();
+    resetChat();
     for (const [id,pair] of Object.entries(labels)) $(id).textContent = t(...pair);
     $('axiom-chat-input').placeholder = t('Ej. Una web para mi consultorio','e.g. A website for my practice');
-    $('axiom-voice').textContent = voice.enabled ? t('Voz activada · silenciar','Voice on · mute') : t('Escuchar a Axiom','Listen to Axiom');
-    $('axiom-caption').hidden = true;
+    voice.refresh();
     viewerLabel();
     if (!viewer) $('axiom-3d-status').textContent = t('La voz funciona sin descargar el 3D.','Voice works without downloading 3D.');
   }
   document.addEventListener('visibilitychange', () => { if (document.hidden) voice.stop(); });
   window.addEventListener('pagehide', event => { voice.stop(); resetChat(); if (!event.persisted) { destroyed = true; voice.destroy(); } });
   render();
+  if(voice.preferred)void voice.cue(currentKey);
   return { get viewer() { return viewer; }, render, setMotion(value) { motionAllowed = value; viewer?.setMotion(value); },
     station(id) { currentKey = STATION_VOICE[id] || 'welcome'; viewer?.gesture(id === 'coffee' ? 'bow' : id === 'axiom' ? 'wave' : 'agree'); if (voice.enabled) speak(); },
     stop() { voice.stop(); } };

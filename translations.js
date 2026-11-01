@@ -1234,7 +1234,7 @@ window.TRANSLATIONS = {
     "infoF_language": "Idioma / Language",
     "infoF_waitlistTitle": "Lista de acceso a Consentimiento Pro",
     "infoF_waitlistPrivacy": "Después de descargar el borrador dental puedes solicitar un aviso de acceso a Clínica Pro. Solo enviamos tu correo, tu consentimiento y el asunto de la lista a Web3Forms. No enviamos nombres de pacientes, procedimientos, riesgos, PDF ni huellas del documento. No es una compra ni confirma disponibilidad o prioridad garantizada. Para retirar tu correo responde al aviso o utiliza el formulario de privacidad.",
-    "infoF_localDocuments": "En la habitación de inicio, el consentimiento dental se genera en tu navegador. Los datos del documento permanecen en memoria mientras la ventana está abierta; cerrar o recargar borra el borrador. Las descargas quedan en tu dispositivo. Solo se guardan las preferencias de modo e idioma. La lista de acceso Pro es un formulario independiente y optativo.",
+    "infoF_localDocuments": "En la habitación de inicio, el consentimiento dental se genera en tu navegador. Los datos del documento permanecen en memoria mientras la ventana está abierta; cerrar o recargar borra el borrador. Las descargas quedan en tu dispositivo. Se guardan las preferencias de modo e idioma y, durante la sesión del navegador, la elección de voz. La lista de acceso Pro es un formulario independiente y optativo.",
     "infoF_professionScope": "Esta entrega muestra únicamente Dentistas. Los otros motores profesionales se conservan en el código, pero no están disponibles en el selector. El borrador debe ser completado y revisado por un profesional; no realiza diagnósticos ni decide tratamientos o resultados jurídicos o fiscales.",
     "infoF_documentEnglish": "El PDF dental requiere revisión clínica; SHA-256 es una huella del contenido, no una firma digital ni una certificación de validez jurídica.",
     "infoF_cvLocal": "El editor, la comparación por reglas y la importación de TXT o DOCX se ejecutan en tu navegador. No guardamos el CV en almacenamiento persistente ni lo enviamos a servicios de analítica. Al recargar o salir, el editor se reinicia; los archivos descargados permanecen en tu dispositivo.",
@@ -1429,7 +1429,19 @@ window.TRANSLATIONS = {
     "cvF_find_extraction_review_title": "Revisa los datos importados",
     "cvF_find_extraction_review_detail": "El importador indicó que algunos datos necesitan revisión. Compara el perfil con el documento original antes de descargarlo.",
     "cvF_find_generic_title": "Revisa este punto",
-    "cvF_find_generic_detail": "Comprueba el contenido con tu información original antes de exportarlo."
+    "cvF_find_generic_detail": "Comprueba el contenido con tu información original antes de exportarlo.",
+    "voice_label": "La voz de Axiom",
+    "voice_listen": "Escuchar a Axiom",
+    "voice_mute": "Voz activada · silenciar",
+    "voice_retry": "Tocar para escuchar de nuevo",
+    "voice_loading": "Preparando la voz…",
+    "voice_repeat": "Repetir",
+    "voice_caption": "Ver lo que dice",
+    "voice_playing": "Voz original · español",
+    "voice_ready": "Voz activada para esta sesión",
+    "voice_off": "Actívala para escuchar sus grabaciones originales",
+    "voice_error": "La reproducción no empezó. Toca para reintentar.",
+    "voice_sessionPrivacy": "La elección de voz se recuerda durante esta sesión del navegador. Solo se reproducen grabaciones originales locales; no se envía tu texto ni se sintetiza voz nueva."
   },
   "en": {
     "labPortalNav": "Play with Axiom",
@@ -2815,7 +2827,7 @@ window.TRANSLATIONS = {
     "infoF_language": "Language / Idioma",
     "infoF_waitlistTitle": "Consent Pro access list",
     "infoF_waitlistPrivacy": "After downloading the dental draft, you can request an access update about Clinic Pro. We send only your email, consent and the list subject to Web3Forms. We do not send patient names, procedures, risks, PDFs or document fingerprints. This is not a purchase or a confirmation of availability or guaranteed priority. Reply to the update or use the privacy form to request removal of your email.",
-    "infoF_localDocuments": "The homepage dental consent form is generated in your browser. Document entries remain in memory while the dialog is open; closing it or reloading clears the draft. Downloads stay on your device. Only mode and language preferences are stored. The Pro access list is a separate, optional form.",
+    "infoF_localDocuments": "The homepage dental consent form is generated in your browser. Document entries remain in memory while the dialog is open; closing it or reloading clears the draft. Downloads stay on your device. Mode and language preferences are stored, along with your voice choice for the browser session. The Pro access list is a separate, optional form.",
     "infoF_professionScope": "This release exposes Dentists only. The other professional engines remain in the source, but are not available in the selector. A professional must complete and review the draft; it does not diagnose or decide treatments, legal outcomes or tax outcomes.",
     "infoF_documentEnglish": "The dental PDF requires clinical review; SHA-256 is a content fingerprint, not a digital signature or certification of legal validity.",
     "infoF_cvLocal": "The editor, rule comparison and TXT or DOCX import run in your browser. We do not persist your CV or send it to analytics services. Reloading or leaving resets the editor; downloaded files stay on your device.",
@@ -3010,6 +3022,18 @@ window.TRANSLATIONS = {
     "cvF_find_extraction_review_title": "Review the imported details",
     "cvF_find_extraction_review_detail": "The importer indicated that some details need review. Compare the profile against the original document before downloading.",
     "cvF_find_generic_title": "Review this point",
-    "cvF_find_generic_detail": "Check the content against your original information before exporting."
+    "cvF_find_generic_detail": "Check the content against your original information before exporting.",
+    "voice_label": "Axiom’s voice",
+    "voice_listen": "Listen to Axiom",
+    "voice_mute": "Voice on · mute",
+    "voice_retry": "Tap to try the voice again",
+    "voice_loading": "Preparing the voice…",
+    "voice_repeat": "Replay",
+    "voice_caption": "Read the recording",
+    "voice_playing": "Original voice · Spanish",
+    "voice_ready": "Voice enabled for this session",
+    "voice_off": "Enable his original recordings",
+    "voice_error": "Playback did not start. Tap to try again.",
+    "voice_sessionPrivacy": "Your voice choice is remembered for this browser session. Only original local recordings play; your text is not sent or turned into new synthetic speech."
   }
 };

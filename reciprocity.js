@@ -81,6 +81,7 @@ export function createReciprocity({
   links = configuredLinks,
   track = name => doc.dispatchEvent(new CustomEvent('portfolio:measurement', { detail: name })),
   openSupport = url => globalThis.window.open(url, '_blank', 'noopener,noreferrer'),
+  voice = null,
 } = {}) {
   if (!doc?.createElement || typeof translate !== 'function' || typeof track !== 'function' || typeof openSupport !== 'function') throw new TypeError('Invalid checkpoint configuration');
   const sessionFlags = Object.create(null);
@@ -100,6 +101,13 @@ export function createReciprocity({
   const monthly = make('a', 'reciprocity-monthly'); monthly.target = '_blank'; monthly.rel = 'noopener noreferrer';
   const status = make('p', 'reciprocity-status'); status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
   actions.append(coffee, support, skip); dialog.append(close, kicker, title, message, note, actions, monthly, status); doc.body.append(dialog);
+  let removeVoice=()=>{};
+  if(voice?.subscribe&&voice?.toggle) {
+    const voiceButton=make('button','axiom-inline-voice');voiceButton.type='button';dialog.insertBefore(voiceButton,message);
+    const updateVoice=state=>{voiceButton.textContent=translate(state.loading?'voice_loading':state.error?'voice_retry':state.preferred?'voice_mute':'voice_listen');voiceButton.setAttribute('aria-pressed',String(state.preferred&&!state.error));};
+    voiceButton.addEventListener('click',()=>{void voice.toggle('supportAnswer2');});
+    removeVoice=voice.subscribe(updateVoice);
+  }
   const currentLinks = () => typeof links === 'function' ? links() : links;
   const setBusy = busy => { coffee.disabled = busy || !active?.urls.two; support.disabled = busy || !active?.urls.five; skip.disabled = busy; };
   function render() {
@@ -184,11 +192,11 @@ export function createReciprocity({
       }
       active = { tool, anchor, urls, onDownload, onDelivered, started: false, failure: false, opener: doc.activeElement, sequence: ++sequence };
       status.textContent = ''; render(); dialog.showModal(); title.focus({ preventScroll: true });
-      track(`recip_shown_${tool}`); return true;
+      track(`recip_shown_${tool}`);if(voice?.cue)void voice.cue('supportAnswer2');return true;
     },
     invalidate(tool) { if (!TOOLS.has(tool)) return; if (active?.tool === tool) finishDialog(); if (sessionFlags[tool]) sessionFlags[tool].success = false; },
     reset(tool) { if (!TOOLS.has(tool)) return; if (active?.tool === tool) finishDialog(); delete sessionFlags[tool]; },
     dismiss(tool) { if (!TOOLS.has(tool)) return; if (active?.tool === tool) finishDialog({ explicit: true }); else if (sessionFlags[tool]) sessionFlags[tool].dismissed = true; },
-    destroy() { if (destroyed) return; destroyed = true; finishDialog(); doc.removeEventListener('portfolio:language', render); dialog.remove(); },
+    destroy() { if (destroyed) return; destroyed = true; finishDialog(); removeVoice(); doc.removeEventListener('portfolio:language', render); dialog.remove(); },
   };
 }

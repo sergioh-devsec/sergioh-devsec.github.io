@@ -1,10 +1,11 @@
-import { initRoomAssistant } from './room-assistant.js?v=performance-3';
+import { initRoomAssistant } from './room-assistant.js?v=voice-5';
 import { createModeManager } from './modeManager.js';
 import { STATIONS } from './stationsConfig.js';
 import { validateConsent, consentHash, buildConsentPdf, CONSENT_SCHEMA } from './dentalConsent.js';
 import { professionConfig, professionSchema, validateProfessionDocument, professionDocumentHash, professionPreview, buildProfessionPdf } from './professionDocuments.js';
-import { createReciprocity } from './reciprocity.js';
+import { createReciprocity } from './reciprocity.js?v=voice-5';
 import { mountProWaitlist } from './pro-waitlist.js';
+import { getPageVoice } from './page-voice.js?v=voice-5';
 
 // Documents stay local. Only explicitly submitted service questions reach the fixed AI endpoint.
 const $ = id => document.getElementById(id);
@@ -13,7 +14,7 @@ const en = () => manager.getLanguage() === 'en';
 const text = (es, english) => en() ? english : es;
 const funnelText = (key, values = {}) => String(window.TRANSLATIONS[manager.getLanguage()]?.[key] ?? key).replace(/\{(\w+)\}/g, (_, name) => String(values[name] ?? ''));
 const measure = name => document.dispatchEvent(new CustomEvent('portfolio:measurement', { detail: name }));
-const reciprocity = createReciprocity({ translate: funnelText, links: () => window.PORTFOLIO?.supportLinks, track: measure });
+const reciprocity = createReciprocity({ translate: funnelText, links: () => window.PORTFOLIO?.supportLinks, track: measure, voice: getPageVoice() });
 const copy = () => window.TRANSLATIONS[manager.getLanguage()][manager.getMode()];
 const shared = () => window.TRANSLATIONS[manager.getLanguage()].roomShared;
 const dialog = $('station-dialog');

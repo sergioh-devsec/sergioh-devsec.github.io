@@ -2,6 +2,9 @@ import { analyzeCv, improveActionText, extractJobKeywords, findingPresentation }
 import { buildPlainText, buildCvPdf, buildDocx, buildCoverLetterDocx, normalizeCvProfile } from './cv-exports.js';
 import { readCvFile } from './cv-import.js';
 import { beginCheckout, verifyCheckout, supportUrl } from './cv-checkout.js';
+import { mountPageVoice } from './page-voice.js?v=voice-5';
+
+const cvVoice=mountPageVoice({initialKey:'welcome2'});
 
 const $=id=>document.getElementById(id);
 // Shared dictionaries contain all new UI copy. No visitor text leaves this page
@@ -95,7 +98,7 @@ let modalOpener;
 function openModal(dialog){modalOpener=document.activeElement;if(!dialog.open)dialog.showModal();document.body.classList.add('modal-open');}
 function closeModal(dialog){dialog.close();document.body.classList.remove('modal-open');modalOpener?.focus();}
 function validateForExport(){try{normalizeCvProfile(profile());if(!$('cv-email').validity.valid)throw new Error(t('cvF_validEmail'));return true;}catch(error){sayKey('cvF_exportError');status(t('cvF_exportError'));setStep('profile');$('cv-name').focus();return false;}}
-function finish(){clearTimeout(updateTimer);update();if(!validateForExport())return;afterTxt=false;$('checkout-dialogue').textContent=t('cvF_conversion');$('checkout-status').textContent='';$('support-after-download').hidden=true;openModal($('export-modal'));track('cv_paywall_seen');}
+function finish(){clearTimeout(updateTimer);update();if(!validateForExport())return;afterTxt=false;$('checkout-dialogue').textContent=t('cvF_conversion');$('checkout-status').textContent='';$('support-after-download').hidden=true;openModal($('export-modal'));track('cv_paywall_seen');void cvVoice.cue('businessWrap');}
 function letterText(){const p=profile(),title=$('job-title').value.trim()||p.headline;return [t('cvF_letterSalutation'),title?t('cvF_letterInterest',{title}):t('cvF_letterGeneral'),p.summary||[p.headline,p.skills?t('cvF_letterSkills',{skills:p.skills}):''].filter(Boolean).join('. '),t('cvF_letterBody'),t('cvF_letterClosing'),p.name].filter(Boolean).join('\n\n');}
 function tailored(p,job){const keywords=extractJobKeywords(job),norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();const skills=p.skills.split(/[,;\n]/).map(s=>s.trim()).filter(Boolean);skills.sort((a,b)=>Number(keywords.some(k=>norm(b).includes(norm(k))))-Number(keywords.some(k=>norm(a).includes(norm(k)))));return {...p,skills:skills.join(', ')};}
 function paidFiles(plan){
