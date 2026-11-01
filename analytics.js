@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const KEY='cyberserch-analytics-v1', AGE=90*24*60*60*1000, PROJECT='z5jal39enl';
-  const HOSTS=["sergioh-devsec.github.io"]; // Replaced from the canonical URL during publication.
+  const HOSTS=["cyberserch.com", "sergioh-devsec.github.io"]; // Replaced from the canonical URL during publication.
   const REFERRALS=new Set(['fbclid','gclid','igshid','utm_source','utm_medium','utm_campaign','utm_content','utm_term']);
   const EVENTS=new Set(['visit_portfolio','open_estimator','estimate_download','enquiry_accepted','support_paypal_click','support_patreon_click','project_repository_click','profile_open','axiom_open','open_local_tools']);
   function readChoice(raw,now=Date.now()){

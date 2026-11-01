@@ -43,3 +43,25 @@ html[data-motion=paused] .cs-start-business::after,.motion-paused .cs-start-busi
 @media(max-width:640px){.cs-menu>nav{position:fixed!important;inset:var(--cs-menu-top,110px) 16px auto 16px!important;width:auto;max-height:min(65dvh,520px)}}
 
 @media(max-width:640px){.site-header .header-inner{flex-wrap:wrap!important;row-gap:8px!important;padding-block:10px}.header-inner>.menu-toggle{margin-left:auto}.site-header .header-tools{max-width:100%;flex-wrap:wrap;justify-content:flex-end}}
+
+/* Original identity supplied by CyberSerch. The paired SVGs retain their exact
+   paths and colors; only the visible variant follows the room's current skin. */
+.cs-brand.cs-original-brand{flex-direction:column;align-items:flex-start;justify-content:center;gap:0!important;max-width:100%}
+.cs-original-brand .cs-logo-pair{display:block;position:relative;width:200px;max-width:100%;flex-shrink:0;line-height:0}
+.cs-original-brand .cs-wordmark{display:block;width:100%!important;height:auto!important;object-fit:contain;max-width:100%;transition:filter .2s ease}
+.cs-original-brand .cs-wordmark--dark{display:none}
+.cs-brand--dark .cs-wordmark--light{display:none}
+.cs-brand--dark .cs-wordmark--dark{display:block}
+html[data-mode=oficina] .cs-original-brand .cs-wordmark--light{display:block}
+html[data-mode=oficina] .cs-original-brand .cs-wordmark--dark{display:none}
+html[data-mode=laboratorio] .cs-original-brand .cs-wordmark--light{display:none}
+html[data-mode=laboratorio] .cs-original-brand .cs-wordmark--dark{display:block}
+.cs-original-brand small{margin:0 0 0 5px!important;max-width:195px}
+.cs-original-brand:hover .cs-wordmark{filter:drop-shadow(0 2px 5px #38c5b625)}
+.cs-footer-signature{display:block;flex:0 1 340px;max-width:100%;min-width:0;line-height:0}
+.cs-footer-signature img{display:block;width:100%;height:auto}
+.cs-footer-signature:focus-visible{outline:3px solid var(--cyan,#6de7c8);outline-offset:5px;border-radius:8px}
+.cs-footer-copyright{font-size:.78rem;color:var(--muted,inherit)}
+@media(max-width:640px){.cs-original-brand .cs-logo-pair{width:150px}.cs-original-brand small{font-size:.54rem!important;max-width:145px}.header-inner .cs-original-brand{gap:0!important}.header-inner .cs-original-brand .cs-logo-pair{width:145px}.cv-nav .cs-original-brand .cs-logo-pair{width:145px}.cv-nav .cs-original-brand small{font-size:.46rem!important}.cs-footer-signature{flex-basis:280px}}
+@media(max-width:360px){.cs-original-brand .cs-logo-pair,.header-inner .cs-original-brand .cs-logo-pair,.cv-nav .cs-original-brand .cs-logo-pair{width:125px}.cs-original-brand small{font-size:.47rem!important;max-width:125px}.cv-nav{flex-wrap:wrap}.cv-nav>.cs-original-brand{margin-right:auto}}
+@media(prefers-reduced-motion:reduce){.cs-original-brand .cs-wordmark{transition:none!important}}

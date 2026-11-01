@@ -1,7 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><title>CyberSerch.mx</title>
-  <rect width="64" height="64" rx="17" fill="#0b3038"/>
-  <path d="M45 14H29c-10 0-18 8-18 18s8 18 18 18h16" fill="none" stroke="#6de7c8" stroke-width="6" stroke-linecap="round"/>
-  <path d="M44 24H30a4 4 0 0 0 0 8h5a4 4 0 0 1 0 8h-9" fill="none" stroke="#6ce2ed" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <rect x="41" y="10" width="8" height="8" rx="2.5" fill="#6de7c8"/>
-  <rect x="41" y="46" width="8" height="8" rx="2.5" fill="#6de7c8"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" role="img" aria-labelledby="logo-title logo-desc">
+<title id="logo-title">cyberserch — favicon</title>
+<desc id="logo-desc">Icono compacto C y SH, sin retícula de radar, sobre fondo carbón redondeado.</desc>
+<rect width="400" height="400" rx="72" fill="#121A1D"/>
+<g id="monograma">
+<path id="c-exterior" d="M 329.3072 83.5713 A 174 174 0 1 0 329.3072 316.4287" fill="none" stroke="#F4F7F7" stroke-width="24"/>
+<g id="inicial-s" aria-label="S">
+<path fill="#F4F7F7" d="M92 233.5647C93.0588 245.8471 95.8118 253.6824 102.1647 262.1529C111.4824 274.0118 126.7294 281 143.4588 281C171.6235 281 193.4353 259.1882 193.4353 230.8118C193.4353 217.6824 188.7765 206.6706 179.4588 198.2C173.3176 192.4824 168.4471 189.9412 152.9882 184.0118C138.1647 178.5059 137.7412 178.2941 135.6235 177.0235C129.9059 173.4235 126.9412 168.5529 126.9412 162.8353C126.9412 153.5176 133.5059 146.9529 143.0353 146.9529C152.7765 146.9529 158.7059 152.8824 159.5529 163.4706H189.6235C188.9882 151.6118 186.2353 143.5647 179.8824 135.7294C171.4118 125.1412 157.8588 119 143.2471 119C117.8353 119 97.7176 138.6941 97.7176 163.4706C97.7176 183.1647 109.1529 198.2 130.3294 206.0353C151.2941 213.8706 152.7765 214.5059 157.4353 218.1059C162.0941 221.9176 164.6353 227.4235 164.6353 233.9882C164.6353 245.2118 155.9529 253.0471 143.4588 253.0471C130.5412 253.0471 123.5529 246.6941 122.2824 233.5647Z"/>
+</g>
+<g id="inicial-h" aria-label="H">
+<path fill="#57C9C3" d="M220 278H248.9202V212.5602H304.6495V278H333.5697V122H304.6495V184.9066H248.9202V122H220Z"/>
+</g>
+</g>
 </svg>
