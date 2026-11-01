@@ -1,4 +1,4 @@
-/* Browser-only tools: no analytics, requests or persistent storage. */
+/* Browser-only tools. No SDK, document upload, network request or persistent document storage. */
 (() => {
 'use strict';
 const MAX_LOG=2_000_000,MAX_CSV=20_000;
@@ -64,39 +64,57 @@ function parseAuthLine(line){
 if(typeof module==='object'&&module.exports)module.exports={parseCSV,organize,exportCSV,analyze};
 if(typeof document==='undefined')return;
 const $=id=>document.getElementById(id),node=(tag,text)=>{const n=document.createElement(tag);n.textContent=text;return n;};
-const samples={csv:'tarea,responsable,prioridad,fecha,estado\nRevisar formulario,Equipo,alta,2026-11-04,pendiente\nRevisar formulario,Equipo,alta,2026-11-04,pendiente\nPublicar aviso,Equipo,media,2026-11-05,completada\nProbar móvil,Equipo,alta,2026-11-06,en curso',logs:'Oct 30 09:00:00 demo sshd[120]: Failed password for invalid user prueba from 192.0.2.14 port 45231 ssh2\nOct 30 09:01:00 demo sshd[121]: Failed password for invalid user prueba from 192.0.2.14 port 45232 ssh2\nOct 30 09:02:00 demo sshd[122]: Accepted publickey for equipo from 198.51.100.5 port 45233 ssh2: ED25519 SHA256:EJEMPLO\n09:03:00 DENY 192.0.2.14\nOct 30 09:04:00 demo sshd[123]: Connection closed by 203.0.113.7 port 45234 [preauth]'};
+const t=(key,values={})=>window.I18N.t(key,values);
+// Only a same-origin module is loaded. Neither the tool input nor its result is passed to a server.
+const reciprocityReady=import('./reciprocity.js').then(({createReciprocity})=>createReciprocity({translate:t,links:()=>window.PORTFOLIO.supportLinks})).catch(()=>null);
+const errorKeys=new Map([
+ ['El archivo supera el tamaño permitido.','toolsF_errorSize'],['Usa un archivo de texto UTF-8, no un documento binario.','toolsF_errorBinary'],
+ ['Comillas CSV inválidas.','toolsF_errorQuotes'],['Texto fuera de comillas CSV.','toolsF_errorOutsideQuotes'],['Hay una celda con comillas sin cerrar.','toolsF_errorUnclosedQuotes'],
+ ['Encabezado requerido: tarea,responsable,prioridad,fecha,estado','toolsF_errorHeader'],['Máximo 200 tareas.','toolsF_errorTasks'],['El umbral debe ser un entero de 1 a 100000.','toolsF_errorThreshold'],
+]);
 function download(content,name,type){const url=URL.createObjectURL(new Blob([content],{type})),a=node('a','');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 for(const kind of ['csv','logs']){
  const input=$(kind+'-input'),out=$(kind+'-result'),file=$(kind+'-file'),drop=$(kind+'-drop'),save=$(kind+'-save');let result=null,generation=0;
- function invalidate(){generation++;result=null;save.disabled=true;out.replaceChildren();}
- function run(){generation++;result=null;save.disabled=true;out.replaceChildren();try{
- result=kind==='csv'?organize(input.value):analyze(input.value,Number($('threshold').value));
- out.append(node('strong',kind==='csv'?'Tareas listas: '+result.tasks.length:'Orígenes por revisar: '+result.findings.length));
- if(kind==='csv')out.append(node('p',['Registros: '+result.total,'duplicados: '+result.duplicates,'terminados: '+result.completed,'inválidos: '+result.invalid.length].join(' · ')));
+ let resultError=null,noticeKey=null,exportPending=false;
+ function invalidateCheckpoint(){void reciprocityReady.then(controller=>controller?.invalidate(kind));}
+ function invalidate(){generation++;result=null;resultError=null;noticeKey=null;save.disabled=true;out.replaceChildren();invalidateCheckpoint();}
+ function renderResult(){out.replaceChildren();if(resultError){out.append(node('p',t(resultError)));return;}if(noticeKey){out.append(node('p',t(noticeKey)));return;}if(!result)return;
+ out.append(node('strong',t(kind==='csv'?'toolsF_tasksReady':'toolsF_sourcesReview',{n:kind==='csv'?result.tasks.length:result.findings.length})));
+ if(kind==='csv')out.append(node('p',t('toolsF_csvSummary',{total:result.total,duplicates:result.duplicates,completed:result.completed,invalid:result.invalid.length})));
  else{
  const stats=node('dl','');stats.className='log-stats';
- for(const [label,count] of [['Rechazos',result.denied],['Aceptados',result.accepted],['No interpretados',result.ignored.length],['Inválidos',result.invalid.length]]){const pair=node('div','');pair.append(node('dt',label),node('dd',String(count)));stats.append(pair);}out.append(stats);
- out.append(node('p',result.total+' líneas · eventos SSH: '+result.formats.ssh+' · formato simple: '+result.formats.simple+'.'));
- const guide=node('p',result.findings.length?'Una señal es el inicio de la investigación. Contrasta usuario, horario, MFA e inventario antes de escalar o bloquear. Los reintentos legítimos también producen rechazos.':'No hay orígenes que alcancen el umbral. Esto no descarta un incidente; revisa la cobertura y las líneas que no se interpretaron.');guide.className='hint';out.append(guide);
- if(result.ignored.length)out.append(node('p','Líneas no interpretadas: '+result.ignored.slice(0,30).join(',')+(result.ignored.length>30?'…':'')));
+ for(const [label,count] of [['toolsF_denied',result.denied],['toolsF_accepted',result.accepted],['toolsF_ignored',result.ignored.length],['toolsF_invalid',result.invalid.length]]){const pair=node('div','');pair.append(node('dt',t(label)),node('dd',String(count)));stats.append(pair);}out.append(stats);
+ out.append(node('p',t('toolsF_logSummary',{total:result.total,ssh:result.formats.ssh,simple:result.formats.simple})));
+ const guide=node('p',t(result.findings.length?'toolsF_signalGuide':'toolsF_noSignals'));guide.className='hint';out.append(guide);
+ if(result.ignored.length)out.append(node('p',t('toolsF_ignoredLines',{lines:result.ignored.slice(0,30).join(',')+(result.ignored.length>30?'…':'')})));
  }
- if(result.invalid.length)out.append(node('p','Revisa filas: '+result.invalid.slice(0,30).join(',')+(result.invalid.length>30?'…':'')));
- const table=node('table',''),head=node('tr','');(kind==='csv'?['Tarea','Responsable','Fecha']:['IP','Rechazos']).forEach(x=>{const th=node('th',x);th.scope='col';head.append(th);});const thead=node('thead','');thead.append(head);table.append(thead);const tbody=node('tbody','');
+ if(result.invalid.length)out.append(node('p',t('toolsF_reviewRows',{lines:result.invalid.slice(0,30).join(',')+(result.invalid.length>30?'…':'')})));
+ const table=node('table',''),head=node('tr','');(kind==='csv'?['toolsF_task','toolsF_owner','toolsF_date']:['toolsF_ip','toolsF_denied']).forEach(key=>{const th=node('th',t(key));th.scope='col';head.append(th);});const thead=node('thead','');thead.append(head);table.append(thead);const tbody=node('tbody','');
  const entries=kind==='csv'?result.tasks:result.findings;
  for(const item of entries.slice(0,200)){const tr=node('tr','');(kind==='csv'?[item.task,item.owner,item.due]:[item.ip,String(item.denials)]).forEach(x=>tr.append(node('td',x)));tbody.append(tr);}table.append(tbody);const scroller=node('div','');scroller.className='table-scroll';scroller.append(table);out.append(scroller);
- if(entries.length>200)out.append(node('p','Vista limitada a 200 resultados. La descarga incluye todos.'));
- save.disabled=false;
- }catch(e){out.append(node('p',e.message));}}
- async function read(selected){invalidate();const token=generation;if(!selected)return;if(selected.size>(kind==='csv'?MAX_CSV:MAX_LOG)){out.textContent='Archivo demasiado grande. CSV: 20 KB; logs: 2 MB.';return;}
- try{const bytes=await selected.arrayBuffer();const text=new TextDecoder('utf-8',{fatal:true}).decode(bytes);if(token!==generation)return;input.value=text;run();}catch{if(token===generation)out.textContent='No se pudo leer. Usa texto UTF-8.';}}
+ if(entries.length>200)out.append(node('p',t('toolsF_viewLimit')));
+ }
+ function run(){invalidate();try{result=kind==='csv'?organize(input.value):analyze(input.value,Number($('threshold').value));save.disabled=false;}catch(e){resultError=errorKeys.get(e.message)||'toolsF_errorGeneral';}renderResult();}
+ async function read(selected){invalidate();const token=generation;if(!selected)return;if(selected.size>(kind==='csv'?MAX_CSV:MAX_LOG)){noticeKey='toolsF_errorSize';renderResult();return;}
+ try{const bytes=await selected.arrayBuffer();const text=new TextDecoder('utf-8',{fatal:true}).decode(bytes);if(token!==generation)return;input.value=text;run();}catch{if(token===generation){noticeKey='toolsF_errorRead';renderResult();}}}
  input.addEventListener('input',invalidate);if(kind==='logs')$('threshold').addEventListener('input',invalidate);
- $(kind+'-sample').addEventListener('click',()=>{invalidate();input.value=samples[kind];run();});
- $(kind+'-run').addEventListener('click',run);$(kind+'-clear').addEventListener('click',()=>{invalidate();input.value='';file.value='';out.textContent='Datos borrados de esta vista.';input.focus();});
+ $(kind+'-sample').addEventListener('click',()=>{input.value=t(kind==='csv'?'toolsF_sampleCsv':'toolsF_sampleLogs');run();});
+ $(kind+'-run').addEventListener('click',run);$(kind+'-clear').addEventListener('click',()=>{invalidate();input.value='';file.value='';noticeKey='toolsF_dataCleared';renderResult();input.focus();});
  file.addEventListener('change',()=>read(file.files[0]));
  for(const event of ['dragenter','dragover'])drop.addEventListener(event,e=>{e.preventDefault();drop.classList.add('dragging');});
  drop.addEventListener('dragleave',()=>drop.classList.remove('dragging'));
- drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('dragging');if(e.dataTransfer.files.length!==1){invalidate();out.textContent='Elige un solo archivo.';return;}read(e.dataTransfer.files[0]);});
- save.addEventListener('click',()=>{if(!result)return;download(kind==='csv'?exportCSV(result.tasks):JSON.stringify(result,null,2),kind==='csv'?'tareas-ordenadas.csv':'revision-accesos.json',kind==='csv'?'text/csv;charset=utf-8':'application/json');});
+ drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('dragging');if(e.dataTransfer.files.length!==1){invalidate();noticeKey='toolsF_oneFile';renderResult();return;}read(e.dataTransfer.files[0]);});
+ save.addEventListener('click',async()=>{
+   if(!result||exportPending)return;exportPending=true;const snapshot=result,token=generation;
+   try{
+     const controller=await reciprocityReady;if(token!==generation||snapshot!==result)return;
+     const onDownload=()=>{if(token!==generation||snapshot!==result)return false;download(kind==='csv'?exportCSV(snapshot.tasks):JSON.stringify(snapshot,null,2),kind==='csv'?'tareas-ordenadas.csv':'revision-accesos.json',kind==='csv'?'text/csv;charset=utf-8':'application/json');return true;};
+     const stats=kind==='csv'?{success:true,total:snapshot.total}:{success:true,valid:snapshot.valid};
+     if(!controller?.checkpoint({tool:kind,stats,onDownload}))onDownload();
+   }catch{noticeKey='toolsF_errorDownload';renderResult();}finally{exportPending=false;}
+ });
+ document.addEventListener('portfolio:language',renderResult);
+ window.addEventListener('pagehide',()=>{invalidate();input.value='';file.value='';void reciprocityReady.then(controller=>controller?.reset(kind));});
 }
 })();
 

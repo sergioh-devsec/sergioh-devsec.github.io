@@ -3,17 +3,22 @@ import { createModeManager } from './modeManager.js';
 import { STATIONS } from './stationsConfig.js';
 import { validateConsent, consentHash, buildConsentPdf, CONSENT_SCHEMA } from './dentalConsent.js';
 import { professionConfig, professionSchema, validateProfessionDocument, professionDocumentHash, professionPreview, buildProfessionPdf } from './professionDocuments.js';
+import { createReciprocity } from './reciprocity.js';
+import { mountProWaitlist } from './pro-waitlist.js';
 
 // Documents stay local. Only explicitly submitted service questions reach the fixed AI endpoint.
 const $ = id => document.getElementById(id);
 const manager = createModeManager();
 const en = () => manager.getLanguage() === 'en';
 const text = (es, english) => en() ? english : es;
+const funnelText = (key, values = {}) => String(window.TRANSLATIONS[manager.getLanguage()]?.[key] ?? key).replace(/\{(\w+)\}/g, (_, name) => String(values[name] ?? ''));
+const measure = name => document.dispatchEvent(new CustomEvent('portfolio:measurement', { detail: name }));
+const reciprocity = createReciprocity({ translate: funnelText, links: () => window.PORTFOLIO?.supportLinks, track: measure });
 const copy = () => window.TRANSLATIONS[manager.getLanguage()][manager.getMode()];
 const shared = () => window.TRANSLATIONS[manager.getLanguage()].roomShared;
 const dialog = $('station-dialog');
 let currentStation = null, opener = null, hashRevision = 0, hashRequest = 0;
-let dentalDraft = {}, profession = 'dentista', tooltipTrigger = null;
+let dentalDraft = {}, profession = 'dentista', tooltipTrigger = null, dentalDelivered = false;
 let documentCleanup = () => {};
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let motionPaused = reducedMotion.matches;
@@ -143,8 +148,8 @@ document.addEventListener('site:mode', render); document.addEventListener('portf
 
 function openStation(id, trigger) {
   if (!STATIONS.some(station => station.id === id)) return;
-  if (!dialog.open) { opener = trigger || document.activeElement; dentalDraft = {}; profession = 'dentista'; }
-  if (currentStation === 'printer' && id !== 'printer') { dentalDraft = {}; hashRevision++; }
+  if (!dialog.open) { opener = trigger || document.activeElement; dentalDraft = {}; profession = 'dentista'; dentalDelivered = false; reciprocity.reset('dental'); }
+  if (currentStation === 'printer' && id !== 'printer') { dentalDraft = {}; dentalDelivered = false; reciprocity.reset('dental'); hashRevision++; }
   currentStation = id; renderStation(); assistant.station(id);
   if (!dialog.open) dialog.showModal();
   document.documentElement.classList.add('dialog-open'); $('station-title').focus();
@@ -206,6 +211,8 @@ function rememberDental() {
   const form = $('consent-form'); if (!form) return;
   dentalDraft = Object.fromEntries(new FormData(form).entries());
 }
+// Other profession engines are retained. This release exposes only the dental flow.
+const ENABLED_PROFESSIONS = Object.freeze(['dentista']);
 const DENTAL_FIELDS = [
   ['patientName','Nombre del paciente','Patient name','text',120,true], ['date','Fecha','Date','date',10,true],
   ['procedure','Procedimiento dental','Dental procedure','textarea',800,true], ['risks','Riesgos principales explicados por el profesional','Main risks explained by the clinician','textarea',1600,true],
@@ -230,9 +237,9 @@ function addDentalField(form, definition) {
 }
 function renderDental(body) {
   const panel = el('section','tool-panel'); panel.id='document-tool'; panel.setAttribute('data-clarity-mask','true');
-  const professionLabel=el('label','field',text('Tu profesión','Your profession')); professionLabel.htmlFor='profession';
+  const professionLabel=el('label','field',funnelText('recip_professionLabel')); professionLabel.htmlFor='profession';
   const select=document.createElement('select'); select.id='profession';
-  for (const [id,es,english] of [['dentista','Dentistas','Dentists'],['psicologia','Psicólogos','Psychologists'],['medicina','Médicos','Doctors'],['abogacia','Abogados','Lawyers'],['contabilidad','Contadores','Accountants']]) { const option=el('option','',text(es,english)); option.value=id; select.append(option); }
+  for (const id of ENABLED_PROFESSIONS) { const option=el('option','',funnelText('recip_dentists')); option.value=id; select.append(option); }
   select.value=profession; professionLabel.append(select); panel.append(professionLabel); body.append(panel);
   select.addEventListener('change',()=>{ dentalDraft={}; profession=select.value; hashRevision++; renderStation(); });
   if (profession!=='dentista') {
@@ -245,7 +252,7 @@ function renderDental(body) {
   const extras=el('details','extra-fields'), summary=el('summary','',text('Completar datos del profesional y de la explicación clínica','Complete clinician details and the clinical explanation')),extraGrid=el('div','form-grid');
   for (const definition of EXTRA_FIELDS) addDentalField(extraGrid,definition); extras.append(summary,extraGrid); form.append(extras);
   const actions=el('div','station-actions'); const submit=el('button','button primary',text('Descargar PDF Gratis','Download free PDF')); submit.type='submit';
-  const reset=button(text('Borrar datos','Clear entries'),()=>{ dentalDraft={}; hashRevision++; renderStation(); }); actions.append(submit,reset); form.append(actions);
+  const reset=button(text('Borrar datos','Clear entries'),()=>{ dentalDraft={}; dentalDelivered=false; hashRevision++; renderStation(); }); actions.append(submit,reset); form.append(actions);
   const result=el('p','form-result'); result.id='consent-result'; result.setAttribute('role','status'); result.setAttribute('aria-live','polite'); form.append(result);
   panel.append(form);
   const technical=el('details','technical-details'); technical.id='consent-technical'; technical.open=true; technical.hidden=manager.getMode()!=='laboratorio';
@@ -254,9 +261,11 @@ function renderDental(body) {
   const schema=el('pre','schema-preview'); schema.textContent=JSON.stringify(CONSENT_SCHEMA,null,2); technical.append(el('h4','',text('Esquema de validación local','Local validation schema')),schema); panel.append(technical);
   rememberDental();
   const preview=createDocumentPreview(panel,()=>({title:text('Datos del consentimiento dental','Dental consent details'),notice:text('El PDF añade las secciones de conversación, decisión y firmas para revisión. Esta vista muestra únicamente tus datos capturados.','The PDF adds discussion, decision and signature sections for review. This view shows only your entered details.'),rows:[...DENTAL_FIELDS,...EXTRA_FIELDS].filter(item=>dentalDraft[item[0]]||item[5]).map(([key,es,english])=>({label:text(es,english),value:dentalDraft[key]||text('Por completar por el profesional.','To be completed by the professional.')}))}));
+  const waitlist = mountProWaitlist({ parent: panel, translate: funnelText, getKey: () => window.COMMERCE?.web3formsAccessKey, track: measure });
+  if(dentalDelivered)waitlist.show({focus:false});
   let timer, busy=false;
-  documentCleanup=()=>{clearTimeout(timer);};
-  form.addEventListener('input',()=>{ clearTimeout(timer); hashRevision++; rememberDental(); preview(); if(busy)result.textContent=text('Los datos cambiaron. Descarga de nuevo para incluirlos.','Entries changed. Download again to include them.'); timer=setTimeout(updateDentalHash,200); });
+  documentCleanup=()=>{clearTimeout(timer);reciprocity.invalidate('dental');waitlist.destroy();};
+  form.addEventListener('input',()=>{ clearTimeout(timer); hashRevision++; dentalDelivered=false;waitlist.hide();reciprocity.invalidate('dental'); rememberDental(); preview(); if(busy)result.textContent=text('Los datos cambiaron. Descarga de nuevo para incluirlos.','Entries changed. Download again to include them.'); timer=setTimeout(updateDentalHash,200); });
   form.addEventListener('submit',async event=>{
     event.preventDefault(); if(busy)return; clearTimeout(timer); rememberDental(); const errors=validateConsent(dentalDraft,manager.getLanguage());
     for(const field of form.querySelectorAll('[name]')) {const message=errors[field.name]||''; $(`error-${field.name}`).textContent=message; field.setAttribute('aria-invalid',String(Boolean(message)));}
@@ -266,8 +275,12 @@ function renderDental(body) {
     try{
       const digest=await consentHash(snapshot); const bytes=await buildConsentPdf(snapshot,{lang:language,hash:digest});
       if(revision!==hashRevision||!dialog.open)return;
-      download(new Blob([bytes],{type:'application/pdf'}),en()?'dental-consent-draft.pdf':'consentimiento-dental-borrador.pdf');
-      hash.textContent=digest; result.textContent=text('PDF preparado. Revisa la carpeta de descargas o la vista de documentos de tu navegador.','PDF prepared. Check your downloads or your browser’s document view.');
+      hash.textContent=digest;
+      reciprocity.checkpoint({tool:'dental',stats:{success:true,hash:digest},onDownload:()=>{
+        if(revision!==hashRevision||!dialog.open||!form.isConnected)return false;
+        download(new Blob([bytes],{type:'application/pdf'}),language==='en'?'dental-consent-draft.pdf':'consentimiento-dental-borrador.pdf');
+        result.textContent=funnelText('recip_dentalDelivered'); return true;
+      },onDelivered:()=>{dentalDelivered=true;waitlist.show();}});
     }catch{if(revision===hashRevision)result.textContent=text('No fue posible generar el PDF. Revisa los campos y vuelve a intentarlo en un navegador actualizado.','The PDF could not be generated. Check the fields and try again in an up-to-date browser.');}
     finally{busy=false;submit.disabled=false;}
   });
@@ -344,7 +357,7 @@ function download(blob,name){const url=URL.createObjectURL(blob),anchor=el('a');
 function closeStation(){closeGlossary();dialog.close();}
 $('close-station').addEventListener('click',closeStation);
 dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)closeStation();}});
-dialog.addEventListener('close',()=>{documentCleanup();documentCleanup=()=>{};closeGlossary();document.documentElement.classList.remove('dialog-open');currentStation=null;dentalDraft={};hashRevision++;document.body.append($('glossary-popover'));$('station-content').replaceChildren();opener?.isConnected&&opener.focus();});
+dialog.addEventListener('close',()=>{documentCleanup();documentCleanup=()=>{};reciprocity.reset('dental');dentalDelivered=false;closeGlossary();document.documentElement.classList.remove('dialog-open');currentStation=null;dentalDraft={};hashRevision++;document.body.append($('glossary-popover'));$('station-content').replaceChildren();opener?.isConnected&&opener.focus();});
 dialog.addEventListener('cancel',event=>{if(tooltipTrigger){event.preventDefault();closeGlossary();}});
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeGlossary();});
 document.addEventListener('click',event=>{if(tooltipTrigger&&!event.target.closest('.tech-term,.glossary-popover'))closeGlossary();});

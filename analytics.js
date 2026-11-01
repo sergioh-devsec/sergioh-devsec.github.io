@@ -4,7 +4,7 @@
   const KEY='cyberserch-analytics-v1', AGE=90*24*60*60*1000, PROJECT='z5jal39enl';
   const HOSTS=["cyberserch.com", "sergioh-devsec.github.io"]; // Replaced from the canonical URL during publication.
   const REFERRALS=new Set(['fbclid','gclid','igshid','utm_source','utm_medium','utm_campaign','utm_content','utm_term']);
-  const EVENTS=new Set(['visit_portfolio','open_estimator','estimate_download','enquiry_accepted','support_paypal_click','support_patreon_click','project_repository_click','profile_open','axiom_open','open_local_tools']);
+  const EVENTS=new Set(['visit_portfolio','open_estimator','estimate_download','enquiry_accepted','support_paypal_click','support_patreon_click','project_repository_click','profile_open','axiom_open','open_local_tools','cv_start','cv_diagnosis_seen','cv_preview_template_switch','cv_paywall_seen','cv_txt_download','cv_checkout_pro_click','cv_checkout_plus_click','cv_license_activated','recip_shown_dental','recip_shown_csv','recip_shown_logs','recip_coffee2_click','recip_support5_click','recip_dismiss','pro_waitlist_sent']);
   function readChoice(raw,now=Date.now()){
     try{const x=JSON.parse(raw);return x.version===1&&['accepted','denied'].includes(x.choice)&&Number.isFinite(x.expires)&&x.expires>now&&x.expires<=now+AGE?x.choice:null;}catch{return null;}
   }
@@ -75,7 +75,7 @@
   preferences.addEventListener('click',()=>{if(sharedNotice&&window.AXIOM?.openPreferences){window.AXIOM.openPreferences(preferences);return;}panel.hidden=false;preferences.setAttribute('aria-expanded','true');render();heading.focus({preventScroll:true});});
   document.addEventListener('portfolio:language',render);render();panel.hidden=sharedNotice||Boolean(controller.choice);preferences.setAttribute('aria-expanded',String(!panel.hidden));
   ['portfolio:axiom-open','portfolio:axiom-close'].forEach(name=>document.addEventListener(name,syncExpanded));
-  window.SiteAnalytics={get choice(){return controller.choice;},get eligible(){return eligible;},get privacySignal(){return signal;},choose};
+  window.SiteAnalytics={get choice(){return controller.choice;},get eligible(){return eligible;},get privacySignal(){return signal;},choose,track:name=>controller.track(name)};
   document.dispatchEvent(new CustomEvent('portfolio:analytics-ready'));
   window.addEventListener('storage',e=>{if(e.key===KEY){const next=readChoice(e.newValue);if(next!=='accepted'&&controller.choice!=='denied')choose('denied');}});
   document.addEventListener('click',e=>{

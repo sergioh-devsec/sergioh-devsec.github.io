@@ -70,8 +70,8 @@ function relevantJobClauses(jobText) {
   const clauses = [];
   for (const line of lines) {
     const normalized = normalize(line);
-    if (/^(?:beneficios|ofrecemos|te ofrecemos|prestaciones|que ofrecemos)\s*(?:[:—-]|$)/.test(normalized)) benefits = true;
-    if (/^(?:requisitos|responsabilidades|funciones|habilidades|conocimientos|perfil|buscamos|se requiere|necesitas)\b/.test(normalized)) benefits = false;
+    if (/^(?:beneficios|ofrecemos|te ofrecemos|prestaciones|que ofrecemos|benefits|we offer|perks)\s*(?:[:—-]|$)/.test(normalized)) benefits = true;
+    if (/^(?:requisitos|responsabilidades|funciones|habilidades|conocimientos|perfil|buscamos|se requiere|necesitas|requirements|responsibilities|skills|qualifications|you need)\b/.test(normalized)) benefits = false;
     if (benefits || /^(?:ofrecemos|te ofrecemos|recibiras|obtendras|capacitacion gratuita|seguro de vida)\b/.test(normalized)) continue;
     for (const clause of normalized.split(/[;.!?](?:\s+|$)/)) {
       if (clause) clauses.push(clause);
@@ -82,6 +82,7 @@ function relevantJobClauses(jobText) {
 
 function negatedSkill(clause, skill) {
   const aliases = skill.aliases.map(escapeRegex).join('|');
+  if (new RegExp(`(?:no\\s+(?:experience|knowledge)\\s+(?:in|of|with)|(?:do(?:es)?\\s+not|not)\\s+(?:require|need))\\s+(?:${aliases})(?=$|[^\\p{L}\\p{N}_])|(?:${aliases})\\s+(?:(?:is|experience is)\\s+)?(?:not\\s+(?:required|necessary)|optional)\\b`,'u').test(clause)) return true;
   const negativeGroup = /(?:no\s+(?:(?:se\s+)?(?:requiere|requieren|necesita|necesitan|solicita)|(?:requieres|necesitas)|es\s+(?:necesario|indispensable|obligatorio))|sin\s+(?:experiencia|conocimientos?))\b([^;.!?]*)/gu;
   for (const match of clause.matchAll(negativeGroup)) {
     const group = match[1].split(/\b(?:pero|aunque|sin embargo)\b/)[0];
@@ -139,7 +140,7 @@ const present = value => /^(?:actualidad|actual|presente|actualmente|hoy|present
 
 const ACTION_ROOTS = ['administr', 'analiz', 'aplic', 'apoy', 'asesor', 'automatiz', 'capacit', 'colabor', 'comunic', 'configur', 'control', 'coordin', 'cre', 'desarroll', 'detect', 'disen', 'document', 'ejecut', 'elabor', 'entreg', 'evalu', 'gestion', 'implement', 'instal', 'integr', 'lider', 'mejor', 'migr', 'negoci', 'oper', 'optimiz', 'organiz', 'planific', 'prepar', 'present', 'proces', 'program', 'realiz', 'recuper', 'revis', 'supervis', 'trabaj', 'valid'];
 const ACTIONS = new RegExp(`\\b(?:${ACTION_ROOTS.join('|')})(?:ar|o|as|a|amos|an|e|aste|aron|aba|abas|abamos|aban|are|aras|ara|aremos|aran|ando|ado|ada|ados|adas|es|en|emos)\\b|\\b(?:analice|aplique|automatice|organice|optimice|planifique|atiendo|atendi|atendia|atender|atiende|atendemos|atendiendo|resolvi|resolvia|resolver|resuelvo|resuelve|reduje|reducia|reducir|reduzco|mantengo|mantuve|mantenia|mantener|dirigi|dirigia|dirigir|dirijo|produje|producir|hice|hacer|brinde|brindo|brindar|vendia|vendi|vender|vendo|escribi|escribir|escribo|construi|construir|construyo|managed|led|built|developed|created|designed|implemented|improved|supported|delivered|analyzed|coordinated|reduced|increased)\\b`, 'u');
-const METRICS = /(?:\d[\d.,]*\s*(?:%|(?:por ciento|mxn|usd|eur|pesos|dolares|euros)\b)|[$€]\s*\d)|\b(?:\d[\d.,]*|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|cien)\s*(?:horas?|minutos?|dias?|semanas?|meses?|clientes?|usuarios?|personas?|colaboradores?|empleados?|proyectos?|cuentas?|tickets?|casos?|solicitudes?|pedidos?|ventas?|sucursales?|equipos?|reportes?|registros?|unidades?|productos?|procesos?|eventos?|pacientes?|alumnos?|proveedores?|sistemas?|servidores?|campanas?)\b/u;
+const METRICS = /(?:\d[\d.,]*\s*(?:%|(?:por ciento|percent|mxn|usd|eur|pesos|dolares|euros)\b)|[$€]\s*\d)|\b(?:\d[\d.,]*|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|cien|one|two|three|four|five|six|seven|eight|nine|ten|hundred)\s*(?:horas?|minutos?|dias?|semanas?|meses?|anos?|clientes?|usuarios?|personas?|colaboradores?|empleados?|proyectos?|cuentas?|tickets?|casos?|solicitudes?|pedidos?|ventas?|sucursales?|equipos?|reportes?|registros?|unidades?|productos?|procesos?|eventos?|pacientes?|alumnos?|proveedores?|sistemas?|servidores?|campanas?|hours?|minutes?|days?|weeks?|months?|years?|clients?|customers?|users?|people|employees?|projects?|accounts?|cases?|requests?|orders?|sales|branches|teams?|reports?|records?|units?|products?|processes|events?|patients?|students?|suppliers?|systems?|servers?|campaigns?)\b/u;
 
 /** Conservative wording edits: no added employers, skills, results, quantities or benefits. */
 export function improveActionText(value = '') {
@@ -230,6 +231,50 @@ export function analyzeCv({profile = {}, jobText = '', sourceText = '', extracti
     if (description && !ACTIONS.test(normalized)) add('description', 'action', 'info', `Describe tus acciones: ${label}`, 'No se reconoció un verbo de acción. Revisa si puedes expresar una función concreta con verbos como «atender», «coordinar» o «desarrollar».', improveActionText(description) !== description ? improveActionText(description) : 'Escribe una acción que realmente hayas realizado; conserva su alcance original.');
     if (description && !METRICS.test(normalized)) add('description', 'metrics', 'info', `Revisa el alcance de tu trabajo: ${label}`, 'No se reconocieron cifras de alcance o resultados. Si cuentas con datos verificables, puedes indicar volumen, frecuencia o tamaño del equipo; no es obligatorio tener métricas en todos los puestos.', 'Añade solo cifras que puedas verificar. También puedes describir el alcance con contexto sin inventar resultados.');
   });
+  // These observations inspect only entered text. They do not predict hiring or
+  // invent a missing result simply to fill a fixed marketing quota.
+  if (!string(jobText)) {
+    const summary = string(profile.summary);
+    if (!summary || !METRICS.test(normalize(summary))) findings.push({id:'profile:summary:scope',type:'profile',severity:'info',targetField:'summary',messageKey:'cvF_blindSummary',params:{},titleKey:'cvF_profileCheck',detailKey:'cvF_blindSummary'});
+    const skills = string(profile.skills).split(/[,;\n]/).map(normalize).filter(Boolean);
+    const generic = /^(?:responsable|puntual|proactivo|proactiva|trabajo en equipo|liderazgo|comunicacion|teamwork|leadership|communication|hardworking|reliable|proactive|responsibility)$/u;
+    if (!skills.length || skills.every(skill=>generic.test(skill))) findings.push({id:'profile:skills:generic',type:'profile',severity:'info',targetField:'skills',messageKey:'cvF_blindSkills',params:{},titleKey:'cvF_profileCheck',detailKey:'cvF_blindSkills'});
+    if (!(Array.isArray(profile.experiences) && profile.experiences.some(item=>item && [item.role,item.company,item.description].some(string)))) findings.push({id:'profile:experience:missing',type:'profile',severity:'info',targetField:'experience',messageKey:'cvF_blindExperience',params:{},titleKey:'cvF_profileCheck',detailKey:'cvF_blindExperience'});
+  }
+  const blindSpots = collectBlindSpots({findings, profile, hasVacancy:Boolean(string(jobText))});
   const {issues, ...extractionResult} = quality;
-  return {findings, keywords, matchedKeywords, missingKeywords, extraction: extractionResult};
+  return {findings, keywords, matchedKeywords, missingKeywords, blindSpots, extraction: extractionResult};
+}
+
+/** Pure, language-neutral, bounded observations suitable for translated UI. */
+export function collectBlindSpots({findings=[],profile={},hasVacancy=false}={}) {
+  const result=[], seen=new Set();
+  const add=(id,key,params={})=>{if(!seen.has(id)){seen.add(id);result.push({id,key,params});}};
+  // Extraction is critical: do not imply a reliable diagnosis of unreadable text.
+  for(const f of findings.filter(f=>f.type==='extraction')) add('extraction','cvF_blindExtraction');
+  if(hasVacancy) for(const f of findings.filter(f=>f.type==='keyword')) add(f.id,'cvF_blindKeyword',{x:f.keyword});
+  for(const f of findings.filter(f=>f.type==='date')) {
+    const experience=(Array.isArray(profile.experiences)?profile.experiences:[]).find(item=>item?.id===f.experienceId);
+    add('date:'+f.experienceId,'cvF_blindDate',{y:string(experience?.role)||string(experience?.company)});
+  }
+  for(const f of findings.filter(f=>f.type==='description' && (f.id.endsWith(':action')||f.id.endsWith(':metrics')))) {
+    const experience=(Array.isArray(profile.experiences)?profile.experiences:[]).find(item=>item?.id===f.experienceId);
+    const actionIssue=findings.some(item=>item.experienceId===f.experienceId&&item.id.endsWith(':action'));
+    const metricIssue=findings.some(item=>item.experienceId===f.experienceId&&item.id.endsWith(':metrics'));
+    add('impact:'+f.experienceId,actionIssue&&metricIssue?'cvF_blindImpact':actionIssue?'cvF_blindAction':'cvF_blindMetric',{y:string(experience?.role)||string(experience?.company)});
+  }
+  for(const f of findings.filter(f=>f.type==='profile')) add(f.id,f.messageKey,f.params);
+  return result.slice(0,hasVacancy?5:3);
+}
+
+/** Stable UI keys. Never translate, parse or rewrite a visitor's experience text. */
+export function findingPresentation(finding={},profile={}) {
+  if(finding.type==='profile'&&finding.titleKey&&finding.detailKey)return {titleKey:finding.titleKey,detailKey:finding.detailKey,params:{...finding.params}};
+  const experiences=Array.isArray(profile.experiences)?profile.experiences:[];
+  const index=experiences.findIndex(item=>item?.id===finding.experienceId),experience=experiences[index];
+  const params={x:string(finding.keyword),y:string(experience?.role)||string(experience?.company),n:index+1};
+  const code=string(finding.id).split(':').at(-1);
+  const known={date:['missing-start','invalid-start','missing-end','invalid-end','order'],description:['short','action','metrics'],extraction:['failed','binary','control','encoding','insufficient','review']};
+  const base=finding.type==='keyword'?'cvF_find_keyword':Object.hasOwn(known,finding.type)&&known[finding.type].includes(code)?`cvF_find_${finding.type}_${code.replace(/-/g,'_')}`:'cvF_find_generic';
+  return {titleKey:base+'_title',detailKey:base+'_detail',params};
 }

@@ -1,7 +1,9 @@
 window.PORTFOLIO = {
   "supportLinks": {
     "patreon": "https://www.patreon.com/c/CyberserchMX/membership",
-    "paypal": "https://www.paypal.com/donate/?hosted_button_id=D587QCAYURRYG"
+    "paypal": "https://www.paypal.com/donate/?hosted_button_id=D587QCAYURRYG",
+    "paypalUsd2": "https://www.paypal.com/donate/?hosted_button_id=48HL47SR9QHQ2",
+    "paypalUsd5": "https://www.paypal.com/donate/?hosted_button_id=GCF536PNYJ9RE"
   },
   "cvCheckoutUrl": null,
   "socialLinks": {
