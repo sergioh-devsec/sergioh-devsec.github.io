@@ -1,7 +1,8 @@
-import { initRoomAssistant } from './room-assistant.js';
+import { initRoomAssistant } from './room-assistant.js?v=performance-3';
 import { createModeManager } from './modeManager.js';
 import { STATIONS } from './stationsConfig.js';
 import { validateConsent, consentHash, buildConsentPdf, CONSENT_SCHEMA } from './dentalConsent.js';
+import { professionConfig, professionSchema, validateProfessionDocument, professionDocumentHash, professionPreview, buildProfessionPdf } from './professionDocuments.js';
 
 // Documents stay local. Only explicitly submitted service questions reach the fixed AI endpoint.
 const $ = id => document.getElementById(id);
@@ -13,6 +14,7 @@ const shared = () => window.TRANSLATIONS[manager.getLanguage()].roomShared;
 const dialog = $('station-dialog');
 let currentStation = null, opener = null, hashRevision = 0, hashRequest = 0;
 let dentalDraft = {}, profession = 'dentista', tooltipTrigger = null;
+let documentCleanup = () => {};
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let motionPaused = reducedMotion.matches;
 const assistant = initRoomAssistant({ language: () => manager.getLanguage() });
@@ -28,7 +30,7 @@ function link(value, href, cls = 'button primary') {
 }
 const UI = {
   skip: ['Ir a las estaciones', 'Skip to stations'], brandLine: ['Ideas que trabajan contigo.', 'Ideas that work with you.'],
-  portfolio: ['Explora lo que hacemos', 'Explore our work'], hint: ['Toca un objeto o elige una estación. Axiom te acompaña.', 'Tap an object or choose a station. Axiom will guide you.'],
+  portfolio: ['Servicios y casos', 'Services and case studies'], hint: ['Toca un objeto o elige una estación. Axiom te acompaña.', 'Tap an object or choose a station. Axiom will guide you.'],
   cvBuilder: ['Crear mi CV', 'Build my CV'],
   boostBusiness: ['Impulsa tu negocio', 'Boost your business'], boostNote: ['Una web, menos tareas, mejores decisiones.', 'A website, fewer tasks, better decisions.'],
   cvNote: ['Tu experiencia, bien contada.', 'Your experience, well told.'], tryTools: ['Prueba las herramientas', 'Try the tools'], toolsNote: ['Resuelve algo y mira el resultado.', 'Solve a task and see the result.'],
@@ -149,6 +151,7 @@ function openStation(id, trigger) {
 }
 function renderStation(preserve = false) {
   if (preserve && currentStation === 'printer') rememberDental();
+  documentCleanup(); documentCleanup = () => {};
   closeGlossary(); hashRevision++;
   const station = STATIONS.find(item => item.id === currentStation), data = copy().stations[currentStation];
   $('dialog-kicker').textContent = `${station.number} / ${data.object}`; $('station-title').textContent = data.title;
@@ -231,9 +234,9 @@ function renderDental(body) {
   const select=document.createElement('select'); select.id='profession';
   for (const [id,es,english] of [['dentista','Dentistas','Dentists'],['psicologia','Psicólogos','Psychologists'],['medicina','Médicos','Doctors'],['abogacia','Abogados','Lawyers'],['contabilidad','Contadores','Accountants']]) { const option=el('option','',text(es,english)); option.value=id; select.append(option); }
   select.value=profession; professionLabel.append(select); panel.append(professionLabel); body.append(panel);
-  select.addEventListener('change',()=>{ rememberDental(); profession=select.value; hashRevision++; renderStation(); });
+  select.addEventListener('change',()=>{ dentalDraft={}; profession=select.value; hashRevision++; renderStation(); });
   if (profession!=='dentista') {
-    panel.append(el('h3','',text('Este escritorio se está preparando.','This desk is being prepared.')),el('p','',text('La herramienta disponible ahora es el consentimiento dental. Para otro giro, podemos revisar tus documentos y diseñar una solución.','The tool currently available is dental consent. For another profession, we can review your documents and design a solution.')),link(text('Consultar una solución para mi profesión','Discuss a solution for my profession'),`cotizador.html?giro=${profession}&interes=documentos`)); return;
+    renderProfessionDocument(panel,body); return;
   }
   panel.append(el('p','eyebrow',text('HERRAMIENTA GRATUITA · SIN SUBIR DATOS','FREE TOOL · NO DATA UPLOADS')),el('h3','',text('Consentimiento dental, en PDF.','Dental consent, in PDF.')));
   panel.append(el('p','tool-notice',text('Genera un borrador para revisión del odontólogo. Los campos clínicos los completa el profesional; esta plantilla no valida el consentimiento ni lo firma. Los datos se borran al cerrar esta ventana.','Generate a draft for review by the dentist. Clinical fields must be completed by the clinician; this template does not validate or sign consent. Entries are cleared when this window closes.')));
@@ -249,8 +252,11 @@ function renderDental(body) {
   technical.append(el('summary','',text('Validación y huella local','Local validation and fingerprint')),el('p','small',text('SHA-256 del JSON canónico. Comprueba el contenido; no acredita identidad, firma ni validez legal.','SHA-256 of the canonical JSON. It checks the content, not identity, signature or legal validity.')));
   const hash=el('code','hash-value',text('Completa los campos obligatorios para calcular la huella.','Complete the required fields to calculate the fingerprint.')); hash.id='consent-hash'; technical.append(hash);
   const schema=el('pre','schema-preview'); schema.textContent=JSON.stringify(CONSENT_SCHEMA,null,2); technical.append(el('h4','',text('Esquema de validación local','Local validation schema')),schema); panel.append(technical);
+  rememberDental();
+  const preview=createDocumentPreview(panel,()=>({title:text('Datos del consentimiento dental','Dental consent details'),notice:text('El PDF añade las secciones de conversación, decisión y firmas para revisión. Esta vista muestra únicamente tus datos capturados.','The PDF adds discussion, decision and signature sections for review. This view shows only your entered details.'),rows:[...DENTAL_FIELDS,...EXTRA_FIELDS].filter(item=>dentalDraft[item[0]]||item[5]).map(([key,es,english])=>({label:text(es,english),value:dentalDraft[key]||text('Por completar por el profesional.','To be completed by the professional.')}))}));
   let timer, busy=false;
-  form.addEventListener('input',()=>{ clearTimeout(timer); hashRevision++; rememberDental(); if(busy)result.textContent=text('Los datos cambiaron. Descarga de nuevo para incluirlos.','Entries changed. Download again to include them.'); timer=setTimeout(updateDentalHash,200); });
+  documentCleanup=()=>{clearTimeout(timer);};
+  form.addEventListener('input',()=>{ clearTimeout(timer); hashRevision++; rememberDental(); preview(); if(busy)result.textContent=text('Los datos cambiaron. Descarga de nuevo para incluirlos.','Entries changed. Download again to include them.'); timer=setTimeout(updateDentalHash,200); });
   form.addEventListener('submit',async event=>{
     event.preventDefault(); if(busy)return; clearTimeout(timer); rememberDental(); const errors=validateConsent(dentalDraft,manager.getLanguage());
     for(const field of form.querySelectorAll('[name]')) {const message=errors[field.name]||''; $(`error-${field.name}`).textContent=message; field.setAttribute('aria-invalid',String(Boolean(message)));}
@@ -273,6 +279,62 @@ function renderDental(body) {
   for(const row of [[text('PDF local de consentimiento','Local consent PDF'),text('Con marca discreta','With discreet watermark'),text('Con tu logo, sin marca','Your logo, no watermark')],[text('Web dental y sistema de citas','Dental website and booking'),text('No incluido','Not included'),text('Se diseña para tu clínica','Scoped for your clinic')],[text('Recordatorios y presupuestos','Reminders and treatment estimates'),text('No incluido','Not included'),text('Integración según alcance','Integration as scoped')]]){const tr=document.createElement('tr'); row.forEach((value,i)=>{const cell=el(i?'td':'th','',value);if(!i)cell.scope='row';tr.append(cell);});tbody.append(tr);} table.append(tbody);pro.append(table);
   pro.append(el('p','small',text('Pro se desarrolla por encargo. El alcance, las licencias y el costo de mensajería se acuerdan antes de contratar.','Pro is built to order. Scope, licences and messaging costs are agreed before purchase.')),link(text('Quiero mi consultorio automatizado','Plan my automated practice'),'cotizador.html?giro=dentista&interes=paquete_pro')); body.append(pro);
 }
+function createDocumentPreview(panel,read) {
+  const details=el('details','extra-fields'); details.open=true;
+  details.append(el('summary','',text('Vista previa de tus datos · se actualiza al escribir','Your details preview · updates as you type')));
+  const preview=el('article','document-preview'); preview.setAttribute('aria-label',text('Vista previa del documento','Document preview')); details.append(preview); panel.append(details);
+  function update() {
+    const data=read(); preview.replaceChildren(el('p','eyebrow',text('BORRADOR · REVISIÓN PROFESIONAL','DRAFT · PROFESSIONAL REVIEW')),el('h3','',data.title),el('p','small',data.notice));
+    for(const row of data.rows) {const item=el('section');item.append(el('h4','',row.label),el('p','',row.value));preview.append(item);}
+  }
+  update(); return update;
+}
+function renderProfessionDocument(panel,body) {
+  const id=profession, config=professionConfig(id), language=manager.getLanguage();
+  const local=pair=>pair[language==='en'?'en':'es'];
+  panel.append(el('p','eyebrow',text('HERRAMIENTA GRATUITA · SIN SUBIR DATOS','FREE TOOL · NO DATA UPLOADS')),el('h3','',local(config.title)),el('p','',local(config.description)),el('p','tool-notice',local(config.notice)));
+  panel.append(el('p','small',text('Los datos se borran al cambiar de profesión o cerrar esta ventana. Los archivos descargados quedan en tu dispositivo.','Entries are cleared when you change profession or close this window. Downloads remain on your device.')));
+  const form=document.createElement('form'); form.id='consent-form'; form.noValidate=true;
+  const grid=el('div','form-grid'), extras=el('details','extra-fields'), extraGrid=el('div','form-grid');
+  extras.append(el('summary','',text('Completar datos opcionales del documento','Complete optional document details')),extraGrid);
+  for(const item of config.fields) addDentalField(item.required?grid:extraGrid,[item.key,item.label.es,item.label.en,item.type,item.maxLength,item.required]);
+  form.append(grid,extras);
+  const actions=el('div','station-actions'), submit=el('button','button primary',text('Descargar PDF Gratis','Download free PDF')); submit.type='submit';
+  actions.append(submit,button(text('Borrar datos','Clear entries'),()=>{dentalDraft={};hashRevision++;renderStation();})); form.append(actions);
+  const result=el('p','form-result');result.id='consent-result';result.setAttribute('role','status');result.setAttribute('aria-live','polite');form.append(result);panel.append(form);
+  rememberDental();
+  const preview=createDocumentPreview(panel,()=>{const data=professionPreview(id,dentalDraft,manager.getLanguage());data.rows=data.rows.filter((row,index)=>config.fields[index].required||dentalDraft[config.fields[index].key]);return data;});
+  const technical=el('details','technical-details'); technical.id='consent-technical';technical.open=true;technical.hidden=manager.getMode()!=='laboratorio';
+  technical.append(el('summary','',text('Validación y huella local','Local validation and fingerprint')),el('p','small',text('SHA-256 del JSON canónico. Comprueba cambios en el contenido; no acredita identidad, firma ni validez profesional.','SHA-256 of the canonical JSON. It checks content changes, not identity, signature or professional validity.')));
+  const hash=el('code','hash-value');hash.id='consent-hash';
+  const schema=el('pre','schema-preview');schema.textContent=JSON.stringify(professionSchema(id),null,2);technical.append(hash,el('h4','',text('Esquema de validación local','Local validation schema')),schema);panel.append(technical);
+  let timer,busy=false,disposed=false;
+  documentCleanup=()=>{disposed=true;clearTimeout(timer);};
+  async function updateHash() {
+    if(disposed||!form.isConnected||profession!==id)return;
+    rememberDental();const revision=hashRevision,request=++hashRequest;
+    if(Object.keys(validateProfessionDocument(id,dentalDraft,manager.getLanguage())).length){hash.textContent=text('Completa los campos obligatorios para calcular la huella.','Complete the required fields to calculate the fingerprint.');return;}
+    try {const digest=await professionDocumentHash(id,dentalDraft);if(!disposed&&revision===hashRevision&&request===hashRequest&&hash.isConnected)hash.textContent=digest;}
+    catch {if(!disposed&&revision===hashRevision&&hash.isConnected)hash.textContent=text('La huella requiere un navegador con Web Crypto y HTTPS.','The fingerprint requires Web Crypto and HTTPS.');}
+  }
+  form.addEventListener('input',()=>{clearTimeout(timer);hashRevision++;rememberDental();preview();if(busy)result.textContent=text('Los datos cambiaron. Descarga de nuevo para incluirlos.','Entries changed. Download again to include them.');timer=setTimeout(updateHash,200);});
+  form.addEventListener('submit',async event=>{
+    event.preventDefault();if(busy||disposed)return;clearTimeout(timer);rememberDental();
+    const errors=validateProfessionDocument(id,dentalDraft,manager.getLanguage());
+    for(const input of form.querySelectorAll('[name]')){const message=errors[input.name]||'';$(`error-${input.name}`).textContent=message;input.setAttribute('aria-invalid',String(Boolean(message)));}
+    if(Object.keys(errors).length){result.textContent=errors.form||text('Revisa los campos marcados.','Review the marked fields.');const first=form.querySelector('[aria-invalid="true"]');if(first?.closest('details'))first.closest('details').open=true;first?.focus();return;}
+    busy=true;submit.disabled=true;const revision=++hashRevision,snapshot={...dentalDraft},lang=manager.getLanguage();result.textContent=text('Preparando tu PDF en este dispositivo…','Preparing the PDF on this device…');
+    try {
+      const digest=await professionDocumentHash(id,snapshot),bytes=await buildProfessionPdf(id,snapshot,{lang,hash:digest});
+      if(disposed||revision!==hashRevision||!dialog.open||profession!==id)return;
+      download(new Blob([bytes],{type:'application/pdf'}),`${config.filename}-${lang==='en'?'draft':'borrador'}.pdf`);
+      hash.textContent=digest;result.textContent=text('PDF preparado. Revisa la carpeta de descargas o la vista de documentos de tu navegador.','PDF prepared. Check your downloads or your browser’s document view.');
+    }catch{if(!disposed&&revision===hashRevision)result.textContent=text('No fue posible generar el PDF. Revisa los campos y vuelve a intentarlo en un navegador actualizado.','The PDF could not be generated. Check the fields and try again in an up-to-date browser.');}
+    finally{busy=false;submit.disabled=false;}
+  });
+  updateHash();
+  const pro=el('section','pro-card');pro.append(el('h3','',text('Este documento puede formar parte de tu flujo de trabajo.','This document can become part of your workflow.')),el('p','',text('Podemos diseñar formularios con tu identidad, revisión de responsables, organización de archivos y avisos. La integración se cotiza según el alcance; esta versión gratuita no guarda expedientes ni envía mensajes.','We can scope branded forms, review responsibilities, file organization and reminders. Integrations are quoted by scope; this free version does not store case records or send messages.')),link(text('Explorar una solución para mi profesión','Explore a solution for my profession'),`cotizador.html?giro=${id}&interes=documentos`));body.append(pro);
+}
 async function updateDentalHash(){
   const node=$('consent-hash'); if(!node)return; rememberDental(); const revision=hashRevision,request=++hashRequest;
   if(Object.keys(validateConsent(dentalDraft,manager.getLanguage())).length){node.textContent=text('Completa los campos obligatorios para calcular la huella.','Complete the required fields to calculate the fingerprint.');return;}
@@ -282,12 +344,12 @@ function download(blob,name){const url=URL.createObjectURL(blob),anchor=el('a');
 function closeStation(){closeGlossary();dialog.close();}
 $('close-station').addEventListener('click',closeStation);
 dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)closeStation();}});
-dialog.addEventListener('close',()=>{closeGlossary();document.documentElement.classList.remove('dialog-open');currentStation=null;dentalDraft={};hashRevision++;document.body.append($('glossary-popover'));$('station-content').replaceChildren();opener?.isConnected&&opener.focus();});
+dialog.addEventListener('close',()=>{documentCleanup();documentCleanup=()=>{};closeGlossary();document.documentElement.classList.remove('dialog-open');currentStation=null;dentalDraft={};hashRevision++;document.body.append($('glossary-popover'));$('station-content').replaceChildren();opener?.isConnected&&opener.focus();});
 dialog.addEventListener('cancel',event=>{if(tooltipTrigger){event.preventDefault();closeGlossary();}});
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeGlossary();});
 document.addEventListener('click',event=>{if(tooltipTrigger&&!event.target.closest('.tech-term,.glossary-popover'))closeGlossary();});
 window.addEventListener('resize',closeGlossary); dialog.addEventListener('scroll',closeGlossary,true);
-window.addEventListener('pagehide',event=>{dentalDraft={};hashRevision++;closeGlossary();document.body.append($('glossary-popover'));$('station-content').replaceChildren();if(dialog.open)dialog.close();currentStation=null;document.documentElement.classList.remove('dialog-open');if(!event.persisted)manager.destroy();});
+window.addEventListener('pagehide',event=>{documentCleanup();documentCleanup=()=>{};dentalDraft={};hashRevision++;closeGlossary();document.body.append($('glossary-popover'));$('station-content').replaceChildren();if(dialog.open)dialog.close();currentStation=null;document.documentElement.classList.remove('dialog-open');if(!event.persisted)manager.destroy();});
 render();
 // Preserve previously shared portfolio anchors without duplicating its content.
 const legacyHashes=new Set(['home','services','creadoras','content','social','contact','apoyar','certifications','laboratory','automation','web-samples','descubrir','projects','about','soc-play','como-trabajamos','que-recibes','preguntas']);

@@ -7,7 +7,7 @@
   'cotizador.html':['Impulsa tu negocio','Boost your business'],
   'cv.html':['Crear mi CV','Build my CV'],
   'herramientas.html':['Herramientas gratuitas','Free tools'],
-  'portafolio.html':['Explora lo que hacemos','Explore our work'],
+  'portafolio.html':['Servicios y casos','Services and case studies'],
   'axiom-3d/index.html':['Conoce a Axiom en 3D','Meet Axiom in 3D'],
  };
  function english(){return document.documentElement.lang.toLowerCase().startsWith('en');}

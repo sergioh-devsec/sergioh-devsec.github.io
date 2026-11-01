@@ -1,6 +1,3 @@
-import { initRoomAxiom } from './room-axiom.js';
-import { createNativeFace } from './axiom-3d/native-face.js';
-import { createNativeSecondary } from './axiom-3d/native-secondary.js';
 import { createRoomVoice } from './room-voice.js';
 
 // A single fixed service endpoint. No keys and no visitor-selected URLs.
@@ -20,16 +17,37 @@ export function initRoomAssistant({ language = () => 'es' } = {}) {
   const en = () => language() === 'en';
   const t = (es, english) => en() ? english : es;
   let currentKey = 'welcome', chatEnabled = false, busy = false, history = [], controller, requestId = 0;
-  const viewer = initRoomAxiom({ container:$('room-axiom-viewer'), canvas:$('room-axiom-canvas'), fallback:$('room-axiom-fallback'),
-    createFace(root) {
-      const face = createNativeFace(root), secondary = createNativeSecondary(root);
-      let time = 0, previous = performance.now();
-      return { apply(pose) {
-        const now = performance.now(); const paused = document.documentElement.dataset.motion === 'paused';
-        if (!paused) time += Math.min(.08, (now - previous) / 1000); previous = now;
-        face.apply(pose); secondary.apply({ time, paused, speaking:pose.jawOpen > .005, level:pose.jawOpen, mood:pose.anger > .4 ? 'angry' : 'neutral' });
-      }, reset() { face.reset(); secondary.reset(); }, dispose() { secondary.dispose(); face.dispose(); } };
-    } });
+  let viewer = null, viewerLoading = false, motionAllowed = true, destroyed = false;
+  function viewerLabel() {
+    $('axiom-3d-start').textContent = viewer ? t('3D activado','3D enabled') : viewerLoading ? t('Cargando 3D…','Loading 3D…') : t('Ver a Axiom en 3D','View Axiom in 3D');
+    $('axiom-3d-start').disabled = viewerLoading || Boolean(viewer);
+  }
+  // Explicit opt-in: no Three.js, decoder or GLB request before this click.
+  $('axiom-3d-start').addEventListener('click', async () => {
+    if (viewer || viewerLoading || destroyed) return;
+    viewerLoading = true; viewerLabel();
+    try {
+      const [{ initRoomAxiom }, { createNativeFace }, { createNativeSecondary }] = await Promise.all([
+        import('./room-axiom.js?v=performance-3'), import('./axiom-3d/native-face.js'), import('./axiom-3d/native-secondary.js'),
+      ]);
+      if (destroyed) return;
+      viewer = initRoomAxiom({ container:$('room-axiom-viewer'), canvas:$('room-axiom-canvas'), fallback:$('room-axiom-fallback'),
+        createFace(root) {
+          const face = createNativeFace(root), secondary = createNativeSecondary(root);
+          let time = 0, previous = performance.now();
+          return { apply(pose) {
+            const now = performance.now(); const paused = document.documentElement.dataset.motion === 'paused';
+            if (!paused) time += Math.min(.08, (now - previous) / 1000); previous = now;
+            face.apply(pose); secondary.apply({ time, paused, speaking:pose.jawOpen > .005, level:pose.jawOpen, mood:pose.anger > .4 ? 'angry' : 'neutral' });
+          }, reset() { face.reset(); secondary.reset(); }, dispose() { secondary.dispose(); face.dispose(); } };
+        } });
+      viewer.setMotion(motionAllowed);
+      if (!await viewer.ready) { viewer.destroy(); viewer = null; throw new Error('3D unavailable'); }
+      $('axiom-3d-status').textContent = t('Listo. Saluda o mueve el cursor.','Ready. Say hello or move your pointer.');
+    } catch {
+      $('axiom-3d-status').textContent = t('La vista ligera sigue disponible. Puedes volver a intentar el 3D.','The lightweight view is still available. You can retry 3D.');
+    } finally { viewerLoading = false; if (!destroyed) viewerLabel(); }
+  });
   const voice = createRoomVoice({
     onCaption(value) { $('axiom-caption').textContent = value; $('axiom-caption').hidden = false; },
     onState(state) {
@@ -41,7 +59,7 @@ export function initRoomAssistant({ language = () => 'es' } = {}) {
   function speak(key = currentKey) { return voice.play(key, window.TRANSLATIONS?.es?.[key]); }
   $('axiom-voice').addEventListener('click', () => { if (voice.enabled) voice.disable(); else speak(); });
   $('axiom-replay').addEventListener('click', () => speak());
-  $('axiom-greet').addEventListener('click', () => { viewer.gesture('wave'); currentKey = 'welcome'; if (voice.enabled) speak(); });
+  $('axiom-greet').addEventListener('click', () => { viewer?.gesture('wave'); currentKey = 'welcome'; if (voice.enabled) speak(); });
   $('axiom-story').addEventListener('click', () => { currentKey = 'axiomStoryVoice'; speak(); });
   function resetChat() {
     chatEnabled = false; busy = false; requestId++; controller?.abort(); history = [];
@@ -84,7 +102,7 @@ export function initRoomAssistant({ language = () => 'es' } = {}) {
       if (response.ok) {
         history.push({ role:'user', content:value.slice(0,600) }); history = history.slice(-4);
         const key = TOPIC_VOICE[result.topic]; if (key) { currentKey = key; if (voice.enabled) speak(key); }
-        viewer.gesture('agree');
+        viewer?.gesture('agree');
       }
       $('axiom-chat-status').textContent = response.status === 429 ? t('Espera un minuto antes de preguntar de nuevo.','Wait a minute before asking again.') : t('Orientación sobre nuestros servicios.','Guidance about our services.');
     } catch {
@@ -106,11 +124,13 @@ export function initRoomAssistant({ language = () => 'es' } = {}) {
     $('axiom-chat-input').placeholder = t('Ej. Una web para mi consultorio','e.g. A website for my practice');
     $('axiom-voice').textContent = voice.enabled ? t('Voz activada · silenciar','Voice on · mute') : t('Escuchar a Axiom','Listen to Axiom');
     $('axiom-caption').hidden = true;
+    viewerLabel();
+    if (!viewer) $('axiom-3d-status').textContent = t('La voz funciona sin descargar el 3D.','Voice works without downloading 3D.');
   }
   document.addEventListener('visibilitychange', () => { if (document.hidden) voice.stop(); });
-  window.addEventListener('pagehide', event => { voice.stop(); resetChat(); if (!event.persisted) voice.destroy(); });
+  window.addEventListener('pagehide', event => { voice.stop(); resetChat(); if (!event.persisted) { destroyed = true; voice.destroy(); } });
   render();
-  return { viewer, render, setMotion:value=>viewer.setMotion(value),
-    station(id) { currentKey = STATION_VOICE[id] || 'welcome'; viewer.gesture(id === 'coffee' ? 'bow' : id === 'axiom' ? 'wave' : 'agree'); if (voice.enabled) speak(); },
+  return { get viewer() { return viewer; }, render, setMotion(value) { motionAllowed = value; viewer?.setMotion(value); },
+    station(id) { currentKey = STATION_VOICE[id] || 'welcome'; viewer?.gesture(id === 'coffee' ? 'bow' : id === 'axiom' ? 'wave' : 'agree'); if (voice.enabled) speak(); },
     stop() { voice.stop(); } };
 }

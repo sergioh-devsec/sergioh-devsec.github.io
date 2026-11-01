@@ -16,6 +16,10 @@ const NEEDS_DECODER = new Set([
   'KHR_draco_mesh_compression', 'KHR_texture_basisu',
   'EXT_meshopt_compression', 'KHR_meshopt_compression'
 ]);
+const MESHOPT = 'EXT_meshopt_compression';
+const MESHOPT_MODES = new Set(['ATTRIBUTES', 'TRIANGLES', 'INDICES']);
+const MESHOPT_FILTERS = new Set(['NONE', 'OCTAHEDRAL', 'QUATERNION', 'EXPONENTIAL']);
+const MESHOPT_FIELDS = new Set(['buffer', 'byteOffset', 'byteLength', 'byteStride', 'count', 'mode', 'filter']);
 
 function fail(message) { throw new Error(message); }
 function object(value, label) {
@@ -32,13 +36,13 @@ function list(value, maximum, label) {
 }
 function ref(value, values, label) { return integer(value, 0, values.length - 1, label); }
 
-function inspectJSON(json) {
+function inspectJSON(json, allowMeshopt = false) {
   object(json, 'Modelo');
-  const stack = [[json, 0]];
+  const stack = [[json, 0, '']];
   const seen = new WeakSet();
   let visited = 0;
   while (stack.length) {
-    const [value, depth] = stack.pop();
+    const [value, depth, path] = stack.pop();
     if (++visited > 180_000 || depth > 64) fail('El modelo tiene demasiados elementos o niveles de anidación.');
     if (value === null || typeof value === 'boolean' || typeof value === 'string') continue;
     if (typeof value === 'number' && Number.isFinite(value)) continue;
@@ -47,8 +51,8 @@ function inspectJSON(json) {
     seen.add(value);
     for (const [key, item] of Object.entries(value)) {
       if (key === '__proto__' || key === 'prototype' || key === 'constructor') fail('El modelo contiene una propiedad no admitida.');
-      if (NEEDS_DECODER.has(key)) fail(`La compresión ${key} necesita un decodificador que este visor no incluye. Exporta el modelo sin compresión.`);
-      stack.push([item, depth + 1]);
+      if (NEEDS_DECODER.has(key) && !(allowMeshopt && key === MESHOPT && /^(?:buffers|bufferViews)\.\d+\.extensions$/.test(path))) fail(`La compresión ${key} necesita un decodificador que este visor no incluye. Exporta el modelo sin compresión.`);
+      stack.push([item, depth + 1, path ? `${path}.${key}` : key]);
     }
   }
   if (new TextEncoder().encode(JSON.stringify(json)).byteLength > MAX_MODEL_BYTES) fail('El modelo supera el límite de 20 MiB.');
@@ -66,24 +70,38 @@ function embeddedBytes(uri, kind) {
   return size;
 }
 
-function validate(json, binLength = null) {
-  inspectJSON(json);
+function validate(json, binLength = null, allowMeshopt = false) {
+  inspectJSON(json, allowMeshopt);
   object(json.asset, 'asset');
   if (json.asset.version !== '2.0' || (json.asset.minVersion !== undefined && json.asset.minVersion !== '2.0')) fail('Solo se admiten modelos glTF 2.0.');
   const required = list(json.extensionsRequired, 32, 'Extensiones obligatorias');
+  const used = list(json.extensionsUsed, 32, 'Extensiones usadas');
   for (const name of required) {
+    if (allowMeshopt && name === MESHOPT && used.includes(MESHOPT)) continue;
     if (NEEDS_DECODER.has(name)) fail(`La compresión ${name} necesita un decodificador que este visor no incluye. Exporta el modelo sin compresión.`);
     if (!SUPPORTED_REQUIRED.has(name)) fail(`Extensión obligatoria no compatible: ${String(name).slice(0, 100)}.`);
   }
 
   const buffers = list(json.buffers, 64, 'Buffers');
+  const virtualBuffers = new Set();
+  const fallbackBuffers = new Set();
   let resourceBytes = 0;
   buffers.forEach((buffer, index) => {
     object(buffer, 'Buffer');
     integer(buffer.byteLength, 1, MAX_MODEL_BYTES, 'Tamaño del buffer');
+    const fallback = buffer.extensions?.[MESHOPT];
+    if (fallback !== undefined) {
+      object(fallback, 'Buffer de respaldo Meshopt');
+      if (!allowMeshopt || !used.includes(MESHOPT) || Object.keys(fallback).length !== 1 || typeof fallback.fallback !== 'boolean') fail('El buffer de respaldo Meshopt no es válido.');
+      if (fallback.fallback) fallbackBuffers.add(index);
+    }
     if (buffer.uri === undefined) {
-      if (index !== 0 || binLength === null) fail('El buffer no está incrustado. Exporta un GLB autocontenido o un glTF con datos base64.');
-      if (binLength < buffer.byteLength || binLength - buffer.byteLength > 3) fail('El tamaño del bloque binario no coincide con el buffer declarado.');
+      if (index === 0 && binLength !== null) {
+        if (binLength < buffer.byteLength || binLength - buffer.byteLength > 3) fail('El tamaño del bloque binario no coincide con el buffer declarado.');
+      } else if (index > 0 && binLength !== null && allowMeshopt && used.includes(MESHOPT) && required.includes(MESHOPT)) {
+        virtualBuffers.add(index);
+        fallbackBuffers.add(index);
+      } else fail('El buffer no está incrustado. Exporta un GLB autocontenido o un glTF con datos base64.');
     } else if (embeddedBytes(buffer.uri, 'Buffer') !== buffer.byteLength) {
       fail('El tamaño del buffer base64 no coincide con el tamaño declarado.');
     }
@@ -92,6 +110,10 @@ function validate(json, binLength = null) {
   if (binLength !== null && (!buffers.length || buffers[0].uri !== undefined)) fail('El bloque binario GLB no tiene un buffer asociado.');
 
   const views = list(json.bufferViews, 8192, 'Vistas de buffers');
+  let decodedBytes = 0;
+  let compressedBytes = 0;
+  let compressedViews = 0;
+  const virtualReferences = new Set();
   views.forEach(view => {
     object(view, 'Vista de buffer');
     const buffer = buffers[ref(view.buffer, buffers, 'Buffer de la vista')];
@@ -99,7 +121,38 @@ function validate(json, binLength = null) {
     const length = integer(view.byteLength, 1, buffer.byteLength, 'Longitud de la vista');
     if (start + length > buffer.byteLength) fail('Una vista de buffer sale del bloque binario.');
     if (view.byteStride !== undefined && (integer(view.byteStride, 4, 252, 'Paso de la vista') % 4)) fail('El paso de la vista debe ser múltiplo de cuatro.');
+    const meshopt = view.extensions?.[MESHOPT];
+    if (meshopt === undefined) {
+      if (fallbackBuffers.has(view.buffer)) fail('Un buffer de respaldo solo admite vistas comprimidas Meshopt.');
+      return;
+    }
+    object(meshopt, 'Compresión Meshopt');
+    if (!allowMeshopt || !used.includes(MESHOPT) || Object.keys(meshopt).some(key => !MESHOPT_FIELDS.has(key))) fail('La configuración Meshopt no está permitida.');
+    const compressedBufferIndex = ref(meshopt.buffer, buffers, 'Buffer comprimido Meshopt');
+    if (virtualBuffers.has(compressedBufferIndex) || fallbackBuffers.has(compressedBufferIndex)) fail('El origen comprimido Meshopt debe tener datos físicos incrustados.');
+    const compressedBuffer = buffers[compressedBufferIndex];
+    const offset = integer(meshopt.byteOffset ?? 0, 0, compressedBuffer.byteLength, 'Inicio comprimido Meshopt');
+    const compressedLength = integer(meshopt.byteLength, 1, compressedBuffer.byteLength, 'Longitud comprimida Meshopt');
+    if (offset + compressedLength > compressedBuffer.byteLength) fail('Los datos comprimidos Meshopt salen del buffer.');
+    const count = integer(meshopt.count, 1, 1_000_000, 'Cantidad Meshopt');
+    const stride = integer(meshopt.byteStride, 1, 256, 'Paso Meshopt');
+    const mode = meshopt.mode;
+    const filter = meshopt.filter ?? 'NONE';
+    if (!MESHOPT_MODES.has(mode) || !MESHOPT_FILTERS.has(filter)) fail('El modo o filtro Meshopt no es compatible.');
+    if (view.byteStride !== undefined && view.byteStride !== stride) fail('El paso Meshopt no coincide con el de la vista.');
+    if (length !== count * stride) fail('La longitud descomprimida Meshopt no coincide con cantidad y paso.');
+    if (mode === 'ATTRIBUTES' && stride % 4) fail('Los atributos Meshopt requieren un paso múltiplo de cuatro.');
+    if (mode !== 'ATTRIBUTES' && (![2, 4].includes(stride) || filter !== 'NONE')) fail('Los índices Meshopt requieren un paso de dos o cuatro y ningún filtro.');
+    if (mode === 'TRIANGLES' && count % 3) fail('Los triángulos Meshopt requieren una cantidad múltiplo de tres.');
+    if (filter === 'OCTAHEDRAL' && ![4, 8].includes(stride)) fail('El filtro octaédrico Meshopt requiere un paso de cuatro u ocho.');
+    if (filter === 'QUATERNION' && stride !== 8) fail('El filtro de cuaterniones Meshopt requiere un paso de ocho.');
+    if (filter === 'EXPONENTIAL' && stride % 4) fail('El filtro exponencial Meshopt requiere un paso múltiplo de cuatro.');
+    decodedBytes += length;
+    compressedBytes += compressedLength;
+    if (decodedBytes > MAX_MODEL_BYTES || compressedBytes > MAX_MODEL_BYTES || ++compressedViews > 4096) fail('La descompresión Meshopt supera el presupuesto de memoria o procesamiento de 20 MiB.');
+    if (virtualBuffers.has(view.buffer)) virtualReferences.add(view.buffer);
   });
+  for (const index of virtualBuffers) if (!virtualReferences.has(index)) fail('Un buffer virtual Meshopt no tiene vistas comprimidas válidas.');
 
   const accessors = list(json.accessors, 8192, 'Accesores');
   let components = 0;
@@ -201,7 +254,7 @@ function validate(json, binLength = null) {
 export function validateGLTF(json) { return validate(json); }
 
 /** Validate a complete glTF 2.0 binary container before passing it to GLTFLoader. */
-export function validateGLB(arrayBuffer) {
+export function validateGLB(arrayBuffer, options = {}) {
   if (!(arrayBuffer instanceof ArrayBuffer)) fail('El archivo GLB debe ser un ArrayBuffer.');
   if (arrayBuffer.byteLength > MAX_MODEL_BYTES) fail('El archivo supera el límite de 20 MiB.');
   if (arrayBuffer.byteLength < 20) fail('El archivo GLB está incompleto.');
@@ -228,5 +281,7 @@ export function validateGLB(arrayBuffer) {
     offset = start + length;
   }
   if (json === null) fail('El GLB no contiene un bloque JSON.');
-  return validate(json, binLength);
+  // Caller-controlled opt-in is reserved for fixed first-party web assets.
+  // User imports and validateGLTF deliberately retain the decoder-free default.
+  return validate(json, binLength, options?.allowMeshopt === true);
 }

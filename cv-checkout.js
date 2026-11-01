@@ -1,5 +1,9 @@
 // Public product configuration only. Gumroad license verification needs no API key.
 // https://gumroad.com/help/article/76-license-keys
+// This client-side unlock is intentionally limited to inexpensive CV exports.
+// It is bypassable by editing the browser. Higher-value products need server-side
+// payment verification and delivery; never embed their protected files here.
+export const CLIENT_SIDE_PRODUCT_MAX_USD = 9;
 export const CV_CHECKOUT = Object.freeze({
   enabled: true,
   products: Object.freeze({
@@ -39,6 +43,7 @@ function record(data) { return Boolean(data && typeof data === 'object' && !Arra
 function validLicense(key) { return typeof key === 'string' && key.length >= 16 && key.length <= 128 && !/[^A-Za-z0-9-]/u.test(key); }
 function configuredProduct(config, plan) {
   if (!knownPlan(plan) || !record(config?.products) || !Object.hasOwn(config.products, plan)) return null;
+  if (CV_PLANS[plan].currency !== 'USD' || CV_PLANS[plan].amount > CLIENT_SIDE_PRODUCT_MAX_USD) return null;
   const product = config.products[plan];
   if (!record(product) || typeof product.productId !== 'string' || product.productId.length < 8 || product.productId.length > 128
     || /[^A-Za-z0-9_+/=-]/u.test(product.productId)) return null;

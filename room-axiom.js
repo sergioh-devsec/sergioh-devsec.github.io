@@ -1,10 +1,11 @@
 import * as THREE from './axiom-3d/vendor/three/build/three.module.js';
 import { GLTFLoader } from './axiom-3d/vendor/three/examples/jsm/loaders/GLTFLoader.js';
-import { validateGLB, MAX_MODEL_BYTES } from './axiom-3d/model-policy.js';
+import { MeshoptDecoder } from './axiom-3d/vendor/meshoptimizer/meshopt_decoder_reference.js';
+import { validateGLB, MAX_MODEL_BYTES } from './axiom-3d/model-policy.js?v=performance-3';
 import { createNativeAxiom } from './axiom-3d/native-axiom.js';
 import { createStudioEnvironment, enhanceAxiomMaterials } from './axiom-3d/axiom-studio.js';
 
-const MODEL_URL = new URL('./axiom-3d/models/axiom-animated.glb', import.meta.url);
+const MODEL_URL = new URL('./axiom-3d/models/axiom-web.glb', import.meta.url);
 const MOODS = new Set(['neutral', 'happy', 'calm', 'angry', 'furious']);
 const CLIPS = Object.freeze({
   clap: /^clap(?:\.|$)/i, agree: /^agree(?:\.|$)/i, nod: /^agree(?:\.|$)/i,
@@ -188,7 +189,7 @@ export function initRoomAxiom({ container, canvas, fallback = null, onReady = nu
       const response = await fetch(MODEL_URL, { signal: fetchController.signal, credentials: 'omit' });
       if (!response.ok || Number(response.headers.get('content-length')) > MAX_MODEL_BYTES) throw new Error('Model unavailable');
       const buffer = await response.arrayBuffer();
-      validateGLB(buffer);
+      validateGLB(buffer, { allowMeshopt:true });
       if (destroyed) return;
       const manager = new THREE.LoadingManager();
       let resourceFailed = false;
@@ -197,7 +198,7 @@ export function initRoomAxiom({ container, canvas, fallback = null, onReady = nu
         if (url.startsWith('blob:') || /^data:(image\/(png|jpeg|webp)|application\/(octet-stream|gltf-buffer));base64,/i.test(url)) return url;
         throw new Error('External model resources are disabled');
       });
-      const gltf = await new GLTFLoader(manager).parseAsync(buffer, '');
+      const gltf = await new GLTFLoader(manager).setMeshoptDecoder(MeshoptDecoder).parseAsync(buffer, '');
       candidate = gltf.scene;
       if (resourceFailed) throw new Error('A model texture could not be loaded');
       if (destroyed) { disposeObject(candidate); candidate = null; return; }

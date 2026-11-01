@@ -16,11 +16,11 @@
   <meta name="twitter:title" content="Axiom 3D: gestos y personajes interactivos | CyberSerch">
   <meta name="twitter:description" content="Conoce a Axiom y siete compañeros en 3D. Prueba sus gestos, cambia el ángulo y atrae su atención con el cursor o un toque en el celular.">
   <meta name="twitter:image" content="https://cyberserch.com/assets/social-card.png">
-  <link rel="stylesheet" href="style.css?v=e54f14a732d9">
-  <script type="module" src="main.js?v=2b37671a2c5f"></script>
+  <link rel="stylesheet" href="style.css?v=05298226c7d1">
+  <script type="module" src="boot.js?v=59a5f71c29da"></script>
   <link rel="icon" href="../assets/favicon.ico" sizes="any"><link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../brand.css?v=39c22e89c601">
-<script src="../brand.js?v=1e40c99cdf4f" defer></script>
+<script src="../brand.js?v=70d355e9d21d" defer></script>
 <link rel="canonical" href="https://cyberserch.com/axiom-3d/index.html"><meta property="og:url" content="https://cyberserch.com/axiom-3d/index.html"></head>
 <body>
   <a class="skip" href="#viewer-controls">Ir a los controles</a>
@@ -52,16 +52,16 @@
       </div>
       <div class="stage-column">
         <div id="axiom-container" class="stage" data-character="axiom" aria-label="Estudio tridimensional de Axiom y sus amigos">
-          <div class="stage-label"><span>CYBERSERCH / CHARACTER STUDIO</span><span id="scene-state">CARGANDO</span></div>
+          <div class="stage-label"><span>CYBERSERCH / CHARACTER STUDIO</span><span id="scene-state">VISTA LIGERA</span></div>
           <div class="stage-grid" aria-hidden="true"></div><div class="stage-orbit" aria-hidden="true"></div>
-          <img id="fallback" class="fallback" src="assets/axiom-reference.png" alt="Ilustración de Axiom mientras se prepara la vista 3D" width="1029" height="1183">
-          <canvas id="axiom-canvas" tabindex="0" aria-label="Personaje en 3D. Arrastra o usa las cuatro flechas para girar la vista. Enter o espacio para saltar." aria-describedby="interaction-hint motion-note"></canvas>
-          <div id="loading-indicator" class="loading-indicator" aria-hidden="true"><span class="loading-ring"></span><span>Abriendo el estudio</span></div>
+          <img id="fallback" class="fallback" src="../assets/axiom/img/axiom.webp" alt="Ilustración de Axiom mientras se prepara la vista 3D" width="1029" height="1183">
+          <div id="activation-panel" class="activation-panel"><button id="activate-3d" class="primary" type="button">Ver estudio 3D</button><p id="activation-status" role="status">El 3D se descarga solo si decides abrirlo.</p></div><canvas id="axiom-canvas" tabindex="0" aria-label="Personaje en 3D. Arrastra o usa las cuatro flechas para girar la vista. Enter o espacio para saltar." aria-describedby="interaction-hint motion-note"></canvas>
+          <div id="loading-indicator" class="loading-indicator" hidden aria-hidden="true"><span class="loading-ring"></span><span>Abriendo el estudio</span></div>
           <div class="character-plaque"><div><span class="plaque-label">CONOCE A</span><h2 id="character-name">Axiom</h2><p id="character-role">El ciberasistente de Serch</p></div><span class="dimension-badge" aria-hidden="true">3D</span></div>
           <p class="stage-caption" id="stage-caption">Tu próxima idea ya tiene compañía.</p>
         </div>
         <div class="interaction-deck">
-          <p id="motion-note" class="motion-note" data-state="loading" aria-live="polite">Preparando sus movimientos…</p>
+          <p id="motion-note" class="motion-note" data-state="loading" aria-live="polite">Abre la vista 3D para interactuar.</p>
           <div class="controls" id="viewer-controls" role="group" aria-label="Interactúa con el personaje">
             <button id="wave" class="primary" type="button" disabled>Saludar</button>
             <button id="jump" type="button" disabled>¡Salta!</button>
@@ -102,7 +102,7 @@
             <div class="view-controls" role="group" aria-label="Punto de vista"><button id="look" type="button" aria-pressed="true" disabled>Seguir cursor: activo</button><button id="orbit" type="button" aria-pressed="true" disabled>Arrastre 360°: activo</button><button id="camera-left" type="button" disabled>Vista izquierda</button><button id="camera-right" type="button" disabled>Vista derecha</button><button id="camera-up" type="button" disabled>Mirar desde arriba</button><button id="camera-down" type="button" disabled>Bajar la vista</button><button id="reset" type="button" disabled>Vista inicial</button></div>
             <p class="hint">La cámara cambia desde dónde lo ves. El movimiento del personaje se pausa por separado. En el celular, desliza fuera del visor para continuar por la página.</p>
           </details>
-          <p class="status" id="status" role="status" aria-live="polite">Preparando a Axiom…</p>
+          <p class="status" id="status" role="status" aria-live="polite">Pulsa Ver estudio 3D para empezar.</p>
         </div>
       </div>
     </section>
@@ -117,7 +117,7 @@
       <details>
         <summary><span id="models-title">Detrás de la escena</span><span class="details-label">Modelo y opciones</span></summary>
         <div class="model-tools-inner">
-          <div class="model-note"><strong id="model-label">Axiom · modelo del laboratorio</strong><p id="model-description">Los personajes de esta colección forman parte del universo visual de CyberSerchMX.</p><a class="text-link" id="model-download" href="models/axiom-animated.glb" download>Descargar este modelo .glb</a><p id="rig-status" class="small" role="status"></p></div>
+          <div class="model-note"><strong id="model-label">Axiom · modelo del laboratorio</strong><p id="model-description">Los personajes de esta colección forman parte del universo visual de CyberSerchMX.</p><a class="text-link" id="model-download" href="models/axiom-web.glb" download>Descargar este modelo .glb</a><p id="rig-status" class="small" role="status"></p></div>
           <div class="model-import"><label for="model-file">Probar un archivo .glb o .gltf (máximo 20 MB)</label><input type="file" id="model-file" accept=".glb,.gltf"><p class="small">El archivo debe incluir sus texturas y recursos. Se procesa en tu navegador; no se sube a ningún servicio.</p><div class="controls"><button type="button" id="restore-model" disabled>Volver a Axiom</button><button type="button" id="rig" aria-pressed="false" disabled>Ver articulaciones</button></div></div>
         </div>
       </details>

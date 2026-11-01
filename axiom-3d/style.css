@@ -33,3 +33,9 @@
 .native-gesture-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:12px 0 4px}
 .native-gesture-list button{min-height:44px;padding:10px 12px;font-size:.84rem;white-space:normal}
 .joint-controls label[hidden]{display:none!important}
+/* Until explicitly opened, this studio is a small image and an accessible button. */
+.activation-panel { position:absolute; z-index:5; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding:clamp(20px,5vw,40px); background:linear-gradient(transparent 55%,#07131be6); text-align:center; }
+.activation-panel[hidden], .loading-indicator[hidden] { display:none; }
+.activation-panel p { max-width:32ch; font-size:.84rem; color:#d5e9e7; margin:12px 0 0; }
+.character-option:disabled { cursor:default; opacity:.65; }
+.stage:not([data-loading="true"]):not([data-ready="true"]) .fallback { opacity:1; filter:none; }

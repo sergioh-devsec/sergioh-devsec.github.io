@@ -1,7 +1,8 @@
 import * as THREE from './vendor/three/build/three.module.js';
 import { GLTFLoader } from './vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from './vendor/three/examples/jsm/controls/OrbitControls.js';
-import { validateGLB, validateGLTF, MAX_MODEL_BYTES } from './model-policy.js';
+import { validateGLB, validateGLTF, MAX_MODEL_BYTES } from './model-policy.js?v=performance-3';
+import { MeshoptDecoder } from './vendor/meshoptimizer/meshopt_decoder_reference.js';
 import { createLivingRig } from './living-rig.js';
 import { sampleLivingPose, ACTION_DURATIONS } from './living-motion.js?v=attention-1';
 import { createGazeTarget } from './gaze-target.js';
@@ -30,7 +31,7 @@ const BONE_NAMES = {
   right: ['Eye_R', 'RightEye', 'EyeRight', 'mixamorigRightEye'],
 };
 const $ = id => document.getElementById(id);
-const characterModel = character => character === 'axiom' ? 'axiom-animated' : character;
+const characterModel = character => `${character}-web`;
 const stage = $('axiom-container');
 const canvas = $('axiom-canvas');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -522,7 +523,7 @@ function adoptModel(gltf, imported, character = selectedCharacter) {
   $('rig').setAttribute('aria-pressed', 'false');
   $('rig').textContent = 'Ver articulaciones';
   $('model-label').textContent = imported ? 'Tu modelo, en este navegador' : `${displayName} · modelo del laboratorio`;
-  $('model-description').textContent = imported ? 'El archivo se procesa aquí, sin subirlo a un servidor. El seguimiento depende de los nombres de sus articulaciones.' : nativeAxiom ? 'Axiom conserva sus 65 articulaciones, 11 animaciones y textura original de 2K. Ahora parpadea, sigue tu mirada y combina expresiones con movimientos suaves de cola y branquias. Los gestos faciales y la ondulación se calculan en el visor; el control de boca mueve los labios sin añadir un interior que el modelo no tiene. El archivo descargable conserva el modelo original.' : isAxiom ? 'Axiom conserva su malla y textura originales. Este visor añade articulaciones de cuerpo y extremidades, expresiones faciales y ciclos en el sitio. El archivo descargable conserva el modelo base.' : 'Malla y textura originales con articulaciones añadidas en este visor: cabeza, torso, brazo y cola. Respiración, miradas y gestos se combinan en tiempo real. El archivo descargable conserva el modelo base.';
+  $('model-description').textContent = imported ? 'El archivo se procesa aquí, sin subirlo a un servidor. El seguimiento depende de los nombres de sus articulaciones.' : nativeAxiom ? 'Axiom conserva sus 65 articulaciones, 11 animaciones y textura optimizada de 2K. Ahora parpadea, sigue tu mirada y combina expresiones con movimientos suaves de cola y branquias. Los gestos faciales y la ondulación se calculan en el visor; el control de boca mueve los labios sin añadir un interior que el modelo no tiene. El archivo descargable conserva las articulaciones y animaciones en la versión optimizada.' : isAxiom ? 'Axiom conserva su malla y textura originales. Este visor añade articulaciones de cuerpo y extremidades, expresiones faciales y ciclos en el sitio. El archivo descargable conserva el modelo base.' : 'Malla conservada y textura optimizada con articulaciones añadidas en este visor: cabeza, torso, brazo y cola. Respiración, miradas y gestos se combinan en tiempo real. El archivo descargable conserva el modelo base.';
   populateNativeGestures();
   $('rig-status').textContent = `${summary.bones} articulaciones · ${summary.skins} mallas con rigging · ${Math.round(summary.triangles).toLocaleString('es-MX')} triángulos.${livingRig || head ? ' Cabeza articulada.' : ' No se encontró una articulación de cabeza compatible.'}`;
   status(`${displayName} está listo. Mueve el cursor o arrastra el visor. Al seleccionarlo, las cuatro flechas giran la vista.`);
@@ -541,7 +542,7 @@ function loaderForLocalFile() {
     if (url.startsWith('blob:') || /^data:(image\/(png|jpeg|webp)|application\/(octet-stream|gltf-buffer));base64,/i.test(url)) return url;
     throw new Error('Usa un modelo autocontenido: no se permiten descargas externas.');
   });
-  return new GLTFLoader(manager);
+  return new GLTFLoader(manager).setMeshoptDecoder(MeshoptDecoder);
 }
 
 async function loadCharacter(character) {
@@ -558,7 +559,7 @@ async function loadCharacter(character) {
     const response = await fetch(new URL(`./models/${characterModel(character)}.glb`, import.meta.url), { signal: pendingFetch.signal, credentials: 'omit' });
     if (!response.ok) throw new Error('El modelo no está disponible.');
     const buffer = await response.arrayBuffer();
-    validateGLB(buffer);
+    validateGLB(buffer, { allowMeshopt:true });
     if (sequence !== loadSequence) return;
     const gltf = await loaderForLocalFile().parseAsync(buffer, '');
     if (sequence !== loadSequence) return disposeModel(gltf.scene);
