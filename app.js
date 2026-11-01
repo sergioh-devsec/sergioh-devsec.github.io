@@ -1,8 +1,9 @@
+import { initRoomAssistant } from './room-assistant.js';
 import { createModeManager } from './modeManager.js';
 import { STATIONS } from './stationsConfig.js';
 import { validateConsent, consentHash, buildConsentPdf, CONSENT_SCHEMA } from './dentalConsent.js';
 
-// The room never loads analytics or sends document contents over the network.
+// Documents stay local. Only explicitly submitted service questions reach the fixed AI endpoint.
 const $ = id => document.getElementById(id);
 const manager = createModeManager();
 const en = () => manager.getLanguage() === 'en';
@@ -14,6 +15,7 @@ let currentStation = null, opener = null, hashRevision = 0, hashRequest = 0;
 let dentalDraft = {}, profession = 'dentista', tooltipTrigger = null;
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let motionPaused = reducedMotion.matches;
+const assistant = initRoomAssistant({ language: () => manager.getLanguage() });
 const NS = 'http://www.w3.org/2000/svg';
 function el(tag, cls = '', value) { const node = document.createElement(tag); node.className = cls; if (value !== undefined) node.textContent = value; return node; }
 function button(value, action, cls = 'button secondary') { const node = el('button', cls, value); node.type = 'button'; node.addEventListener('click', action); return node; }
@@ -101,7 +103,8 @@ function guideOptions(target) {
 }
 function render() {
   const dictionary = copy(), isLab = manager.getMode() === 'laboratorio';
-  document.title = `${isLab ? text('El Laboratorio', 'The Lab') : text('La Oficina', 'The Office')} · CyberSerchMX`;
+  document.title = text('CyberSerch | Páginas web, automatización y ciberseguridad', 'CyberSerch | Websites, automation and cybersecurity');
+  assistant.render();
   document.querySelector('meta[name="theme-color"]').content = isLab ? '#091b27' : '#f3f1e8';
   $('mode-switch').checked = isLab;
   $('mode-switch').setAttribute('aria-label', isLab ? text('Volver a La Oficina', 'Switch to The Office') : text('Entrar a El Laboratorio', 'Switch to The Lab'));
@@ -125,6 +128,7 @@ function render() {
 }
 function updateMotion() {
   document.documentElement.dataset.motion = motionPaused ? 'paused' : 'playing';
+  assistant.setMotion(!motionPaused);
   $('motion-toggle').setAttribute('aria-pressed', String(motionPaused));
   $('motion-toggle').textContent = motionPaused ? text('Activar movimiento', 'Enable motion') : text('Pausar movimiento', 'Pause motion');
 }
@@ -139,7 +143,7 @@ function openStation(id, trigger) {
   if (!STATIONS.some(station => station.id === id)) return;
   if (!dialog.open) { opener = trigger || document.activeElement; dentalDraft = {}; profession = 'dentista'; }
   if (currentStation === 'printer' && id !== 'printer') { dentalDraft = {}; hashRevision++; }
-  currentStation = id; renderStation();
+  currentStation = id; renderStation(); assistant.station(id);
   if (!dialog.open) dialog.showModal();
   document.documentElement.classList.add('dialog-open'); $('station-title').focus();
 }

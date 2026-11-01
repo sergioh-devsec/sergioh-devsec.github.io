@@ -86,7 +86,14 @@
   if(typeof document==='undefined')return;
   const I=window.I18N,S=window.Site,C=window.COMMERCE,$=id=>document.getElementById(id),root=$('quote-builder');
   const review=$('review-actions'),pay=paymentLink(C.reviewPaymentUrl),booking=bookingLink(C.bookingUrl);
-  function renderReview(){if(!review)return;review.replaceChildren();if(pay&&booking){$('review-pending-note').hidden=true;review.append(S.link(I.t('reviewCheckAvailability'),booking,'button secondary'),S.link(I.t('reviewPay'),pay,'button primary'));}}
+  function renderReview(){
+    if(!review)return;
+    const ready=Boolean(pay&&booking),note=$('review-pending-note');
+    review.hidden=!ready;
+    if(note)note.hidden=ready;
+    review.replaceChildren();
+    if(ready)review.append(S.link(I.t('reviewCheckAvailability'),booking,'button secondary'),S.link(I.t('reviewPay'),pay,'button primary'));
+  }
   renderReview();document.addEventListener('portfolio:language',renderReview);
   if(!root||!$('quote-packages'))return;
   let kind='landing',selected={};

@@ -1,0 +1,11 @@
+/* One transparent WebGL layer inside the existing, mode-invariant avatar. */
+#room-axiom-viewer { isolation: isolate; }
+#room-axiom-viewer > img,
+#room-axiom-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+#room-axiom-viewer > img { transition: opacity .24s ease; }
+#room-axiom-canvas { display: block; opacity: 0; pointer-events: none; transition: opacity .24s ease; }
+#room-axiom-viewer.room-axiom-ready > img { opacity: 0; animation: none; }
+#room-axiom-viewer.room-axiom-ready #room-axiom-canvas { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  #room-axiom-viewer > img, #room-axiom-canvas { transition: none; }
+}

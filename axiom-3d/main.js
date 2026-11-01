@@ -9,6 +9,8 @@ import { createAxiomBodyRig } from './axiom-body-rig.js?v=articulation-2';
 import { createAxiomFace } from './axiom-face.js';
 import { sampleAxiomPerformance, AXIOM_ACTION_DURATIONS } from './axiom-performance.js?v=articulation-2';
 import { createNativeAxiom } from './native-axiom.js';
+import { createNativeFace } from './native-face.js';
+import { createNativeSecondary } from './native-secondary.js';
 import { createStudioEnvironment, enhanceAxiomMaterials } from './axiom-studio.js';
 
 // Locally converted user-supplied models. Only the selected character is fetched.
@@ -35,9 +37,10 @@ const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const buttons = [...document.querySelectorAll('#viewer-controls button, .view-controls button, #rig')];
 const status = text => { $('status').textContent = text; };
 let renderer, scene, camera, controls, model, mixer, skeletonHelper, livingRig, axiomFace;
-let nativeAxiom, studioMaterials, studioEnvironment;
+let nativeAxiom, nativeSecondary, studioMaterials, studioEnvironment;
 let studioLights;
 let axiomActive = false, mood = 'neutral', locomotion = 'idle', blendedPose = null;
+let blendedNativeFace = null;
 let closeUp = false;
 const manualPose = new Map();
 let head, chest, eyes = [], tracked = [], loadSequence = 0;
@@ -168,7 +171,9 @@ function resetPose() {
   nativeAxiom?.reset();
   livingRig?.reset();
   axiomFace?.reset();
+  nativeSecondary?.reset();
   blendedPose = null;
+  blendedNativeFace = null;
   for (const entry of tracked) entry.node.quaternion.copy(entry.rest);
   motionRoot.position.set(0, 0, 0);
   motionRoot.rotation.set(0, 0, 0);
@@ -209,6 +214,8 @@ function previewPerformance() {
   if (!axiomActive || !model) return;
   if (nativeAxiom) {
     applyNativeRoot(nativeAxiom.preview(elapsed || 0.8, { mood, locomotion, pointer: smoothPointer, action: null, manualPose }));
+    const pose = sampleAxiomPerformance(elapsed || 0.8, { mood, locomotion, pointer: smoothPointer, action: null });
+    applyNativeDetails(pose, 0, true);
     render();
     return;
   }
@@ -226,9 +233,31 @@ function updatePerformanceControls() {
   canvas.dataset.locomotion = axiomActive ? locomotion : '';
   $('native-gestures').hidden = !nativeAxiom;
   document.querySelectorAll('[data-joint]').forEach(input => {
-    input.closest('label').hidden = !!nativeAxiom && !nativeAxiom.supportsJoint(input.dataset.joint);
+    const key = input.dataset.joint;
+    const facialControl = key.startsWith('face.') && axiomFace?.targets && Object.hasOwn(axiomFace.targets, key.slice(5));
+    input.closest('label').hidden = !!nativeAxiom && !nativeAxiom.supportsJoint(key) && !facialControl;
   });
-  document.querySelector('.joint-options summary span').textContent = nativeAxiom ? 'Cabeza y cuerpo' : 'Ojos, boca y cuerpo';
+  document.querySelector('.joint-options summary span').textContent = nativeAxiom && !axiomFace ? 'Cabeza y cuerpo' : 'Ojos, boca y cuerpo';
+}
+
+function applyNativeDetails(pose, delta = 0, preview = false) {
+  if (!nativeAxiom) return;
+  // This standalone viewer has no playing voice. Do not turn expression or
+  // action jaw pulses into pretend speech; an explicit mouth slider is a pose.
+  const target = { ...pose.face, jawOpen: 0 };
+  if (preview) target.blink = 0;
+  const blend = preview || !blendedNativeFace ? 1 : 1 - Math.exp(-Math.max(delta, 0) * 16);
+  if (!blendedNativeFace) blendedNativeFace = { ...target };
+  for (const [key, value] of Object.entries(target)) {
+    const previous = blendedNativeFace[key] ?? value;
+    blendedNativeFace[key] = key === 'blink' || key === 'jawOpen' ? value : previous + (value - previous) * blend;
+  }
+  const face = { ...blendedNativeFace };
+  for (const [key, value] of manualPose) {
+    if (key.startsWith('face.') && axiomFace?.targets && Object.hasOwn(axiomFace.targets, key.slice(5))) face[key.slice(5)] = value;
+  }
+  axiomFace?.apply(face);
+  nativeSecondary?.apply({ time: elapsed, mood, speaking: false, level: 0, paused: paused || reducedMotion.matches });
 }
 
 function applyNativeRoot(pose) {
@@ -255,6 +284,8 @@ function populateNativeGestures() {
     fragment.append(button);
   }
   $('native-gesture-list').replaceChildren(fragment);
+  const mouthControl = document.querySelector('[data-joint="face.jawOpen"]');
+  mouthControl.closest('label').querySelector('span').textContent = nativeAxiom ? 'Gesto de boca' : 'Abrir la boca';
   for (const [key, text] of [['shoulderLX', 'Hombro izquierdo'], ['shoulderRX', 'Hombro derecho'],
     ['shoulderLY', 'Rotar brazo izquierdo'], ['shoulderRY', 'Rotar brazo derecho'],
     ['shoulderLZ', 'Abrir brazo izquierdo'], ['shoulderRZ', 'Abrir brazo derecho'],
@@ -326,7 +357,10 @@ function tick(time) {
   const pose = axiomActive
     ? sampleAxiomPerformance(elapsed, { mood, locomotion, pointer: smoothPointer, action })
     : sampleLivingPose(elapsed, selectedCharacter, smoothPointer, action);
-  if (nativeAxiom) applyNativeRoot(nativeAxiom.update(delta, elapsed, { mood, locomotion, pointer: smoothPointer, action, manualPose }));
+  if (nativeAxiom) {
+    applyNativeRoot(nativeAxiom.update(delta, elapsed, { mood, locomotion, pointer: smoothPointer, action, manualPose }));
+    applyNativeDetails(pose, delta);
+  }
   else if (axiomActive) applyPerformance(pose, delta);
   else if (livingRig) livingRig.apply(pose);
   else {
@@ -394,7 +428,8 @@ function adoptModel(gltf, imported, character = selectedCharacter) {
   const isAxiom = !imported && character === 'axiom';
   const nextNative = isAxiom && summary.skins && gltf.animations?.length ? createNativeAxiom(gltf) : null;
   const nextLivingRig = imported || nextNative ? null : isAxiom ? createAxiomBodyRig(next) : createLivingRig(next, character);
-  const nextFace = isAxiom && !nextNative ? createAxiomFace(next, nextLivingRig) : null;
+  const nextFace = isAxiom ? nextNative ? createNativeFace(next) : createAxiomFace(next, nextLivingRig) : null;
+  const nextSecondary = nextNative ? createNativeSecondary(next) : null;
   summary = sceneSummary(next);
   const scale = 3.2 / Math.max(size.y, size.x * 1.05, size.z * 1.05);
   const center = bounds.getCenter(new THREE.Vector3());
@@ -425,12 +460,14 @@ function adoptModel(gltf, imported, character = selectedCharacter) {
   motionRoot.clear();
   nativeAxiom?.dispose();
   studioMaterials?.dispose();
+  nativeSecondary?.dispose();
   axiomFace?.dispose();
   livingRig?.dispose();
   disposeModel(model);
   livingRig = nextLivingRig;
   axiomFace = nextFace;
   nativeAxiom = nextNative;
+  nativeSecondary = nextSecondary;
   studioMaterials = nextNative ? enhanceAxiomMaterials(next, renderer) : null;
   studioEnvironment?.setActive?.(!!nextNative);
   if (studioLights) {
@@ -485,7 +522,7 @@ function adoptModel(gltf, imported, character = selectedCharacter) {
   $('rig').setAttribute('aria-pressed', 'false');
   $('rig').textContent = 'Ver articulaciones';
   $('model-label').textContent = imported ? 'Tu modelo, en este navegador' : `${displayName} · modelo del laboratorio`;
-  $('model-description').textContent = imported ? 'El archivo se procesa aquí, sin subirlo a un servidor. El seguimiento depende de los nombres de sus articulaciones.' : nativeAxiom ? 'Modelo animado de Axiom: conserva sus 65 articulaciones, 11 animaciones y textura original de 2K. El acabado de estudio aporta luces suaves y reflejos. La cabeza sigue tu atención; este archivo todavía no incluye controles independientes de ojos, boca, cola o branquias. Caminar y respirar son movimientos calculados en el visor.' : isAxiom ? 'Axiom conserva su malla y textura originales. Este visor añade articulaciones de cuerpo y extremidades, expresiones faciales y ciclos en el sitio. El archivo descargable conserva el modelo base.' : 'Malla y textura originales con articulaciones añadidas en este visor: cabeza, torso, brazo y cola. Respiración, miradas y gestos se combinan en tiempo real. El archivo descargable conserva el modelo base.';
+  $('model-description').textContent = imported ? 'El archivo se procesa aquí, sin subirlo a un servidor. El seguimiento depende de los nombres de sus articulaciones.' : nativeAxiom ? 'Axiom conserva sus 65 articulaciones, 11 animaciones y textura original de 2K. Ahora parpadea, sigue tu mirada y combina expresiones con movimientos suaves de cola y branquias. Los gestos faciales y la ondulación se calculan en el visor; el control de boca mueve los labios sin añadir un interior que el modelo no tiene. El archivo descargable conserva el modelo original.' : isAxiom ? 'Axiom conserva su malla y textura originales. Este visor añade articulaciones de cuerpo y extremidades, expresiones faciales y ciclos en el sitio. El archivo descargable conserva el modelo base.' : 'Malla y textura originales con articulaciones añadidas en este visor: cabeza, torso, brazo y cola. Respiración, miradas y gestos se combinan en tiempo real. El archivo descargable conserva el modelo base.';
   populateNativeGestures();
   $('rig-status').textContent = `${summary.bones} articulaciones · ${summary.skins} mallas con rigging · ${Math.round(summary.triangles).toLocaleString('es-MX')} triángulos.${livingRig || head ? ' Cabeza articulada.' : ' No se encontró una articulación de cabeza compatible.'}`;
   status(`${displayName} está listo. Mueve el cursor o arrastra el visor. Al seleccionarlo, las cuatro flechas giran la vista.`);
@@ -667,8 +704,7 @@ function start() {
     updatePerformanceControls();
     $('stage-caption').textContent = button.textContent;
     if (paused || reducedMotion.matches) {
-      applyNativeRoot(nativeAxiom.preview(elapsed || 0.8, { mood, locomotion, pointer: smoothPointer, action: null, manualPose }));
-      render();
+      previewPerformance();
     }
     status(`Axiom: ${button.textContent.toLowerCase()}.${paused || reducedMotion.matches ? ' Vista de la pose; el movimiento continuo está desactivado.' : ''}`);
   });
@@ -749,7 +785,7 @@ function start() {
     loadSequence++;
     pendingFetch?.abort();
     listenerController.abort(); resizeObserver.disconnect(); visibilityObserver.disconnect();
-    controls.dispose(); mixer?.stopAllAction(); nativeAxiom?.dispose(); studioMaterials?.dispose(); studioEnvironment?.dispose(); axiomFace?.dispose(); livingRig?.dispose(); disposeModel(scene); renderer.dispose();
+    controls.dispose(); mixer?.stopAllAction(); nativeAxiom?.dispose(); studioMaterials?.dispose(); studioEnvironment?.dispose(); nativeSecondary?.dispose(); axiomFace?.dispose(); livingRig?.dispose(); disposeModel(scene); renderer.dispose();
   });
   listen(window, 'pageshow', () => updateState());
   resize();
