@@ -11,8 +11,9 @@
   function allowedPage(location,privacySignal=false,hosts=HOSTS){
     const params=new URLSearchParams(location.search||'');
     const safe=[...params].every(([key,value])=>REFERRALS.has(key)||(key==='ruta'&&['business','creator','lab'].includes(value)));
-    return !privacySignal&&location.protocol==='https:'&&hosts.includes(location.hostname)&&['/portafolio.html','/cotizador.html'].includes(location.pathname)&&safe;
+    return !privacySignal&&location.protocol==='https:'&&hosts.includes(location.hostname)&&['/portafolio.html','/cotizador.html','/portafolio','/cotizador'].includes(location.pathname)&&safe;
   }
+  function isEstimatorPath(pathname){return pathname==='/cotizador.html'||pathname==='/cotizador';}
   function createConsent({initial=null,eligible=true,load,stop,save,event,reload}){
     let choice=initial,started=false,stopped=false;
     function start(){if(eligible&&choice==='accepted'&&!started){if(stopped){reload();return;}started=true;load();}}
@@ -20,7 +21,7 @@
     function track(name){if(started&&choice==='accepted'&&EVENTS.has(name))event(name);}
     start();return {choose,track,get choice(){return choice;},get active(){return started;}};
   }
-  if(typeof module==='object'&&module.exports)module.exports={readChoice,allowedPage,createConsent,KEY,AGE};
+  if(typeof module==='object'&&module.exports)module.exports={readChoice,allowedPage,isEstimatorPath,createConsent,KEY,AGE};
   if(typeof document==='undefined')return;
   const en=()=>document.documentElement.lang==='en',tx=(es,english)=>en()?english:es;
   const signal=navigator.globalPrivacyControl===true||navigator.doNotTrack==='1';
@@ -69,7 +70,7 @@
   }
   function syncExpanded(){preferences.setAttribute('aria-expanded',String(sharedNotice?!document.getElementById('axiom-panel').hidden:!panel.hidden));}
   function hide(){panel.hidden=true;syncExpanded();}
-  function choose(value){const previous=controller.choice;controller.choose(signal?'denied':value);if(previous!=='accepted'&&controller.choice==='accepted')controller.track(location.pathname.endsWith('cotizador.html')?'open_estimator':'visit_portfolio');render();hide();document.dispatchEvent(new CustomEvent('portfolio:analytics-choice'));}
+  function choose(value){const previous=controller.choice;controller.choose(signal?'denied':value);if(previous!=='accepted'&&controller.choice==='accepted')controller.track(isEstimatorPath(location.pathname)?'open_estimator':'visit_portfolio');render();hide();document.dispatchEvent(new CustomEvent('portfolio:analytics-choice'));}
   accept.addEventListener('click',()=>choose('accepted'));
   decline.addEventListener('click',()=>choose('denied'));close.addEventListener('click',hide);
   preferences.addEventListener('click',()=>{if(sharedNotice&&window.AXIOM?.openPreferences){window.AXIOM.openPreferences(preferences);return;}panel.hidden=false;preferences.setAttribute('aria-expanded','true');render();heading.focus({preventScroll:true});});
@@ -92,5 +93,5 @@
     }
   });
   document.addEventListener('portfolio:measurement',e=>controller.track(e.detail));
-  controller.track(location.pathname.endsWith('cotizador.html')?'open_estimator':'visit_portfolio');
+  controller.track(isEstimatorPath(location.pathname)?'open_estimator':'visit_portfolio');
 })();
