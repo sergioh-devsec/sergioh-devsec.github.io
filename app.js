@@ -26,8 +26,10 @@ function link(value, href, cls = 'button primary') {
 }
 const UI = {
   skip: ['Ir a las estaciones', 'Skip to stations'], brandLine: ['Ideas que trabajan contigo.', 'Ideas that work with you.'],
-  portfolio: ['Portafolio', 'Portfolio'], hint: ['Toca un objeto o elige una estación. Axiom te acompaña.', 'Tap an object or choose a station. Axiom will guide you.'],
+  portfolio: ['Explora lo que hacemos', 'Explore our work'], hint: ['Toca un objeto o elige una estación. Axiom te acompaña.', 'Tap an object or choose a station. Axiom will guide you.'],
   cvBuilder: ['Crear mi CV', 'Build my CV'],
+  boostBusiness: ['Impulsa tu negocio', 'Boost your business'], boostNote: ['Una web, menos tareas, mejores decisiones.', 'A website, fewer tasks, better decisions.'],
+  cvNote: ['Tu experiencia, bien contada.', 'Your experience, well told.'], tryTools: ['Prueba las herramientas', 'Try the tools'], toolsNote: ['Resuelve algo y mira el resultado.', 'Solve a task and see the result.'],
   stationCount: ['12 estaciones · un solo espacio', '12 stations · one shared space'], hoverHint: ['Cada objeto tiene algo para ti.', 'Every object has something for you.'],
   companion: ['/ TU CIBERASISTENTE', '/ YOUR CYBER ASSISTANT'], meet3d: ['Conoce mis gestos en 3D', 'Meet my 3D personality'],
   guidePrivacy: ['Explora sin registro. Tus documentos se generan en este navegador.', 'Explore without signing up. Documents are generated in this browser.'],

@@ -4,7 +4,7 @@
   const routes = ['business', 'creator', 'lab'];
   const sources = ['instagram', 'youtube', 'tiktok', 'x', 'whatsapp', 'telegram', 'linkedin', 'compartir'];
   const resources = [
-    {id:'estimate', icon:'money', href:'cotizador.html', weights:[6,2,1], kind:'plan',
+    {id:'estimate', icon:'chart', href:'cotizador.html', weights:[6,2,1], kind:'plan',
       es:['Ponle números a tu idea','Calcula una referencia para tu web o automatización, sin dejar datos personales.','Armar mi estimación →'],
       en:['Put numbers to your idea','Estimate a website or automation project without providing personal details.','Build my estimate →']},
     {id:'organizer', icon:'automation', href:'herramientas.html#csv', weights:[5,4,5], kind:'tool',
@@ -50,36 +50,52 @@
   const S=window.Site,I=window.I18N,history=Object.create(null);
   let route=new URLSearchParams(location.search).has('ruta')?routeFromSearch(location.search):'business',current=[],shareUrl='',shareText='',busy=false;
   const copy={
-    es:{labels:['Hacer crecer mi negocio','Crear contenido','Explorar tecnología'], note:'Dos ideas elegidas para tu recorrido. Puedes cambiarlo cuando quieras.',
+    es:{labels:['Impulsa tu negocio','Crear contenido','Explorar tecnología'],
+      descriptions:['Web, procesos y nuevas posibilidades.','Imagen, video y voz para tus ideas.','Herramientas y proyectos para probar.'],
+      note:'Dos ideas para empezar. Elige otra ruta o descubre más cuando quieras.',
+      quick:'Ir directo',quickLabel:'Accesos directos',
+      shortcuts:[[['Ver servicios','#services'],['Explorar muestras','#web-samples'],['Estimar mi proyecto','cotizador.html']],[['Estudio creativo','#content'],['Creadoras (+18)','#creadoras'],['Ver canales','#social']],[['Probar herramientas','herramientas.html#csv'],['Ver proyectos','#technical'],['Ver casos','#cases']]],
+      kinds:{plan:'Planea tu proyecto',tool:'Pruébalo en tu navegador',explore:'Explora una idea',follow:'Sigue el proyecto',evidence:'Conoce un caso'},
       share:['Encontré un cotizador para aterrizar una idea web y un laboratorio de automatización.','Un laboratorio creativo con Axiom, ideas de producción y canales para seguir el proyecto.','Código abierto, herramientas de Python y un ciberasistente: date una vuelta por CyberSerchMX.'],
       copied:'Enlace copiado. Tú eliges a quién enviárselo.',manual:'Selecciona y copia el enlace de abajo.',ready:'Se abrió el menú para compartir.',cancel:'No se compartió nada.',
       hint:'Sin registros ni cuentas. Estas sugerencias se ajustan a tus clics durante esta visita y se reinician al recargar.'},
-    en:{labels:['Grow my business','Create content','Explore technology'],note:'Two ideas selected for your route. You can change it anytime.',
+    en:{labels:['Boost your business','Create content','Explore technology'],
+      descriptions:['Websites, processes and new possibilities.','Image, video and voice for your ideas.','Tools and projects to try.'],
+      note:'Two ideas to get started. Choose another route or discover more whenever you like.',
+      quick:'Jump to',quickLabel:'Quick links',
+      shortcuts:[[['View services','#services'],['Explore examples','#web-samples'],['Estimate my project','cotizador.html']],[['Creative studio','#content'],['Creators (18+)','#creadoras'],['View channels','#social']],[['Try the tools','herramientas.html#csv'],['View projects','#technical'],['View cases','#cases']]],
+      kinds:{plan:'Plan your project',tool:'Try it in your browser',explore:'Explore an idea',follow:'Follow the project',evidence:'See a project'},
       share:['I found an estimator to plan a website idea and an automation lab.','A creative lab with Axiom, production ideas and channels to follow the project.','Open-source code, Python tools and a cyber assistant: explore CyberSerchMX.'],
       copied:'Link copied. You choose who to send it to.',manual:'Select and copy the link below.',ready:'The sharing menu opened.',cancel:'Nothing was shared.',
       hint:'No sign-up or account. Suggestions adapt to your clicks during this visit and reset when you reload.'}
   };
   const words=()=>copy[I.language==='en'?'en':'es'];
   const status=document.getElementById('share-status'),field=document.getElementById('share-url');
+  const shortcuts=S.el('nav','discovery-shortcuts');
+  root.querySelector('.discovery-routes').after(shortcuts);
   function record(id,fieldName) { const item=history[id]||(history[id]={shown:0,opened:0});item[fieldName]=Math.min(12,item[fieldName]+1); }
   function render() {
+    const text=words(),routeIndex=routes.indexOf(route);
     current=rankResources(route,history);
     const fragment=document.createDocumentFragment();
-    current.forEach((item,index)=>{
+    current.forEach(item=>{
       const [title,description,action]=item[I.language==='en'?'en':'es'];
       const card=S.el('article','discovery-card');
-      if(item.id==='estimate'){
-        const money=S.el('span','discovery-money');money.setAttribute('aria-hidden','true');
-        for(let coin=0;coin<5;coin++)money.append(S.el('span','','$'));
-        card.classList.add('discovery-card-estimate');card.append(money);
-      }else card.append(S.icon(item.icon));
-      card.append(S.el('span','discovery-step',String(index+1).padStart(2,'0')),S.el('h3','',title),S.el('p','',description));
-      const link=S.link(action,item.href,'text-link');link.dataset.discoveryResource=item.id;card.append(link);fragment.append(card);
+      if(item.id==='estimate')card.classList.add('discovery-card-estimate');
+      card.append(S.icon(item.icon),S.el('span','discovery-kind',text.kinds[item.kind]),S.el('h3','',title),S.el('p','',description));
+      const link=S.link(action,item.href,'discovery-action');link.dataset.discoveryResource=item.id;card.append(link);fragment.append(card);
     });
     document.getElementById('discovery-results').replaceChildren(fragment);
-    root.querySelectorAll('[data-discovery-route]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.discoveryRoute===route));b.textContent=words().labels[routes.indexOf(b.dataset.discoveryRoute)];});
-    document.getElementById('discovery-note').textContent=words().note;
-    document.getElementById('discovery-privacy').textContent=words().hint;
+    root.querySelectorAll('[data-discovery-route]').forEach(b=>{
+      const index=routes.indexOf(b.dataset.discoveryRoute);
+      b.setAttribute('aria-pressed',String(b.dataset.discoveryRoute===route));
+      b.replaceChildren(S.el('span','discovery-route-label',text.labels[index]),S.el('span','discovery-route-description',text.descriptions[index]));
+    });
+    shortcuts.setAttribute('aria-label',text.quickLabel+': '+text.labels[routeIndex]);
+    shortcuts.replaceChildren(S.el('span','discovery-shortcuts-label',text.quick));
+    text.shortcuts[routeIndex].forEach(([label,href])=>shortcuts.append(S.link(label,href,'discovery-shortcut')));
+    document.getElementById('discovery-note').textContent=text.note;
+    document.getElementById('discovery-privacy').textContent=text.hint;
   }
   function setRoute(next) { route=validRoute(next);render(); }
   root.addEventListener('click',event=>{

@@ -22,6 +22,10 @@ html.menu-is-open,body.menu-is-open{overflow:hidden}
 .side-menu-links a:hover{background:#15333e;border-color:#345e69;color:#8cfff0;transform:translateX(3px)}
 .side-menu-links a:focus-visible,.side-menu-head button:focus-visible,.side-menu-actions a:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .side-menu-links a[aria-current=location]{background:#1b454b;border-color:#63d8d0;color:#adfff5}
+.side-menu-links a[data-i18n=sideBusiness]{background:#14383e;border-color:#3d797c;color:#c5fff1;font-weight:750}
+.side-menu-links a[data-i18n=sideBusiness]::before{width:7px;height:7px;background:#92f4d3;box-shadow:0 0 0 4px #92f4d314}
+.side-menu-links a[data-i18n=sideBusiness]:hover{background:#205057;border-color:#8de9d6}
+main>section[id]:target,#descubrir:target{outline:2px solid #72dfd3;outline-offset:6px;scroll-margin-top:100px}
 .side-menu-actions{display:grid;gap:.7rem;padding-top:1rem;margin-top:auto;border-top:1px solid #31505b;flex:none}
 .side-menu-actions .button{width:100%;min-height:48px;justify-content:center;text-align:center;padding:.8rem .9rem;font-size:.88rem;white-space:normal}
 .side-menu-actions .small{margin:0;color:#9eb8c1;font-size:.76rem;line-height:1.5}
