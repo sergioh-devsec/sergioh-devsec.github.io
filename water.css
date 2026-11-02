@@ -1,0 +1,8 @@
+/* The original liquid trail: decorative, local, and transparent to every click. */
+#water-surface{position:fixed;inset:0;width:100%;height:100%;z-index:20;pointer-events:none!important;mix-blend-mode:screen;opacity:.20;contain:strict;display:block}
+#water-surface[data-water-theme="light"]{mix-blend-mode:multiply;opacity:.15}
+#water-surface[data-water-state="idle"]{visibility:hidden}
+@media(hover:hover) and (pointer:fine){body{cursor:url('assets/cursor.svg') 14 14,auto}a,button,summary,select,input[type="checkbox"],input[type="radio"],input[type="range"],input[type="file"],input[type="color"]{cursor:pointer}input:not([type]),input[type="text"],input[type="email"],input[type="number"],input[type="search"],input[type="password"],input[type="url"],input[type="tel"],textarea,[contenteditable="true"]{cursor:text}}
+html[data-motion="paused"] #water-surface,html.motion-paused #water-surface{visibility:hidden}
+@media(prefers-reduced-motion:reduce){#water-surface{display:none!important}}
+@media print{#water-surface{display:none!important}}
