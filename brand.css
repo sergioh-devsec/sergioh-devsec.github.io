@@ -65,3 +65,6 @@ html[data-mode=laboratorio] .cs-original-brand .cs-wordmark--dark{display:block}
 @media(max-width:640px){.cs-original-brand .cs-logo-pair{width:150px}.cs-original-brand small{font-size:.54rem!important;max-width:145px}.header-inner .cs-original-brand{gap:0!important}.header-inner .cs-original-brand .cs-logo-pair{width:145px}.cv-nav .cs-original-brand .cs-logo-pair{width:145px}.cv-nav .cs-original-brand small{font-size:.46rem!important}.cs-footer-signature{flex-basis:280px}}
 @media(max-width:360px){.cs-original-brand .cs-logo-pair,.header-inner .cs-original-brand .cs-logo-pair,.cv-nav .cs-original-brand .cs-logo-pair{width:125px}.cs-original-brand small{font-size:.47rem!important;max-width:125px}.cv-nav{flex-wrap:wrap}.cv-nav>.cs-original-brand{margin-right:auto}}
 @media(prefers-reduced-motion:reduce){.cs-original-brand .cs-wordmark{transition:none!important}}
+
+/* Keep the character world near the start of every shared menu. */
+.cs-menu>nav>a.cs-3d-link{background:var(--accent-wash,var(--wash,#244a4f));border:1px solid var(--accent,var(--cyan,#6de7c8));font-weight:750!important}.cs-menu>nav>a.cs-3d-link::before{width:10px;height:10px;border:1px solid currentColor;border-radius:2px;background:transparent;transform:rotate(30deg);opacity:1}

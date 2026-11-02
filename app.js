@@ -168,7 +168,11 @@ function render() {
   $('mode-office-label').textContent = text('La Oficina', 'The Office'); $('mode-lab-label').textContent = text('El Laboratorio', 'The Lab');
   $('scene-mode').textContent = isLab ? text('EL LABORATORIO', 'THE LAB') : text('LA OFICINA', 'THE OFFICE');
   $('language-select').value = manager.getLanguage();
-  for (const node of document.querySelectorAll('[data-room-ui]')) { const pair = UI[node.dataset.roomUi]; if (pair) node.textContent = text(...pair); }
+  for (const node of document.querySelectorAll('[data-room-ui]')) {
+    const key = node.dataset.roomUi, pair = UI[key];
+    if (pair) node.textContent = text(...pair);
+    else if (typeof window.TRANSLATIONS[manager.getLanguage()]?.[key] === 'string') node.textContent = funnelText(key);
+  }
   $('room-title').textContent = dictionary.title; $('room-eyebrow').textContent = dictionary.eyebrow; $('room-lead').textContent = dictionary.lead;
   $('guide-title').textContent = text('¿Qué te quita tiempo hoy?', 'What takes up your time today?'); $('guide-copy').textContent = dictionary.guide;
   $('rescue-office').hidden = !isLab; $('rescue-office').textContent = text('¿Te perdiste entre tanto código? Volver a La Oficina', 'Lost in all this code? Back to The Office');

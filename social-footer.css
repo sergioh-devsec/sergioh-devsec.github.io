@@ -1,0 +1,13 @@
+/* One quiet row at the bottom; existing full-sized social sections stay intact. */
+footer.cs-has-social-footer{flex-wrap:wrap}
+footer>.cs-social-footer{display:flex!important;flex:1 0 100%;grid-column:1/-1;width:100%;min-width:0;box-sizing:border-box;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:4px!important;order:99;margin:12px 0 0!important;padding:12px 0 0!important;border-top:1px solid var(--line,#365360);line-height:1}
+footer>.cs-social-footer>.cs-social-item{display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 44px;box-sizing:border-box;width:44px;min-width:44px;height:44px;min-height:44px;margin:0!important;padding:10px!important;border:1px solid transparent;border-radius:12px;text-decoration:none!important;background:transparent;line-height:1;position:relative;color:var(--ink,var(--text,#eaf6f4));transition:background .18s,border-color .18s}
+.cs-social-footer .cs-social-item svg{display:block;width:20px;height:20px;flex:none;transition:transform .2s ease;pointer-events:none}
+.cs-social-footer>.cs-social-facebook{color:#2478dc!important}.cs-social-footer>.cs-social-instagram{color:#c84589!important}.cs-social-footer>.cs-social-youtube{color:#dc404b!important}.cs-social-footer>.cs-social-linkedin{color:#287bb3!important}
+.cs-social-footer>.cs-social-item:hover{background:var(--accent-wash,var(--wash,#24464c));border-color:var(--line,#365360)}.cs-social-footer>.cs-social-item:hover svg{transform:translateY(-2px) rotate(-4deg)}.cs-social-footer>a:focus-visible{outline:3px solid #b99b62;outline-offset:2px}.cs-social-footer>.cs-social-pending{opacity:.45;cursor:default}.cs-social-footer>.cs-social-pending:hover{background:transparent;border-color:transparent}.cs-social-footer>.cs-social-pending:hover svg{transform:none}
+.cs-social-sr{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important}
+@media(max-width:640px){footer>.cs-social-footer{justify-content:center;align-self:stretch}}
+@media(max-width:360px){footer>.cs-social-footer{max-width:188px;margin-inline:auto!important;justify-content:center}}
+html[data-motion=paused] .cs-social-item svg,.motion-paused .cs-social-item svg{transition:none!important;transform:none!important}
+@media(prefers-reduced-motion:reduce){.cs-social-footer .cs-social-item,.cs-social-footer .cs-social-item svg{transition:none!important;transform:none!important}}
+@media print{footer>.cs-social-footer{display:none!important}}
