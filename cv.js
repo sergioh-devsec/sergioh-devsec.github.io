@@ -2,7 +2,7 @@ import { analyzeCv, improveActionText, extractJobKeywords, findingPresentation }
 import { buildPlainText, buildCvPdf, buildDocx, buildCoverLetterDocx, normalizeCvProfile } from './cv-exports.js';
 import { readCvFile } from './cv-import.js';
 import { beginCheckout, verifyCheckout, supportUrl } from './cv-checkout.js';
-import { mountPageVoice } from './page-voice.js?v=voice-9';
+import { mountPageVoice } from './page-voice.js?v=voice-10';
 
 const cvVoice=mountPageVoice({page:'cv',initialKey:'welcome2'});
 

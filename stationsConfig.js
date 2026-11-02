@@ -1,3 +1,10 @@
+// Sign anchors share the room coordinates; concise text comes from the active dictionary.
+const SIGN_LAYOUT = Object.freeze({
+  axiom: [980, 1018, 240], workstation: [680, 752, 265], security: [285, 526, 360],
+  comms: [1375, 574, 345], printer: [410, 916, 360], board: [1275, 284, 360],
+  clock: [803, 143, 330], register: [1315, 970, 325], vault: [1655, 508, 375],
+  library: [516, 278, 280], showcase: [1110, 402, 355], coffee: [1660, 868, 250],
+});
 // Hotspot geometry shares the 1920 × 1080 viewBox of both room illustrations.
 // The room's dialog is the first step; href is the destination of its CTA.
 export const STATIONS = Object.freeze([
@@ -13,4 +20,4 @@ export const STATIONS = Object.freeze([
   { id: 'library', x: 565, y: 390, polygon: '435,272 675,173 675,480 435,579', number: '10', icon: 'book', href: 'https://github.com/sergioh-devsec', kind: 'repository' },
   { id: 'showcase', x: 1100, y: 510, polygon: '1040,405 1115,375 1190,405 1190,575 1115,615 1040,575', number: '11', icon: 'sparkles', href: 'portafolio.html#services', kind: 'catalog' },
   { id: 'coffee', x: 1595, y: 805, polygon: '1510,735 1615,690 1715,735 1715,835 1620,885 1510,840', number: '12', icon: 'coffee', href: 'portafolio.html#apoyar', kind: 'support' },
-].map(station => Object.freeze(station)));
+].map(station => Object.freeze({ ...station, sign: Object.freeze(SIGN_LAYOUT[station.id]) })));

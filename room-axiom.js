@@ -4,6 +4,7 @@ import { MeshoptDecoder } from './axiom-3d/vendor/meshoptimizer/meshopt_decoder_
 import { validateGLB, MAX_MODEL_BYTES } from './axiom-3d/model-policy.js?v=performance-3';
 import { createNativeAxiom } from './axiom-3d/native-axiom.js';
 import { createStudioEnvironment, enhanceAxiomMaterials } from './axiom-3d/axiom-studio.js';
+import { speechEnvelope } from './axiom-portrait.js?v=living-10';
 
 const MODEL_URL = new URL('./axiom-3d/models/axiom-web.glb', import.meta.url);
 const MOODS = new Set(['neutral', 'happy', 'calm', 'angry', 'furious']);
@@ -61,7 +62,7 @@ export function initRoomAxiom({ container, canvas, fallback = null, onReady = nu
   let loading = false, loaded = false, failed = false, frame = 0, previousTime = 0, elapsed = 0;
   let modelHeight = 3.2, modelWidth = 2.5, modelDepth = 2.5, pointerUntil = 0;
   let mood = 'neutral', action = null, pendingGesture = null;
-  let speaking = false, speechTarget = 0, speechLevel = 0;
+  let speaking = false, speechTarget = 0, speechLevel = 0, hasMeterSignal = false;
   let resolveReady;
   const ready = new Promise(resolve => { resolveReady = resolve; });
   const moving = () => loaded && motion && !reducedMotion.matches && intersecting && !document.hidden && !contextLost && !destroyed;
@@ -100,7 +101,11 @@ export function initRoomAxiom({ container, canvas, fallback = null, onReady = nu
   }
 
   function updateFace(delta) {
-    speechLevel += (speechTarget - speechLevel) * Math.min(1, delta * 16);
+    // Safari's first trusted HTML-audio clip can be audible before AudioContext
+    // becomes available. A zero meter must not leave an audible Axiom frozen.
+    // Once a real nonzero sample arrives, pauses follow the actual RMS again.
+    const target = speaking && !hasMeterSignal ? speechEnvelope(elapsed) : speechTarget;
+    speechLevel += (target - speechLevel) * Math.min(1, delta * 16);
     canvas.dataset.voiceLevel = speechLevel.toFixed(3);
     if (!face?.apply) return;
     const cycle = elapsed % 6.7;
@@ -164,6 +169,8 @@ export function initRoomAxiom({ container, canvas, fallback = null, onReady = nu
   function setSpeech(value) {
     if (destroyed) return;
     const speech = normalizeRoomSpeech(value);
+    if (speech.speaking && !speaking) hasMeterSignal = false;
+    if (speech.level > .006) hasMeterSignal = true;
     speaking = speech.speaking;
     speechTarget = speaking ? speech.level : 0;
     if (speech.mood) mood = speech.mood;

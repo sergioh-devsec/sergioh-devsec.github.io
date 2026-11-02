@@ -1,5 +1,6 @@
 import { createRoomVoice, ROOM_VOICES } from './room-voice.js?v=voice-5';
-import { mountAxiomPresence } from './axiom-presence.js?v=living-9';
+import { mountAxiomPresence } from './axiom-presence.js?v=living-10';
+import { mountAxiomPortrait } from './axiom-portrait.js?v=living-10';
 
 export const VOICE_PREFERENCE = 'cyberserch-voice-session-v1';
 export const VOICE_REACTIONS = Object.freeze({
@@ -14,7 +15,7 @@ export const VOICE_REACTIONS = Object.freeze({
   thanks: ['thanks', 'thanks2'],
   finish: ['businessWrap'],
 });
-function readPreference() { try { return sessionStorage.getItem(VOICE_PREFERENCE) === 'on'; } catch { return false; } }
+function readPreference() { try { const value = sessionStorage.getItem(VOICE_PREFERENCE); return value === 'on' ? true : value === 'off' ? false : null; } catch { return null; } }
 function writePreference(value) { try { sessionStorage.setItem(VOICE_PREFERENCE, value ? 'on' : 'off'); } catch { /* Voice still works in this view. */ } }
 export function voiceText(key, values = {}, language = globalThis.document?.documentElement?.lang) {
   const lang = String(language).startsWith('en') ? 'en' : 'es';
@@ -27,7 +28,9 @@ export function createVoiceHub({ createPlayer = createRoomVoice, read = readPref
   captionFor = key => globalThis.window?.TRANSLATIONS?.es?.[key] || '', document: doc = globalThis.document,
   now = Date.now, schedule = setTimeout, cancel = clearTimeout } = {}) {
   const listeners = new Set(), lastPlayed = new Map(), reactionPositions = new Map();
-  let preferred = Boolean(read()), currentKey = 'welcome2', destroyed = false, gestureRetryUsed = false;
+  const previousChoice = read();
+  let explicitlyMuted = previousChoice === false, preferred = previousChoice === true;
+  let currentKey = 'welcome2', destroyed = false, gestureRetryUsed = false, began = false, startWhenVisible = false;
   let pending = null, pendingTimer = null, starting = false, stopping = false;
   let snapshot = { preferred, enabled: false, playing: false, loading: false, error: false, caption: '', key: currentKey };
   function clearPending() { pending = null; if (pendingTimer !== null) cancel(pendingTimer); pendingTimer = null; }
@@ -58,7 +61,7 @@ export function createVoiceHub({ createPlayer = createRoomVoice, read = readPref
   function start(key, manual) {
     if (destroyed || !Object.hasOwn(ROOM_VOICES, key) || (!manual && !preferred)) return Promise.resolve(false);
     currentKey = key;
-    if (manual) { preferred = true; write(true); }
+    if (manual) { explicitlyMuted = false; preferred = true; write(true); }
     lastPlayed.set(key, now());
     starting = true;
     try {
@@ -98,9 +101,19 @@ export function createVoiceHub({ createPlayer = createRoomVoice, read = readPref
     return Promise.resolve(false);
   }
   function stop() { clearPending(); stopping = true; try { player.stop(); } finally { stopping = false; } }
-  function disable() { preferred = false; write(false); clearPending(); player.disable(); publish({ preferred: false }); }
+  function disable() { explicitlyMuted = true; preferred = false; startWhenVisible = false; write(false); clearPending(); player.disable(); publish({ preferred: false }); }
+  function begin(key = 'welcome2') {
+    if (destroyed || began || explicitlyMuted || !Object.hasOwn(ROOM_VOICES, key)) return Promise.resolve(false);
+    began = true;
+    if (snapshot.playing || snapshot.loading) return Promise.resolve(false);
+    preferred = true; currentKey = key; publish({});
+    if (doc?.hidden) { startWhenVisible = true; return Promise.resolve(false); }
+    // The browser decides whether sound may begin now. A blocked attempt is
+    // retried only in the first suitable real touch/key gesture, never bypassed.
+    return play(key, { manual: false });
+  }
   const hub = {
-    play, cue, react,
+    play, cue, react, begin,
     toggle(key = currentKey) { return preferred && !snapshot.error ? (disable(), Promise.resolve(false)) : play(key); },
     disable, stop,
     subscribe(listener) { listeners.add(listener); listener({ ...snapshot, pendingKey: pending?.key || null }); return () => listeners.delete(listener); },
@@ -118,7 +131,10 @@ export function createVoiceHub({ createPlayer = createRoomVoice, read = readPref
     },
   };
   const changedLanguage = () => hub.refresh();
-  const visibility = () => { if (doc.hidden) hub.stop(); };
+  const visibility = () => {
+    if (doc.hidden) hub.stop();
+    else if (startWhenVisible && !explicitlyMuted) { startWhenVisible = false; void play(currentKey, { manual: false }); }
+  };
   const resumeFromGesture = event => {
     if (destroyed || gestureRetryUsed || !event.isTrusted || !preferred || !snapshot.error || snapshot.loading) return;
     if (event.type === 'keydown' && !['Enter', ' '].includes(event.key)) return;
@@ -136,9 +152,23 @@ let singleton;
 export function getPageVoice() { return singleton ||= createVoiceHub(); }
 
 /** Native dialogs need their own accessible mute control. */
-export function bindVoiceButton(button, { hub = getPageVoice(), key = 'welcome2' } = {}) {
+export function bindVoiceButton(button, { hub = getPageVoice(), key = 'welcome2', iconOnly = false } = {}) {
+  let waves, slash;
+  if (iconOnly) {
+    const doc = button.ownerDocument || globalThis.document;
+    const svg = doc.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    for (const [name, value] of Object.entries({viewBox:'0 0 24 24',width:'23',height:'23',fill:'none',stroke:'currentColor','stroke-width':'1.8','stroke-linecap':'round','stroke-linejoin':'round','aria-hidden':'true',focusable:'false'})) svg.setAttribute(name, value);
+    const path = d => { const node = doc.createElementNS('http://www.w3.org/2000/svg', 'path'); node.setAttribute('d', d); svg.append(node); return node; };
+    path('M4 9h4l5-4v14l-5-4H4Z');
+    waves = path('M16 8a6 6 0 0 1 0 8M19 5a10 10 0 0 1 0 14');
+    slash = path('m17 9 5 6m0-6-5 6');
+    button.textContent = ''; button.classList.add('voice-icon-only'); button.append(svg);
+  }
   const update = state => {
-    button.textContent = voiceText(state.loading ? 'voice_loading' : state.error ? 'voice_retry' : state.preferred ? 'voice_mute' : 'voice_listen');
+    const label = voiceText(state.loading ? 'voice_loading' : state.error ? 'voice_retry' : state.preferred ? 'voice_mute' : 'voice_listen');
+    if (!iconOnly) button.textContent = label;
+    else { waves.setAttribute('visibility', state.preferred && !state.error ? 'visible' : 'hidden'); slash.setAttribute('visibility', state.preferred && !state.error ? 'hidden' : 'visible'); }
+    button.setAttribute('aria-label', label); button.title = label;
     button.setAttribute('aria-pressed', String(state.preferred && !state.error));
     button.setAttribute('aria-busy', String(state.loading));
   };
@@ -157,13 +187,22 @@ export function mountPageVoice({ initialKey = 'welcome2', document: doc = global
   const avatar = make('button', 'page-voice-avatar'); avatar.type = 'button';
   const face = make('img'); face.src = new URL('./assets/axiom/img/axiom.webp', import.meta.url).href;
   face.alt = ''; face.width = 56; face.height = 64; face.draggable = false;
-  const name = make('span'); name.textContent = 'AXIOM'; avatar.append(face, name);
+  avatar.append(face);
   const toggle = make('button', 'page-voice-toggle'); toggle.type = 'button'; toggle.id = 'page-voice-toggle';
   const state = make('span', 'page-voice-state'); state.setAttribute('role', 'status'); state.setAttribute('aria-live', 'polite');
   const bubble = make('p', 'page-voice-bubble'); bubble.id = 'page-voice-caption';
   bubble.setAttribute('role', 'status'); bubble.setAttribute('aria-live', 'polite'); bubble.setAttribute('aria-atomic', 'true'); bubble.hidden = true;
   actions.append(avatar, toggle); panel.append(bubble, actions, state); doc.body.append(panel);
-  bindVoiceButton(toggle, { hub, key: initialKey });
+  mountAxiomPortrait(avatar, { image: face, document: doc });
+  for (const host of doc.querySelectorAll('#room-axiom-viewer')) {
+    mountAxiomPortrait(host, { document: doc });
+  }
+  for (const host of doc.querySelectorAll('.axiom-note,.quote-guide,.checkout-axiom')) {
+    const image = host.querySelector('img'); if (!image || image.closest('.axiom-portrait-slot')) continue;
+    const slot = make('span', 'axiom-portrait-slot'); image.replaceWith(slot); slot.append(image);
+    mountAxiomPortrait(slot, { image, document: doc });
+  }
+  bindVoiceButton(toggle, { hub, key: initialKey, iconOnly: true });
   avatar.addEventListener('click', () => { if (!hub.preferred || hub.state.error) void hub.play(initialKey); else void hub.react('greeting', { priority: 1 }); });
   hub.subscribe(value => {
     panel.setAttribute('aria-label', voiceText('voice_label'));
@@ -177,9 +216,9 @@ export function mountPageVoice({ initialKey = 'welcome2', document: doc = global
     if (dialog.id === 'reciprocity-delivery' || dialog.dataset.axiomVoiceBound) continue;
     const control = make('button', 'axiom-inline-voice'); control.type = 'button';
     dialog.insertBefore(control, dialog.firstChild); dialog.dataset.axiomVoiceBound = 'true';
-    bindVoiceButton(control, { hub, key: () => dialog.dataset.voiceKey || initialKey });
+    bindVoiceButton(control, { hub, key: () => dialog.dataset.voiceKey || initialKey, iconOnly: true });
   }
   mountAxiomPresence({ hub, document: doc });
-  if (hub.preferred) void hub.cue(initialKey);
+  void hub.begin(initialKey);
   return hub;
 }

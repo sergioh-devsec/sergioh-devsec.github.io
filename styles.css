@@ -124,6 +124,48 @@ html[data-mode="oficina"] #mode-office-label, html[data-mode="laboratorio"] #mod
 .station-hitbox circle { fill: var(--surface); stroke: var(--accent); stroke-width: 2; }
 .station-hitbox .station-marker, .station-hitbox .hotspot-marker { opacity: .9; transition: opacity 180ms, filter 180ms; }
 .station-hitbox:hover .station-marker, .station-hitbox:focus-visible .station-marker { opacity: 1; filter: drop-shadow(0 0 8px var(--accent)); }
+/* Named signposts replace the numeric pins. Their leaders preserve the shared map. */
+.station-sign { pointer-events: none; transition: filter 180ms; }
+.station-sign rect { fill: var(--surface); fill-opacity: .96; stroke: var(--line-strong); stroke-width: 3; }
+.station-hitbox .station-sign-label { font-family: var(--font); font-size: 48px; font-weight: 750; letter-spacing: .6px; stroke: none; fill: var(--ink); }
+.station-sign-leader { fill:none; stroke:var(--accent); stroke-width:3; stroke-opacity:.55; pointer-events:none; }
+.station-hitbox:hover .station-sign rect,.station-hitbox:focus-visible .station-sign rect,.station-hitbox[aria-expanded="true"] .station-sign rect { stroke:var(--accent); fill:var(--accent-wash); }
+.station-hitbox:hover .station-sign,.station-hitbox:focus-visible .station-sign { filter:drop-shadow(0 5px 9px #071b2928); }
+/* Animate individual working parts, retaining the authored furniture matrices. */
+.room-art .furniture-motion { transform-box:fill-box; transform-origin:center; }
+.room-art .furniture-clock-hand { transform-box:view-box; transform-origin:0 0; animation:room-clock 30s linear infinite; }
+.room-art .furniture-book { animation:room-book 7s ease-in-out infinite; }
+.room-art .furniture-note { transform-origin:50% 0; animation:room-note 6s ease-in-out infinite; }
+.room-art .furniture-note-alt { animation:room-note 7s ease-in-out -3s infinite; transform-origin:50% 0; }
+.room-art .furniture-flow { stroke-dasharray:14 10; animation:room-flow 2.4s linear infinite; }
+.room-art .furniture-status { animation:room-status 3s ease-in-out infinite; }
+.room-art .furniture-screen { animation:room-screen 5s ease-in-out infinite; }
+.room-art .furniture-paper { animation:room-paper 5.5s ease-in-out infinite; }
+.room-art .furniture-handset { animation:room-handset 6.5s ease-in-out infinite; }
+.room-art .furniture-signal { animation:room-status 3.5s ease-in-out -1s infinite; }
+.room-art .furniture-lock { transform-box:view-box; transform-origin:46px 73px; animation:room-lock 9s ease-in-out infinite; }
+.room-art .furniture-specimen { animation:room-specimen 4.5s ease-in-out infinite; }
+.room-art .furniture-orbit { animation:room-orbit 10s linear infinite; }
+.room-art .furniture-receipt { animation:room-receipt 6s ease-in-out infinite; }
+.room-art .furniture-steam { animation:room-steam 3.5s ease-out infinite; }
+.room-art [data-furniture].is-engaged { filter:drop-shadow(0 0 7px #48d9ba60); }
+.room-art [data-furniture].is-engaged .furniture-motion { animation-duration:2s; }
+html[data-mode="oficina"] .skin-laboratorio .furniture-motion,html[data-mode="laboratorio"] .skin-oficina .furniture-motion,.scene-shell[data-visible="false"] .furniture-motion { animation-play-state:paused; }
+@keyframes room-clock { to { transform:rotate(360deg); } }
+@keyframes room-book { 0%,60%,100% { transform:translateY(0); } 20%,40% { transform:translateY(-12px); } }
+@keyframes room-note { 0%,70%,100% { transform:rotate(0); } 25% { transform:rotate(5deg); } 45% { transform:rotate(-3deg); } }
+@keyframes room-flow { to { stroke-dashoffset:-48; } }
+@keyframes room-status { 0%,100% { opacity:.35; } 35%,65% { opacity:1; } }
+@keyframes room-screen { 0%,100% { opacity:.72; } 50% { opacity:1; } }
+@keyframes room-paper { 0%,15%,100% { transform:translateY(0); } 45%,70% { transform:translateY(13px); } }
+@keyframes room-handset { 0%,50%,100% { transform:rotate(0); } 56%,68% { transform:rotate(-6deg) translateY(-3px); } 62%,74% { transform:rotate(5deg) translateY(-3px); } }
+@keyframes room-lock { 0%,60%,100% { transform:rotate(0); } 25%,40% { transform:rotate(42deg); } }
+@keyframes room-specimen { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-12px); } }
+@keyframes room-orbit { to { stroke-dashoffset:-110; } }
+@keyframes room-receipt { 0%,10%,100% { transform:translateY(0); } 35%,65% { transform:translateY(-11px); } }
+@keyframes room-steam { 0% { transform:translateY(4px) scaleX(.9); opacity:0; } 25% { opacity:.75; } 100% { transform:translateY(-25px) scaleX(1.15); opacity:0; } }
+@media(max-width:640px) { .station-hitbox .station-sign-label { font-size:54px; letter-spacing:0; } }
+@media(prefers-reduced-motion:reduce) { .room-art .furniture-motion { animation:none!important; transform:none!important; } .station-sign { transition:none; } }
 .axiom-guide { align-self: center; position: relative; padding: 27px 23px; border: 1px solid var(--line); border-radius: 21px; background: var(--surface); box-shadow: var(--shadow); transition: background-color 400ms, border-color 400ms; }
 .axiom-guide::before { content: ""; position: absolute; left: -7px; top: 83px; width: 13px; height: 13px; background: var(--surface); border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); transform: rotate(45deg); transition: background-color 400ms; }
 .guide-kicker { display: flex; align-items: center; gap: 7px; margin-bottom: 20px; font-family: ui-monospace, Consolas, monospace; font-size: .65rem; font-weight: 700; letter-spacing: .07em; color: var(--accent); }

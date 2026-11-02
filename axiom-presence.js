@@ -1,3 +1,4 @@
+import { mountAxiomSupport } from './axiom-support.js?v=living-10';
 // Reactions stay in this document. No visitor text, analytics or remote voice.
 export function isNight(hour) { return hour >= 21 || hour < 6; }
 export function presenceClip(kind, hour = new Date().getHours()) {
@@ -22,6 +23,7 @@ export function mountAxiomPresence({ hub, document: doc = globalThis.document,
   let destroyed = false, idleTimer, lastReaction = -Infinity, idleCount = 0;
   let away = false, lastActivity = now(), scrollAt = now(), scrollFrom = view?.scrollY || 0;
   const root = doc.documentElement;
+  const destroySupport = mountAxiomSupport({ hub, document: doc });
   const editing = () => Boolean(doc.activeElement?.matches?.('input,textarea,select,[contenteditable="true"]'));
   const available = () => canReact({ preferred: hub.preferred, playing: hub.playing,
     loading: hub.loading, error: hub.state?.error, hidden: doc.hidden, editing: editing(), dialogOpen: Boolean(doc.querySelector('dialog[open]')) });
@@ -84,7 +86,7 @@ export function mountAxiomPresence({ hub, document: doc = globalThis.document,
   const unsubscribe = hub.subscribe(state => { if (state.preferred && !state.playing && !state.error) armIdle(); else clearIdle(); });
   function destroy() {
     if (destroyed) return;
-    destroyed = true; clearIdle(); unsubscribe(); cleanups.forEach(fn => fn());
+    destroyed = true; clearIdle(); unsubscribe(); destroySupport(); cleanups.forEach(fn => fn());
     delete root.dataset.axiomSpeaking; delete root.dataset.axiomMood; mounted.delete(doc);
   }
   listen(view, 'pagehide', destroy);

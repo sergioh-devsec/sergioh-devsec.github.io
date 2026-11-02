@@ -790,6 +790,20 @@ window.TRANSLATIONS = {
           ],
           "cta": "Ver formas de apoyar"
         }
+      },
+      "stationLabels": {
+        "axiom": "Axiom",
+        "workstation": "Tu web",
+        "security": "Respaldos",
+        "comms": "Avisos",
+        "printer": "Documentos",
+        "board": "Procesos",
+        "clock": "Agenda",
+        "register": "Números",
+        "vault": "Privacidad",
+        "library": "Guías",
+        "showcase": "Soluciones",
+        "coffee": "Café"
       }
     },
     "laboratorio": {
@@ -935,6 +949,20 @@ window.TRANSLATIONS = {
           ],
           "cta": "Apoyar el laboratorio"
         }
+      },
+      "stationLabels": {
+        "axiom": "Axiom",
+        "workstation": "Web",
+        "security": "Seguridad",
+        "comms": "Redes",
+        "printer": "PDF",
+        "board": "Flujos",
+        "clock": "Cron",
+        "register": "Datos",
+        "vault": "Privacidad",
+        "library": "Repos",
+        "showcase": "Proyectos",
+        "coffee": "Café"
       }
     },
     "roomShared": {
@@ -1441,7 +1469,7 @@ window.TRANSLATIONS = {
     "voice_ready": "Aquí contigo.",
     "voice_off": "Toca para interactuar con Axiom.",
     "voice_error": "Toca para volver a escucharme.",
-    "voice_sessionPrivacy": "La elección de voz se recuerda durante esta sesión del navegador. Axiom reacciona a acciones y pausas con grabaciones originales locales. Las reacciones se calculan en tu dispositivo: no se envía tu texto, no se activa el micrófono ni se sintetiza voz nueva.",
+    "voice_sessionPrivacy": "Axiom intenta saludarte al entrar; si el navegador bloquea el audio, empieza con tu primer toque permitido. Puedes silenciarlo y se respeta esa elección durante la sesión. Sus gestos y sugerencias responden localmente a tus acciones; las invitaciones de apoyo usan la hora de tu dispositivo. Sin micrófono, voz generada ni envío de lo que escribes.",
     "notice_title": "Privacidad y condiciones",
     "notice_privacy": "Aviso de privacidad",
     "notice_terms": "Condiciones de uso",
@@ -1463,7 +1491,16 @@ window.TRANSLATIONS = {
     "voice_recommend": "¿Por dónde empiezo?",
     "patreonCoffee": "Un café cada mes",
     "paypalCoffee": "Invítame un café",
-    "creatorAudience": "PARA CREADORAS DE CONTENIDO ERÓTICO"
+    "creatorAudience": "PARA CREADORAS DE CONTENIDO ERÓTICO",
+    "presence_supportTitle": "AXIOM / LA PRÓXIMA IDEA",
+    "presence_breakfastCopy": "Todavía no desayunamos y ya hay ideas trabajando. Si este rincón te sirve, invítanos el desayuno y ayúdanos a seguir creciendo.",
+    "presence_coffeeCopy": "Yo pongo los bits; tú puedes poner el café. Cada invitación ayuda a que este laboratorio siga creciendo.",
+    "presence_dinnerCopy": "Las ideas siguen despiertas aunque ya sea hora de cenar. ¿Nos invitas la cena para seguir construyendo lo que viene?",
+    "presence_breakfastButton": "Invitar el desayuno · PayPal",
+    "presence_coffeeButton": "Poner el café · PayPal",
+    "presence_dinnerButton": "Invitar la cena · PayPal",
+    "presence_patreon": "Apoyar las próximas ideas · Patreon",
+    "presence_closeSupport": "Cerrar invitación por ahora"
   },
   "en": {
     "labPortalNav": "Play with Axiom",
@@ -2405,6 +2442,20 @@ window.TRANSLATIONS = {
           ],
           "cta": "See ways to support"
         }
+      },
+      "stationLabels": {
+        "axiom": "Axiom",
+        "workstation": "Your web",
+        "security": "Backups",
+        "comms": "Messages",
+        "printer": "Documents",
+        "board": "Processes",
+        "clock": "Schedule",
+        "register": "Finances",
+        "vault": "Privacy",
+        "library": "Guides",
+        "showcase": "Solutions",
+        "coffee": "Coffee"
       }
     },
     "laboratorio": {
@@ -2550,6 +2601,20 @@ window.TRANSLATIONS = {
           ],
           "cta": "Support the lab"
         }
+      },
+      "stationLabels": {
+        "axiom": "Axiom",
+        "workstation": "Web",
+        "security": "Security",
+        "comms": "Networks",
+        "printer": "PDF",
+        "board": "Workflows",
+        "clock": "Cron",
+        "register": "Data",
+        "vault": "Privacy",
+        "library": "Repos",
+        "showcase": "Projects",
+        "coffee": "Coffee"
       }
     },
     "roomShared": {
@@ -3056,7 +3121,7 @@ window.TRANSLATIONS = {
     "voice_ready": "Right here with you.",
     "voice_off": "Tap to interact with Axiom.",
     "voice_error": "Tap to hear me again.",
-    "voice_sessionPrivacy": "Your voice choice is remembered for this browser session. Axiom reacts to actions and pauses with original local recordings. Reactions are computed on your device: your text is not sent, the microphone is not activated and no new voice is synthesized.",
+    "voice_sessionPrivacy": "Axiom tries to greet you on arrival; if your browser blocks audio, it begins with your first permitted touch. You can mute it and that choice is respected throughout the session. Gestures and suggestions react locally to your actions; support invitations use your device clock. No microphone, generated voice or transmission of what you type.",
     "notice_title": "Privacy and terms",
     "notice_privacy": "Privacy notice",
     "notice_terms": "Terms of use",
@@ -3078,6 +3143,15 @@ window.TRANSLATIONS = {
     "voice_recommend": "Where should I start?",
     "patreonCoffee": "A coffee every month",
     "paypalCoffee": "Buy me a coffee",
-    "creatorAudience": "FOR WOMEN CREATING EROTIC CONTENT"
+    "creatorAudience": "FOR WOMEN CREATING EROTIC CONTENT",
+    "presence_supportTitle": "AXIOM / THE NEXT IDEA",
+    "presence_breakfastCopy": "We have ideas working before breakfast. If this little corner helps you, treat us to breakfast and help the lab keep growing.",
+    "presence_coffeeCopy": "I bring the bits; you can bring the coffee. Every contribution helps this lab keep growing.",
+    "presence_dinnerCopy": "The ideas are still awake, even at dinner time. Treat us to dinner and help us build what comes next.",
+    "presence_breakfastButton": "Treat us to breakfast · PayPal",
+    "presence_coffeeButton": "Bring the coffee · PayPal",
+    "presence_dinnerButton": "Treat us to dinner · PayPal",
+    "presence_patreon": "Support the next ideas · Patreon",
+    "presence_closeSupport": "Close this invitation for now"
   }
 };

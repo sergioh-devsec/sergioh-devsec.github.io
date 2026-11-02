@@ -1,4 +1,4 @@
-import { getPageVoice, voiceText } from './page-voice.js?v=voice-9';
+import { getPageVoice, voiceText, bindVoiceButton } from './page-voice.js?v=voice-10';
 import { ROOM_VOICES } from './room-voice.js?v=voice-5';
 
 // A single fixed service endpoint. No keys and no visitor-selected URLs.
@@ -54,7 +54,7 @@ export function initRoomAssistant({ language = () => 'es', document: doc = globa
     viewerLoading = true; viewerLabel();
     try {
       const [{ initRoomAxiom }, { createNativeFace }, { createNativeSecondary }] = await Promise.all([
-        import('./room-axiom.js?v=performance-3'), import('./axiom-3d/native-face.js'), import('./axiom-3d/native-secondary.js'),
+        import('./room-axiom.js?v=living-10'), import('./axiom-3d/native-face.js'), import('./axiom-3d/native-secondary.js'),
       ]);
       if (destroyed) return;
       viewer = initRoomAxiom({ container:$('room-axiom-viewer'), canvas:$('room-axiom-canvas'), fallback:$('room-axiom-fallback'),
@@ -83,13 +83,10 @@ export function initRoomAssistant({ language = () => 'es', document: doc = globa
     avatar?.classList.toggle('is-speaking', Boolean(state.playing));
     if (avatar) { avatar.dataset.speaking = String(Boolean(state.playing)); avatar.dataset.voiceMood = state.playing ? (ROOM_VOICES[state.key]?.[2] || 'neutral') : 'calm'; }
     if(state.caption){$('axiom-caption').textContent=state.caption;$('axiom-caption').hidden=false;}
-    $('axiom-voice').setAttribute('aria-pressed',String(state.preferred&&!state.error));
-    $('axiom-voice').setAttribute('aria-busy',String(state.loading));
-    $('axiom-voice').textContent=voiceText(state.loading?'voice_loading':state.error?'voice_retry':state.preferred?'voice_mute':'voice_listen');
     $('axiom-voice-status').textContent=voiceText(state.error?'voice_error':state.loading?'voice_loading':state.playing?'voice_playing':state.preferred?'voice_ready':'voice_off');
   });
   function speak(key = currentKey) { return voice.play(key); }
-  listen($('axiom-voice'), 'click', () => { void voice.toggle(currentKey); });
+  const unbindVoiceButton = bindVoiceButton($('axiom-voice'), { hub: voice, key: () => currentKey, iconOnly: true });
   listen($('axiom-replay'), 'click', () => {
     currentKey = pickReaction('station', currentStation || (doc.documentElement.dataset.mode === 'laboratorio' ? 'library' : 'workstation'));
     void speak();
@@ -164,7 +161,7 @@ export function initRoomAssistant({ language = () => 'es', document: doc = globa
   }
   function destroy() {
     if (destroyed) return;
-    destroyed = true; requestId++; controller?.abort(); unsubscribeVoice();
+    destroyed = true; requestId++; controller?.abort(); unsubscribeVoice(); unbindVoiceButton();
     for (const remove of removers.splice(0)) remove();
     viewer?.destroy(); viewer = null; voice.destroy();
     const avatar = $('room-axiom-viewer');
@@ -173,7 +170,7 @@ export function initRoomAssistant({ language = () => 'es', document: doc = globa
   listen(doc, 'visibilitychange', () => { if (doc.hidden) voice.stop(); });
   listen(view, 'pagehide', event => { voice.stop(); resetChat(); if (!event.persisted) destroy(); });
   render();
-  if(voice.preferred)void voice.cue(currentKey);
+  void voice.begin?.(en() ? 'welcomeEn' : currentKey);
   return { get viewer() { return viewer; }, render, setMotion(value) { motionAllowed = value; viewer?.setMotion(value); },
     station(id) {
       const key = pickReaction('station', id); if (destroyed || !key) return;

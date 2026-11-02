@@ -1,12 +1,11 @@
-import { initRoomAssistant } from './room-assistant.js?v=voice-9';
+import { initRoomAssistant } from './room-assistant.js?v=voice-10';
 import { createModeManager } from './modeManager.js';
 import { STATIONS } from './stationsConfig.js';
 import { validateConsent, consentHash, buildConsentPdf, CONSENT_SCHEMA } from './dentalConsent.js';
 import { professionConfig, professionSchema, validateProfessionDocument, professionDocumentHash, professionPreview, buildProfessionPdf } from './professionDocuments.js';
 import { createReciprocity } from './reciprocity.js?v=voice-5';
 import { mountProWaitlist } from './pro-waitlist.js';
-import { getPageVoice } from './page-voice.js?v=voice-9';
-import { mountAxiomPresence } from './axiom-presence.js?v=living-9';
+import { getPageVoice, mountPageVoice } from './page-voice.js?v=voice-10';
 
 // Documents stay local. Only explicitly submitted service questions reach the fixed AI endpoint.
 const $ = id => document.getElementById(id);
@@ -15,7 +14,7 @@ const en = () => manager.getLanguage() === 'en';
 const text = (es, english) => en() ? english : es;
 const funnelText = (key, values = {}) => String(window.TRANSLATIONS[manager.getLanguage()]?.[key] ?? key).replace(/\{(\w+)\}/g, (_, name) => String(values[name] ?? ''));
 const measure = name => document.dispatchEvent(new CustomEvent('portfolio:measurement', { detail: name }));
-mountAxiomPresence({ hub: getPageVoice() });
+mountPageVoice({ initialKey: en() ? 'welcomeEn' : 'welcome' });
 const reciprocity = createReciprocity({ translate: funnelText, links: () => window.PORTFOLIO?.supportLinks, track: measure, voice: getPageVoice() });
 const copy = () => window.TRANSLATIONS[manager.getLanguage()][manager.getMode()];
 const shared = () => window.TRANSLATIONS[manager.getLanguage()].roomShared;
@@ -53,6 +52,49 @@ const UI = {
   privacy: ['Privacidad', 'Privacy'], terms: ['Condiciones', 'Terms'], security: ['Seguridad', 'Security'], about: ['Sobre Serch', 'About Serch'],
 };
 
+// Fixed same-origin illustration files become inert inline SVG so their real
+// furniture parts can animate under the shared pause/reduced-motion controls.
+async function mountRoomFurniture() {
+  const tags = new Set(['svg','title','desc','defs','linearGradient','radialGradient','stop','filter','feGaussianBlur','clipPath','pattern','g','path','rect','circle','ellipse','line','polyline','polygon']);
+  for (const [className, filename] of [['skin-oficina','room-office.svg'],['skin-laboratorio','room-lab.svg']]) {
+    const image = document.querySelector(`img.${className}`); if (!image) continue;
+    try {
+      const url = new URL(image.src, location.href);
+      if (url.origin !== location.origin || !url.pathname.endsWith(`/assets/${filename}`)) continue;
+      const response = await fetch(url.href, { credentials:'same-origin' });
+      if (!response.ok) continue;
+      const source = await response.text(); if (source.length > 128000) continue;
+      const parsed = new DOMParser().parseFromString(source, 'image/svg+xml'), svg = parsed.documentElement;
+      if (svg.localName !== 'svg' || svg.namespaceURI !== NS || svg.getAttribute('viewBox') !== '0 0 1920 1080') continue;
+      const nodes = [svg, ...svg.querySelectorAll('*')], ids = new Map(); let safe = true;
+      for (const node of nodes) {
+        if (!tags.has(node.localName) || node.namespaceURI !== NS) { safe = false; break; }
+        for (const attr of node.attributes) {
+          if (/^on/i.test(attr.name) || attr.name === 'style' || (/(?:^|:)href$/i.test(attr.name) && !/^#[\w-]+$/.test(attr.value)) || (/url\s*\(/i.test(attr.value) && !/^url\(#[\w-]+\)$/.test(attr.value))) { safe = false; break; }
+        }
+        if (node.id) { if (!/^[\w-]+$/.test(node.id)) { safe=false; break; } ids.set(node.id, `${className}-${node.id}`); }
+      }
+      if (!safe || svg.querySelectorAll('[data-furniture]').length !== STATIONS.length) continue;
+      for (const node of nodes) for (const attr of [...node.attributes]) {
+        if (attr.name === 'id') node.setAttribute('id', ids.get(attr.value));
+        else if (attr.name === 'aria-labelledby') node.setAttribute(attr.name, attr.value.split(/\s+/).map(id=>ids.get(id)||id).join(' '));
+        else if (attr.value.startsWith('url(#')) node.setAttribute(attr.name, attr.value.replace(/#([\w-]+)/, (_,id)=>`#${ids.get(id)||id}`));
+        else if (/(?:^|:)href$/i.test(attr.name)) node.setAttribute(attr.name, `#${ids.get(attr.value.slice(1))||attr.value.slice(1)}`);
+      }
+      svg.setAttribute('class', `${className} room-art`); svg.setAttribute('aria-hidden','true'); svg.setAttribute('focusable','false');
+      image.replaceWith(document.importNode(svg, true));
+    } catch { /* The authored image remains an intact, usable fallback. */ }
+  }
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries=>{ $('room-scene').dataset.visible=String(entries[0].isIntersecting); });
+    observer.observe($('room-scene')); window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
+  }
+}
+void mountRoomFurniture();
+function engageFurniture(id, active) {
+  document.querySelectorAll(`[data-furniture="${id}"]`).forEach(node=>node.classList.toggle('is-engaged',active));
+}
+
 // A single SVG map, created once. Changing mode only replaces labels and paint.
 for (const station of STATIONS) {
   const group = document.createElementNS(NS, 'g');
@@ -60,13 +102,18 @@ for (const station of STATIONS) {
   group.setAttribute('role', 'button'); group.setAttribute('tabindex', '0');
   group.setAttribute('aria-haspopup', 'dialog'); group.setAttribute('aria-controls', 'station-dialog');
   const polygon = document.createElementNS(NS, 'polygon'); polygon.setAttribute('points', station.polygon);
-  const circle = document.createElementNS(NS, 'circle'); circle.setAttribute('cx', station.x); circle.setAttribute('cy', station.y); circle.setAttribute('r', '23'); circle.classList.add('station-pin');
-  const number = document.createElementNS(NS, 'text'); number.setAttribute('x', station.x); number.setAttribute('y', station.y + 7); number.classList.add('station-number'); number.textContent = station.number;
-  group.append(polygon, circle, number); $('station-map').append(group);
+  const [sx,sy,sw] = station.sign;
+  const leader = document.createElementNS(NS,'path'); leader.setAttribute('d',`M${station.x} ${station.id === 'axiom' ? 920 : station.y}L${sx} ${sy > station.y ? sy-31 : sy+31}`); leader.classList.add('station-sign-leader');
+  const sign = document.createElementNS(NS,'g'); sign.classList.add('station-sign');
+  const plate = document.createElementNS(NS,'rect'); plate.setAttribute('x',sx-sw/2); plate.setAttribute('y',sy-31); plate.setAttribute('width',sw); plate.setAttribute('height','62'); plate.setAttribute('rx','18');
+  const label = document.createElementNS(NS,'text'); label.setAttribute('x',sx); label.setAttribute('y',sy+16); label.classList.add('station-sign-label');
+  sign.append(plate,label); group.append(polygon,leader,sign); $('station-map').append(group);
   group.addEventListener('click', () => openStation(station.id, group));
   group.addEventListener('keydown', event => { if (['Enter', ' '].includes(event.key)) { event.preventDefault(); openStation(station.id, group); } });
-  group.addEventListener('pointerenter', () => { $('station-hover').textContent = copy().stations[station.id].title; });
-  group.addEventListener('focus', () => { $('station-hover').textContent = copy().stations[station.id].title; });
+  group.addEventListener('pointerenter', () => { $('station-hover').textContent = copy().stations[station.id].title; engageFurniture(station.id,true); });
+  group.addEventListener('focus', () => { $('station-hover').textContent = copy().stations[station.id].title; engageFurniture(station.id,true); });
+  group.addEventListener('pointerleave', () => engageFurniture(station.id,false));
+  group.addEventListener('blur', () => engageFurniture(station.id,false));
   const item = button('', () => openStation(station.id, item), 'directory-item'); item.dataset.station = station.id;
   item.setAttribute('aria-haspopup', 'dialog'); item.setAttribute('aria-controls', 'station-dialog');
   item.append(el('span', 'directory-number', station.number), el('strong', 'directory-title'), el('span', 'directory-object'));
@@ -129,6 +176,7 @@ function render() {
   $('room-scene').setAttribute('aria-label', text('Habitación interactiva', 'Interactive room'));
   for (const station of STATIONS) {
     const stationCopy = dictionary.stations[station.id];
+    document.querySelector(`.station-hitbox[data-station="${station.id}"] .station-sign-label`).textContent = dictionary.stationLabels?.[station.id] || stationCopy.object;
     document.querySelector(`.station-hitbox[data-station="${station.id}"]`).setAttribute('aria-label', `${station.number}. ${stationCopy.title}: ${stationCopy.object}`);
     const item = document.querySelector(`.directory-item[data-station="${station.id}"]`);
     item.querySelector('strong').textContent = stationCopy.title; item.querySelector('.directory-object').textContent = stationCopy.object;
