@@ -38,3 +38,17 @@ html:is([data-motion=paused],.motion-paused,.page-hidden) .pc-support *,html:is(
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.pc-support .pc-support-actions>a{--donate-top:rgba(226,249,240,.90);--donate-bottom:rgba(217,240,231,.88)}html:is([data-mode=laboratorio],[data-mode=lab]) .pc-support .pc-support-actions>a,.pc-support[data-pc-theme=dark] .pc-support-actions>a{--donate-top:rgba(15,48,55,.92);--donate-bottom:rgba(9,31,41,.90)}}
 @media(prefers-reduced-transparency:reduce){.pc-support .pc-support-actions>a{--donate-top:rgba(226,249,240,.96);--donate-bottom:rgba(217,240,231,.94);backdrop-filter:none;-webkit-backdrop-filter:none}html:is([data-mode=laboratorio],[data-mode=lab]) .pc-support .pc-support-actions>a,.pc-support[data-pc-theme=dark] .pc-support-actions>a{--donate-top:rgba(15,48,55,.96);--donate-bottom:rgba(9,31,41,.94)}}
 @media print{.pc-support{display:none!important}}
+
+/* A small four-leaf thank-you; the payment cards keep their own glass system. */
+.pc-support .pc-support-thanks{display:flex;align-items:center;gap:14px;margin-top:18px;min-width:0}
+.pc-support .pc-support-thanks .pc-support-note{flex:1;min-width:0;max-width:58ch;margin:0;font-size:.78rem;line-height:1.6}
+.pc-support .pc-lucky-clover{--clover-ink:#176a5d;--clover-fill:rgba(42,159,127,.20);display:grid;place-items:center;flex:0 0 78px;box-sizing:border-box;width:78px;height:78px;border:1px solid rgba(33,117,94,.22);border-radius:22px;background:radial-gradient(ellipse at 25% 10%,rgba(123,229,190,.15),transparent 75%),linear-gradient(145deg,rgba(248,255,250,.24),rgba(183,234,211,.10));backdrop-filter:blur(12px) saturate(1.15);-webkit-backdrop-filter:blur(12px) saturate(1.15);box-shadow:inset 0 1px rgba(255,255,255,.3);pointer-events:none}
+.pc-support .pc-lucky-clover>svg{display:block;width:64px;height:64px;overflow:visible;transform-origin:50% 85%;animation:pc-clover-sway 8s ease-in-out infinite}
+.pc-support .pc-clover-leaf{fill:var(--clover-fill);stroke:var(--clover-ink);stroke-width:1.35;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.pc-support .pc-clover-stem{fill:none;stroke:var(--clover-ink);stroke-width:1.6;stroke-linecap:round;vector-effect:non-scaling-stroke}
+html:is([data-mode=laboratorio],[data-mode=lab]) .pc-support .pc-lucky-clover,.pc-support[data-pc-theme=dark] .pc-lucky-clover{--clover-ink:#9af1d5;--clover-fill:rgba(109,231,200,.16);border-color:rgba(154,241,213,.25)}
+.pc-support .pc-donate-provider{display:block;color:var(--donate-price-ink);font-size:.59rem;font-weight:650;line-height:1.35;letter-spacing:.025em;text-align:center}
+@keyframes pc-clover-sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg) translateY(-1px)}}
+@media(max-width:640px){.pc-support .pc-support-thanks{gap:12px;margin-top:17px}.pc-support .pc-support-thanks .pc-support-note{font-size:.76rem}}
+@media(max-width:360px){.pc-support .pc-support-thanks{flex-direction:column;text-align:center}.pc-support .pc-support-thanks .pc-support-note{max-width:30ch}}
+@media(prefers-reduced-transparency:reduce){.pc-support .pc-lucky-clover{background:var(--surface,#fffdf6);backdrop-filter:none;-webkit-backdrop-filter:none}}
