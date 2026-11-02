@@ -1,6 +1,6 @@
 import { initRoomAssistant } from './room-assistant.js?v=voice-10';
 import { createModeManager } from './modeManager.js';
-import { STATIONS } from './stationsConfig.js';
+import { STATIONS } from './stationsConfig.js?v=furniture-10';
 import { validateConsent, consentHash, buildConsentPdf, CONSENT_SCHEMA } from './dentalConsent.js';
 import { professionConfig, professionSchema, validateProfessionDocument, professionDocumentHash, professionPreview, buildProfessionPdf } from './professionDocuments.js';
 import { createReciprocity } from './reciprocity.js?v=voice-5';
@@ -102,7 +102,7 @@ for (const station of STATIONS) {
   group.setAttribute('role', 'button'); group.setAttribute('tabindex', '0');
   group.setAttribute('aria-haspopup', 'dialog'); group.setAttribute('aria-controls', 'station-dialog');
   const polygon = document.createElementNS(NS, 'polygon'); polygon.setAttribute('points', station.polygon);
-  const [sx,sy,sw] = station.sign;
+  const [sx,sy,sw] = station.sign || [station.x, Math.min(1018, station.y + 90), 280];
   const leader = document.createElementNS(NS,'path'); leader.setAttribute('d',`M${station.x} ${station.id === 'axiom' ? 920 : station.y}L${sx} ${sy > station.y ? sy-31 : sy+31}`); leader.classList.add('station-sign-leader');
   const sign = document.createElementNS(NS,'g'); sign.classList.add('station-sign');
   const plate = document.createElementNS(NS,'rect'); plate.setAttribute('x',sx-sw/2); plate.setAttribute('y',sy-31); plate.setAttribute('width',sw); plate.setAttribute('height','62'); plate.setAttribute('rx','18');
