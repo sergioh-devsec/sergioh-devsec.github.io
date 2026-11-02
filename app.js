@@ -1,4 +1,4 @@
-import { initRoomAssistant } from './room-assistant.js?v=voice-10';
+import { initRoomAssistant } from './room-assistant.js?v=guide-21';
 import { createModeManager } from './modeManager.js';
 import { STATIONS } from './stationsConfig.js?v=furniture-10';
 import { validateConsent, consentHash, buildConsentPdf, CONSENT_SCHEMA } from './dentalConsent.js';
@@ -174,7 +174,7 @@ function render() {
     else if (typeof window.TRANSLATIONS[manager.getLanguage()]?.[key] === 'string') node.textContent = funnelText(key);
   }
   $('room-title').textContent = dictionary.title; $('room-eyebrow').textContent = dictionary.eyebrow; $('room-lead').textContent = dictionary.lead;
-  $('guide-title').textContent = text('¿Qué te quita tiempo hoy?', 'What takes up your time today?'); $('guide-copy').textContent = dictionary.guide;
+  $('guide-title').textContent = funnelText('axiomGuideTitle'); $('guide-copy').textContent = funnelText('axiomGuideIntro');
   $('rescue-office').hidden = !isLab; $('rescue-office').textContent = text('¿Te perdiste entre tanto código? Volver a La Oficina', 'Lost in all this code? Back to The Office');
   $('close-station').setAttribute('aria-label', text('Cerrar', 'Close')); $('station-map').setAttribute('aria-label', text('Estaciones de la habitación', 'Room stations'));
   $('room-scene').setAttribute('aria-label', text('Habitación interactiva', 'Interactive room'));

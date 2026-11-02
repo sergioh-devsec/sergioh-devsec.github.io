@@ -157,7 +157,7 @@ export function initRoomAssistant({ language = () => 'es', document: doc = globa
     $('axiom-chat-input').placeholder = t('Ej. Una web para mi consultorio','e.g. A website for my practice');
     voice.refresh();
     viewerLabel();
-    if (!viewer) $('axiom-3d-status').textContent = t('La voz funciona sin descargar el 3D.','Voice works without downloading 3D.');
+    if (!viewer) $('axiom-3d-status').textContent = '';
   }
   function destroy() {
     if (destroyed) return;
