@@ -1,5 +1,6 @@
 /* One transparent WebGL layer inside the existing, mode-invariant avatar. */
-#room-axiom-viewer { isolation: isolate; }
+/* The portrait adds a generic relative host; this room avatar stays anchored. */
+#room-axiom-viewer { position: absolute; isolation: isolate; }
 #room-axiom-viewer > img,
 #room-axiom-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 #room-axiom-viewer > img { transition: opacity .24s ease; }
