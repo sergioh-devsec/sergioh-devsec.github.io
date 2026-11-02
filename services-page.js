@@ -33,7 +33,7 @@ let language=(navigator.language||'es').toLowerCase().startsWith('en')?'en':'es'
 try { const saved=localStorage.getItem('cyberserch-language'); if(['es','en'].includes(saved))language=saved; } catch {}
 let paused=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function t(key,values={}) { return String(COPY[language][key]??COPY.es[key]??key).replace(/\{(\w+)\}/g,(_,name)=>String(values[name]??'')); }
-function pageText(key){return UI[key]?.[language==='en'?1:0]??key;}
+function pageText(key){return UI[key]?.[language==='en'?1:0]??window.TRANSLATIONS?.[language]?.[key]??key;}
 function renderMotion(){ document.documentElement.classList.toggle('motion-paused',paused);for(const id of ['motion-toggle','motion-mobile']){const button=document.getElementById(id);button.textContent=pageText(paused?'resume':'pause');button.setAttribute('aria-pressed',String(paused));} }
 function apply(root=document){
  root.querySelectorAll('[data-i18n]').forEach(node=>{if(Object.hasOwn(COPY.es,node.dataset.i18n))node.textContent=t(node.dataset.i18n);});

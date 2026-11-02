@@ -225,6 +225,14 @@ function renderStation(preserve = false) {
     body.append(el('p', 'tool-notice', text('Apoyo voluntario. No compra servicios ni reserva una cita.', 'Voluntary support. It does not purchase services or book an appointment.')));
     const actions = el('div', 'station-actions');
     actions.append(link(text('Invitar un café · PayPal', 'Buy us a coffee · PayPal'), 'https://www.paypal.com/donate/?hosted_button_id=D587QCAYURRYG'), link(text('Impulsar el laboratorio · Patreon', 'Support the lab · Patreon'), 'https://www.patreon.com/c/CyberserchMX/membership', 'button secondary'));
+    const pcFund = link(funnelText('pcSupportLink'), '#nueva-pc', 'button secondary');
+    pcFund.addEventListener('click', () => {
+      dialog.addEventListener('close', () => {
+        $('pc-support-title').focus({ preventScroll: true });
+        $('nueva-pc').scrollIntoView({ block: 'start' });
+      }, { once: true });
+      closeStation();
+    }); actions.append(pcFund);
     body.append(actions, el('p', 'small', text('PayPal: importe libre en MXN. Patreon: apoyo mensual. Revisa el importe, la recurrencia y los datos del destinatario en el proveedor.', 'PayPal: choose an amount in MXN. Patreon: monthly support. Review the amount, recurrence and recipient information with the provider.')));
   } else if (station.id === 'register') renderNumbers(body);
   else if (station.id === 'security' || station.id === 'vault') {
@@ -424,3 +432,4 @@ const legacyHashes=new Set(['home','services','creadoras','content','social','co
 const hash=location.hash.slice(1);
 if(legacyHashes.has(hash))location.replace(`portafolio.html${location.search}${location.hash}`);
 else if(STATIONS.some(station=>station.id===hash))openStation(hash);
+else if(hash==='nueva-pc')requestAnimationFrame(()=>$('nueva-pc').scrollIntoView({block:'start'}));

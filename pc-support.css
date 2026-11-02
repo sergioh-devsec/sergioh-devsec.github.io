@@ -1,0 +1,22 @@
+/* An honest workshop note: the little tower works; there is no invented meter. */
+.pc-support{--pc-coral:#98462e;--pc-wash:#c9833212;position:relative;display:grid;grid-template-columns:minmax(200px,.7fr) minmax(0,1.3fr);align-items:center;gap:clamp(24px,4vw,64px);margin:38px 0;padding:clamp(24px,4vw,48px);border:1px solid var(--line,#d2dbce);border-left:4px solid var(--pc-coral);border-radius:8px 24px 24px 8px;background:linear-gradient(120deg,var(--pc-wash),transparent 62%),var(--surface,#fffdf6);color:var(--ink,var(--text,#183b3d));isolation:isolate}
+html[data-mode=laboratorio] .pc-support,html[data-mode=lab] .pc-support,.pc-support[data-pc-theme=dark]{--pc-coral:#ffb18c;--pc-wash:#c9833219}
+.pc-support .pc-support-art{position:relative;display:grid;place-items:center;min-width:0;padding:12px;color:var(--accent,#187e72)}
+.pc-support .pc-support-art::after{content:"";position:absolute;inset:auto 10% 0;height:16px;border:1px solid var(--pc-coral);border-radius:50%;opacity:.25;transform:rotate(-5deg);z-index:-1}
+.pc-support .pc-support-art>svg{display:block;width:min(100%,300px);height:auto;overflow:visible;filter:drop-shadow(6px 12px 5px #071b2712)}
+.pc-support .pc-case{transform-box:fill-box;transform-origin:50% 95%;animation:pc-support-presence 8s ease-in-out infinite}
+.pc-support .pc-fan{transform-box:fill-box;transform-origin:center;animation:pc-support-fan 12s linear infinite}
+.pc-support .pc-signal{color:var(--pc-coral);stroke:currentColor;stroke-linecap:round;animation:pc-support-signal 6s ease-in-out infinite}
+.pc-support .pc-sticker{position:absolute;right:5%;top:9%;padding:9px 12px;border:1px dashed currentColor;border-radius:9px;background:var(--surface,#fffdf6);font:750 .75rem/1.55 ui-monospace,monospace;text-align:center;color:var(--pc-coral);transform-box:fill-box;transform-origin:center;transform:rotate(-8deg)}
+.pc-support .pc-support-copy{min-width:0}.pc-support .pc-support-tag{margin:0 0 12px;color:var(--pc-coral);font:700 .66rem/1.5 ui-monospace,Consolas,monospace;letter-spacing:.12em}
+.pc-support h2{max-width:19ch;margin:0 0 17px;font-size:clamp(1.65rem,2.6vw,2.7rem);line-height:1.1;letter-spacing:-.04em}
+.pc-support .pc-support-copy>p{max-width:62ch;line-height:1.65}.pc-support .pc-support-line{padding-left:14px;border-left:2px solid var(--pc-coral);font-weight:550;color:var(--ink,var(--text,#183b3d))}
+.pc-support .pc-support-actions{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 12px}.pc-support .pc-support-actions>a{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:12px 18px;border:1px solid transparent;border-radius:11px;color:#fff;text-align:center;text-decoration:none;font-size:.87rem;font-weight:650;line-height:1.35;touch-action:manipulation;transition:transform .18s,box-shadow .18s}
+.pc-support .pc-support-actions>.pc-support-paypal{background:#154d85;border-color:#3674b3}.pc-support .pc-support-actions>.pc-support-patreon{background:#7d3c2c;border-color:#ae7058}.pc-support .pc-support-actions>a:hover{transform:translateY(-2px);box-shadow:0 5px 12px #071b2720}.pc-support .pc-support-actions>a:focus-visible{outline:3px solid var(--accent,#187e72);outline-offset:4px}
+.pc-support .pc-support-note{font-size:.76rem;color:var(--muted,#5b706b);line-height:1.55;margin:0}
+@keyframes pc-support-fan{to{transform:rotate(360deg)}}@keyframes pc-support-presence{0%,100%{transform:rotate(-.7deg)}50%{transform:rotate(.7deg)}}@keyframes pc-support-signal{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+html[data-motion=paused] .pc-support *,html.motion-paused .pc-support *,html.page-hidden .pc-support *{animation-play-state:paused!important}
+@media(max-width:640px){.pc-support{grid-template-columns:1fr;gap:18px;padding:24px 20px;margin:28px 0}.pc-support .pc-support-art{padding:0}.pc-support .pc-support-art>svg{width:160px}.pc-support h2{max-width:23ch;font-size:1.8rem}.pc-support .pc-support-actions>a{flex:1 1 155px}.pc-support .pc-support-copy>p{font-size:.9rem}}
+@media(prefers-reduced-motion:reduce){.pc-support *{animation:none!important;transition:none!important}.pc-support .pc-support-actions>a:hover{transform:none}}
+
+@media print{.pc-support{display:none!important}}
