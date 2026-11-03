@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es" data-mode="oficina">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Una biblioteca de herramientas por profesión. GAD-7 gratuito para adultos: cálculo local y archivo HTML independiente para compartir.">
+<title>Herramientas para profesionistas · CyberSerch</title>
+<link rel="canonical" href="https://cyberserch.com/profesionistas.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="profesionistas.css">
+<script src="translations.js" defer></script>
+<script src="profesionistas.js" type="module"></script>
+</head>
+<body>
+<a href="#main" class="prof-skip" data-prof-copy="skip">Saltar al contenido</a>
+<header class="prof-header" data-no-print>
+  <div class="prof-wrap prof-header-inner">
+    <a class="prof-logo" href="index.html" aria-label="CyberSerch"><img class="logo-light" src="assets/cyberserch-horizontal-claro.svg" width="1340" height="440" alt="CyberSerch"><img class="logo-dark" src="assets/cyberserch-horizontal-oscuro.svg" width="1340" height="440" alt="CyberSerch"></a>
+    <nav class="prof-nav" aria-label="Navegación principal" data-prof-label="navigation"><a href="index.html" data-prof-copy="home">Inicio</a><a href="tienda.html" data-prof-copy="store">Tienda</a><a href="profesionistas.html" aria-current="page" data-prof-copy="current">Profesionistas</a></nav>
+    <div class="prof-controls"><label for="professional-language" class="sr-only" data-prof-copy="languageLabel">Idioma</label><select id="professional-language"><option value="es">ES</option><option value="en">EN</option></select><label for="professional-mode" class="sr-only" data-prof-copy="modeLabel">Aspecto del sitio</label><select id="professional-mode"><option value="oficina" data-prof-copy="office">La Oficina</option><option value="laboratorio" data-prof-copy="lab">El Laboratorio</option></select></div>
+  </div>
+</header>
+<main id="main" class="prof-wrap">
+  <section class="prof-hero"><h1 data-prof-copy="hero">Herramientas que acompañan tu práctica.</h1><p data-prof-copy="lead">Elige tu profesión, revisa el alcance de cada recurso y úsalo con criterio. Empezamos con una herramienta de psicología que puedes abrir aquí o enviar como archivo.</p></section>
+  <nav class="prof-professions" aria-label="Elegir una profesión" data-prof-label="professionNav"><a href="#psicologia" data-prof-copy="psychology">Psicología</a><a href="#contabilidad" data-prof-copy="accounting">Contabilidad</a><a href="#otras-profesiones" data-prof-copy="other">Otras profesiones</a></nav>
+  <section class="prof-section" id="psicologia" aria-labelledby="psychology-heading">
+    <h2 id="psychology-heading" data-prof-copy="psychologyTitle">Psicología: del cuestionario a una conversación.</h2>
+    <p data-prof-copy="psychologyLead">Un instrumento disponible, con sus fuentes, límites y cálculo verificable. El resultado orienta una evaluación profesional; no reemplaza una entrevista clínica.</p>
+    <div class="prof-library">
+      <form class="prof-filters" id="instrument-filters" role="search" autocomplete="off">
+        <label><span data-prof-copy="filterSearch">Buscar por nombre</span><input type="search" id="instrument-search" placeholder="Ej. GAD-7" maxlength="80" data-prof-placeholder="filterPlaceholder"></label>
+        <label><span data-prof-copy="filterSymptom">Síntoma</span><select id="instrument-symptom"><option value="all" data-prof-copy="allSymptoms">Todos los disponibles</option><option value="anxiety" data-prof-copy="anxiety">Ansiedad</option></select></label>
+        <label><span data-prof-copy="filterMethod">Método</span><select id="instrument-method"><option value="all" data-prof-copy="allMethods">Todos los disponibles</option><option value="self-report" data-prof-copy="selfReport">Autoinforme</option></select></label>
+        <label><span data-prof-copy="filterSort">Ordenar por</span><select id="instrument-sort"><option value="newest" data-prof-copy="newest">Más reciente en la biblioteca</option><option value="name" data-prof-copy="nameSort">Nombre: A–Z</option></select></label>
+      </form>
+      <p id="instrument-count" class="prof-count" role="status" aria-live="polite">1 instrumento disponible</p>
+      <article class="prof-instrument" id="gad7-catalog" aria-labelledby="gad7-catalog-heading">
+        <div><h3 id="gad7-catalog-heading" data-prof-copy="instrumentTitle">GAD-7 · Síntomas de ansiedad</h3><p data-prof-copy="instrumentLead">Siete preguntas sobre las últimas dos semanas. Autoinforme para personas adultas, con puntuación de 0 a 21.</p><p class="prof-free" data-prof-copy="free">Gratuito · instrumento de dominio público</p><p class="prof-caveat" data-prof-copy="caveat">Tamizaje, no diagnóstico. Requiere interpretación profesional.</p><p class="prof-note" data-prof-copy="added">Incorporado a la biblioteca el 3 de noviembre de 2026. Instrumento publicado en 2006.</p></div>
+        <div class="prof-actions"><button class="prof-button" type="button" id="open-questionnaire" data-prof-copy="tryHere">Abrir el cuestionario</button><button class="prof-button secondary" type="button" id="download-blank" data-prof-copy="downloadBlank">Descargar HTML en blanco</button></div>
+      </article>
+      <div id="instrument-empty" class="prof-empty" hidden><p data-prof-copy="empty">No hay instrumentos con estos filtros. Prueba “GAD-7” o borra la búsqueda.</p><button type="button" class="prof-button secondary" id="clear-filters" data-prof-copy="clearFilters">Limpiar filtros</button></div>
+      <p id="download-status" class="prof-note" role="status" aria-live="polite"></p>
+    </div>
+    <aside class="prof-workflow"><div><h3 data-prof-copy="fileTitle">Un archivo que puedes enviar.</h3><p data-prof-copy="fileLead">Descarga el HTML en blanco y envíalo a una persona adulta por el canal que acuerden. Esa persona lo abre en un navegador, responde y obtiene la suma en su dispositivo, incluso sin conexión.</p></div><ol><li data-prof-copy="fileStep1">Envía solo el archivo en blanco. No necesitas crear una cuenta ni registrar un nombre.</li><li data-prof-copy="fileStep2">La persona responde y revisa el resultado. Puede imprimirlo o guardarlo como PDF desde el diálogo de impresión, o descargar un TXT.</li><li data-prof-copy="fileStep3">La persona decide si comparte el resultado contigo y por qué canal. Este sitio y el archivo no lo envían automáticamente.</li></ol><p class="prof-note" data-prof-copy="fileCaution">Requisito: navegador actualizado que ejecute JavaScript. Algunos visores de correo y teléfonos no lo permiten: guarda el archivo y ábrelo en el navegador. Si no funciona, acuerden otra vía con el profesional.</p></aside>
+    <section class="prof-questionnaire" id="gad7-questionnaire" hidden></section>
+    <p id="language-status" class="prof-note" role="status" aria-live="polite"></p>
+    <noscript><p>Activa JavaScript en un navegador actualizado para abrir el cuestionario y descargar el archivo. / Enable JavaScript in an up-to-date browser to open the questionnaire and download the file.</p></noscript>
+  </section>
+  <section class="prof-section prof-sources" aria-labelledby="sources-heading"><h2 id="sources-heading" data-prof-copy="sourceTitle">Fuentes, licencia y alcance.</h2><p data-prof-copy="attribution">El GAD-7 fue desarrollado por Robert L. Spitzer, Janet B. W. Williams, Kurt Kroenke y colaboradores, con una subvención educativa de Pfizer Inc.</p><p data-prof-copy="license">El manual PHQ/GAD-7 declara de dominio público las medidas de su tabla 1 y permite su reproducción sin solicitar permiso (pág. 8). El instrumento GAD-7 se ofrece gratis.</p><p data-prof-copy="interfaceNote">CyberSerch creó esta interfaz y el cálculo local. No es autor del instrumento, no afirma que esta interfaz sea una nueva prueba validada y no ofrece interpretación clínica automática ni aval de sus autores.</p><p data-prof-copy="spanishScope">El texto en español corresponde a la versión publicada para Estados Unidos. No se afirma que sea una validación específica para México. El profesional debe valorar su pertinencia lingüística y clínica.</p><p data-prof-copy="thresholds">Suma de siete respuestas de 0 a 3: 0–4 mínimo, 5–9 leve, 10–14 moderado, 15–21 grave. Se usa ≥10 como orientación para solicitar evaluación, según el manual original (pág. 6). No se genera un diagnóstico.</p><ul><li><a href="https://capp.ucsf.edu/sites/g/files/tkssra6871/f/GAD-7_Spanish.pdf" target="_blank" rel="noopener noreferrer" data-prof-copy="spanishSource">GAD-7: versión publicada en español para Estados Unidos (UCSF, PDF)</a></li><li><a href="https://www.hiv.uw.edu/page/mental-health-screening/gad-7" target="_blank" rel="noopener noreferrer" data-prof-copy="englishSource">GAD-7: texto en inglés y atribución (University of Washington)</a></li><li><a href="https://www.phqscreeners.com/images/sites/g/files/g10016261/f/201412/instructions.pdf" target="_blank" rel="noopener noreferrer" data-prof-copy="licenseSource">Manual PHQ/GAD-7: dominio público (pág. 8)</a></li></ul></section>
+  <section class="prof-section prof-other"><article id="contabilidad"><h2 data-prof-copy="accountingTitle">Contabilidad y administración.</h2><p data-prof-copy="accountingLead">Para ordenar pendientes, cobros y operación, revisa el cuaderno “Ordena tu negocio” en la tienda. Es un recurso administrativo; no calcula impuestos ni sustituye asesoría contable.</p><a href="ordena-tu-negocio.html" data-prof-copy="accountingLink">Revisar el cuaderno administrativo</a></article><article id="otras-profesiones"><h2 data-prof-copy="otherTitle">¿Tu profesión necesita otra herramienta?</h2><p data-prof-copy="otherLead">Podemos conversar sobre un recurso digital para tu flujo de trabajo. Describe el proceso que quieres resolver, sin enviar expedientes, datos de pacientes ni documentos confidenciales.</p><a href="cotizador.html" data-prof-copy="otherLink">Ver servicios y contacto</a></article></section>
+</main>
+<footer class="prof-wrap prof-footer"><p data-prof-copy="footer">CyberSerch · Herramientas con un alcance claro.</p><a href="informacion.html#privacidad" data-prof-copy="footerPrivacy">Privacidad del sitio</a></footer>
+</body>
+</html>
+

@@ -13,6 +13,122 @@ export function purchaseUrl(value, source = 'tienda') {
 }
 export function canPurchase(product) { return product?.status === 'available' && purchaseUrl(product.checkout, product.slug) !== null; }
 export function selectProducts(products, category) { return products.filter(p => category === 'all' || p.category === category); }
+export function professionalsUrl(language, mode) {
+  const query = new URLSearchParams({ idioma: language === 'en' ? 'en' : 'es', modo: mode === 'laboratorio' ? 'laboratorio' : 'oficina' });
+  return `profesionistas.html?${query}`;
+}
+
+export const CART_MAX_QUANTITY = 1;
+export function unitPriceCents(product) {
+  const value = product?.price;
+  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0 || value > 100000) return null;
+  const cents = Math.round(value * 100);
+  return Number.isSafeInteger(cents) && Math.abs(value * 100 - cents) < 1e-7 ? cents : null;
+}
+/** A local selection, never a payment session or proof of purchase. */
+export function normalizeCart(lines, catalogue) {
+  if (!Array.isArray(lines) || !Array.isArray(catalogue)) return [];
+  const byId = new Map();
+  for (const line of lines) {
+    if (!line || typeof line.id !== 'string' || !Number.isSafeInteger(line.quantity) || line.quantity < 1) continue;
+    const product = catalogue.find(p => p.id === line.id);
+    if (!canPurchase(product) || unitPriceCents(product) === null) continue;
+    const current = byId.get(line.id) || 0;
+    byId.set(line.id, Math.min(CART_MAX_QUANTITY, current + Math.min(CART_MAX_QUANTITY, line.quantity)));
+  }
+  return [...byId].map(([id, quantity]) => ({ id, quantity }));
+}
+export function setCartQuantity(lines, id, quantity, catalogue) {
+  const current = normalizeCart(lines, catalogue);
+  const product = Array.isArray(catalogue) && catalogue.find(p => p.id === id);
+  if (!canPurchase(product) || unitPriceCents(product) === null || !Number.isSafeInteger(quantity) || quantity < 0) return current;
+  const next = current.filter(line => line.id !== id);
+  if (quantity > 0) {
+    const entry = { id, quantity: Math.min(CART_MAX_QUANTITY, quantity) };
+    const index = current.findIndex(line => line.id === id);
+    if (index < 0) next.push(entry); else next.splice(index, 0, entry);
+  }
+  return next;
+}
+export function addToCart(lines, id, catalogue) {
+  const current = normalizeCart(lines, catalogue);
+  const quantity = current.find(line => line.id === id)?.quantity || 0;
+  return setCartQuantity(current, id, quantity + 1, catalogue);
+}
+export function cartSummary(lines, catalogue) {
+  const normalized = normalizeCart(lines, catalogue);
+  const entries = normalized.map(line => {
+    const product = catalogue.find(p => p.id === line.id);
+    const unitCents = unitPriceCents(product);
+    return { ...line, unitCents, lineCents: unitCents * line.quantity };
+  });
+  return { lines: entries, count: entries.reduce((n, line) => n + line.quantity, 0),
+    distinctCount: entries.length, totalCents: entries.reduce((n, line) => n + line.lineCents, 0) };
+}
+
+function mountCart({ document: doc, catalogue, I }) {
+  const dialog = doc.getElementById('shop-cart'), trigger = doc.getElementById('shop-cart-open');
+  if (!dialog || !trigger) return { render() {} };
+  const list = doc.getElementById('shop-cart-items'), empty = doc.getElementById('shop-cart-empty');
+  const count = doc.getElementById('shop-cart-count'), total = doc.getElementById('shop-cart-total');
+  const clear = doc.getElementById('shop-cart-clear'), announcement = doc.getElementById('shop-cart-announcement');
+  let lines = [], opener = null;
+  const money = cents => new Intl.NumberFormat(I.language === 'en' ? 'en-US' : 'es-MX', { style: 'currency', currency: 'USD', currencyDisplay: 'code' }).format(cents / 100);
+  const node = (tag, className, value) => {
+    const el = doc.createElement(tag); el.className = className;
+    if (value !== undefined) el.textContent = value;
+    return el;
+  };
+  function announce(key, values = {}) { if (announcement) announcement.textContent = I.t(key, values); }
+  function render() {
+    const summary = cartSummary(lines, catalogue); lines = summary.lines.map(({ id, quantity }) => ({ id, quantity }));
+    count.textContent = String(summary.count); trigger.setAttribute('aria-label', I.t('shopCartOpen', { n: summary.count }));
+    total.textContent = money(summary.totalCents); empty.hidden = summary.count !== 0; clear.hidden = summary.count === 0;
+    const fragment = doc.createDocumentFragment();
+    for (const line of summary.lines) {
+      const product = catalogue.find(p => p.id === line.id), name = product.name[I.language];
+      const item = node('li', 'shop-cart-item');
+      const heading = node('h3', '', name), detail = node('p', 'shop-cart-unit', I.t('shopCartUnitPrice', { price: money(line.unitCents) }));
+      const remove = node('button', 'shop-cart-remove', I.t('shopCartRemove')); remove.type = 'button';
+      remove.setAttribute('aria-label', I.t('shopCartRemoveNamed', { name }));
+      remove.addEventListener('click', () => { lines = setCartQuantity(lines, line.id, 0, catalogue); render(); announce('shopCartRemoved', { name }); dialog.querySelector('[data-cart-close]').focus(); });
+      const buy = node('a', 'shop-button', I.t('shopCartCheckout')); buy.href = purchaseUrl(product.checkout, 'carrito'); buy.target = '_blank'; buy.rel = 'noopener noreferrer';
+      buy.setAttribute('aria-label', I.t('shopCartCheckoutNamed', { name }));
+      item.append(heading, detail, remove, buy); fragment.append(item);
+    }
+    list.replaceChildren(fragment);
+  }
+  function close() {
+    if (dialog.open) dialog.close();
+    doc.documentElement.classList.remove('shop-cart-open'); trigger.setAttribute('aria-expanded', 'false');
+    if (opener?.isConnected) opener.focus();
+  }
+  trigger.addEventListener('click', () => {
+    if (dialog.open) return;
+    opener = doc.activeElement; render(); dialog.showModal(); doc.documentElement.classList.add('shop-cart-open');
+    trigger.setAttribute('aria-expanded', 'true'); dialog.querySelector('[data-cart-close]').focus();
+  });
+  for (const button of dialog.querySelectorAll('[data-cart-close]')) button.addEventListener('click', close);
+  dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
+  dialog.addEventListener('close', () => { doc.documentElement.classList.remove('shop-cart-open'); trigger.setAttribute('aria-expanded', 'false'); });
+  dialog.addEventListener('keydown', event => {
+    if (event.key !== 'Tab') return;
+    const items = [...dialog.querySelectorAll('button:not([disabled]),a[href],select,input,[tabindex]:not([tabindex="-1"])')].filter(el => !el.closest('[hidden]') && el.getClientRects().length);
+    const first = items[0], last = items.at(-1);
+    if (!first) { event.preventDefault(); return; }
+    if (event.shiftKey && doc.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && doc.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
+  clear.addEventListener('click', () => { lines = []; render(); announce('shopCartCleared'); dialog.querySelector('[data-cart-close]').focus(); });
+  for (const button of doc.querySelectorAll('[data-cart-add]')) button.addEventListener('click', () => {
+    const id = button.dataset.cartAdd, product = catalogue.find(p => p.id === id);
+    if (!canPurchase(product)) return;
+    const previous = lines.find(line => line.id === id)?.quantity || 0;
+    lines = addToCart(lines, id, catalogue); render();
+    announce(previous >= CART_MAX_QUANTITY ? 'shopCartAlready' : 'shopCartAdded', { name: product.name[I.language], n: cartSummary(lines, catalogue).count });
+  });
+  render(); return { render };
+}
 
 function start() {
   const I=window.I18N, catalogue=window.STORE_CATALOG?.products || [];
@@ -21,9 +137,13 @@ function start() {
   document.documentElement.dataset.mode=resolveMode(location.search,read('site_mode'));
   const mode=document.getElementById('shop-mode');
   mode.value=document.documentElement.dataset.mode;
-  mode.addEventListener('change',()=>{document.documentElement.dataset.mode=mode.value;try{localStorage.setItem('site_mode',mode.value);}catch{}document.dispatchEvent(new CustomEvent('site:mode',{detail:{mode:mode.value}}));});
+  mode.addEventListener('change',()=>{document.documentElement.dataset.mode=mode.value;try{localStorage.setItem('site_mode',mode.value);}catch{}renderProfessionalLink();document.dispatchEvent(new CustomEvent('site:mode',{detail:{mode:mode.value}}));});
   I.setLanguage(resolveLanguage(location.search,read('cyberserch-language'),navigator.language),false);
+  const cart = mountCart({ document, catalogue, I });
   let selected='all';
+  function renderProfessionalLink() {
+    for (const link of document.querySelectorAll('[data-professionals-link]')) link.href = professionalsUrl(I.language, document.documentElement.dataset.mode);
+  }
   function render() {
     const lang=I.language;
     for(const row of document.querySelectorAll('[data-product]')) {
@@ -46,6 +166,8 @@ function start() {
       link.href=purchaseUrl(base,'cv-tienda');
     }
     filter(selected);
+    cart.render();
+    renderProfessionalLink();
   }
   function filter(category) {
     selected=category;
