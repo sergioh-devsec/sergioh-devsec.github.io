@@ -50,61 +50,165 @@ const SKILLS = [
   ['Six Sigma', 'seis sigma'], ['CNC'], ['Soldadura', 'welding'], ['Lectura de planos'],
 ].map(([label, ...aliases]) => ({label, aliases: [...new Set([label, ...aliases].map(normalize))]}));
 
+const ALIAS_EXPRESSIONS = new Map();
+const MENTION_EXPRESSIONS = new Map();
+const NEGATION_EXPRESSIONS = new WeakMap();
 function aliasExpression(alias) {
   // Unicode boundaries avoid Java matching JavaScript, SQL matching MySQL, or JS matching a name.
   // A dot joining identifiers also matters: the "js" in Node.js is not a separate mention.
-  return new RegExp(`(^|[^\\p{L}\\p{N}_.])${escapeRegex(alias)}(?=$|[^\\p{L}\\p{N}_])(?!\\.[\\p{L}\\p{N}])`, 'u');
+  if (!ALIAS_EXPRESSIONS.has(alias)) ALIAS_EXPRESSIONS.set(alias, new RegExp(`(^|[^\\p{L}\\p{N}_.])${escapeRegex(alias)}(?=$|[^\\p{L}\\p{N}_])(?!\\.[\\p{L}\\p{N}])`, 'u'));
+  return ALIAS_EXPRESSIONS.get(alias);
 }
 
 function contains(text, alias) {
-  return aliasExpression(alias).test(text);
+  // Most vocabulary entries are absent. Avoid compiling/executing a Unicode
+  // boundary regex when the literal alias is not even a substring.
+  return text.includes(alias) && aliasExpression(alias).test(text);
 }
 
 function skillIn(text, skill) {
   return skill.aliases.some(alias => contains(text, alias));
 }
 
+export const DIAGNOSTIC_LIMITS = Object.freeze({jobCharacters: 100000, fieldCharacters: 20000, experiences: 40, evidence: 120, excerptCharacters: 220});
+function bounded(value, maximum) {
+  const text = string(value);
+  // Do not turn a truncated identifier (e.g. PythonLibrary) into a skill.
+  return text.length <= maximum ? text : text.slice(0, maximum).replace(/\S+$/, '').trimEnd();
+}
+const splitClauses = value => string(value).split(/[;\r\n]+|[.!?](?=\s|$)/u).map(string).filter(Boolean);
+const CONTRAST = /\b(?:pero|aunque|sin embargo|but|however|whereas|yet)\b/u;
+const OPTIONAL = /\b(?:opcional(?:es)?|deseable(?:s)?|valorable(?:s)?|preferid[oa]s?|preferred|preferable|optional|desirable|desired|nice[- ]to[- ]have|bonus|plus|se valora(?:n|ra)?|valoramos|suma(?:n)? puntos)\b/u;
+const MANDATORY = /\b(?:obligatori[oa]s?|indispensable(?:s)?|imprescindible(?:s)?|requerid[oa]s?|mandatory|required|essential|must[- ]have)\b/u;
+
 function relevantJobClauses(jobText) {
-  const lines = string(jobText).split(/[\r\n]+/);
-  let benefits = false;
+  const lines = bounded(jobText, DIAGNOSTIC_LIMITS.jobCharacters).split(/[\r\n]+/);
+  let benefits = false, optionalSection = false;
   const clauses = [];
   for (const line of lines) {
     const normalized = normalize(line);
     if (/^(?:beneficios|ofrecemos|te ofrecemos|prestaciones|que ofrecemos|benefits|we offer|perks)\s*(?:[:—-]|$)/.test(normalized)) benefits = true;
-    if (/^(?:requisitos|responsabilidades|funciones|habilidades|conocimientos|perfil|buscamos|se requiere|necesitas|requirements|responsibilities|skills|qualifications|you need)\b/.test(normalized)) benefits = false;
+    if (/^(?:requisitos|responsabilidades|funciones|habilidades|conocimientos|perfil|buscamos|se requiere|necesitas|requirements|responsibilities|skills|qualifications|you need)\b/.test(normalized)) { benefits = false; optionalSection = false; }
+    if (/^(?:requisitos\s+)?(?:opcionales|deseables|valorables|nice[- ]to[- ]have|(?:preferred|desired|optional)(?:\s+(?:qualifications|skills))?)\s*(?:[:—-]|$)/.test(normalized)) { benefits = false; optionalSection = true; }
     if (benefits || /^(?:ofrecemos|te ofrecemos|recibiras|obtendras|capacitacion gratuita|seguro de vida)\b/.test(normalized)) continue;
-    for (const clause of normalized.split(/[;.!?](?:\s+|$)/)) {
-      if (clause) clauses.push(clause);
-    }
+    for (const text of splitClauses(line)) clauses.push({text, normalized: normalize(text), optionalSection});
   }
   return clauses;
 }
 
 function negatedSkill(clause, skill) {
-  const aliases = skill.aliases.map(escapeRegex).join('|');
-  if (new RegExp(`(?:no\\s+(?:experience|knowledge)\\s+(?:in|of|with)|(?:do(?:es)?\\s+not|not)\\s+(?:require|need))\\s+(?:${aliases})(?=$|[^\\p{L}\\p{N}_])|(?:${aliases})\\s+(?:(?:is|experience is)\\s+)?(?:not\\s+(?:required|necessary)|optional)\\b`,'u').test(clause)) return true;
+  if (!NEGATION_EXPRESSIONS.has(skill)) {
+    const aliases = skill.aliases.map(escapeRegex).join('|');
+    NEGATION_EXPRESSIONS.set(skill, [
+      new RegExp(`(?:no\\s+(?:experience|knowledge)\\s+(?:in|of|with)|(?:do(?:es)?\\s+not|not)\\s+(?:require|need))\\s+(?:${aliases})(?=$|[^\\p{L}\\p{N}_])|(?:${aliases})\\s+(?:(?:is|experience is)\\s+)?not\\s+(?:required|necessary)\\b`, 'u'),
+      new RegExp(`(?:no\\s+(?:(?:se\\s+)?(?:requiere|requieren|necesita|necesitan|solicita)|es\\s+(?:necesario|indispensable|obligatorio))|sin\\s+(?:experiencia|conocimientos?)\\s+(?:previa\\s+)?(?:en|de))\\s+(?:(?:dominio|experiencia|conocimientos?)\\s+(?:en|de)\\s+)?(?:${aliases})(?=$|[^\\p{L}\\p{N}_])`, 'u'),
+      new RegExp(`(?:${aliases})\\s*[:—-]?\\s*no\\s+(?:es\\s+)?(?:requerido|necesario|indispensable|obligatorio)\\b`, 'u'),
+    ]);
+  }
+  const expressions = NEGATION_EXPRESSIONS.get(skill);
+  if (expressions[0].test(clause)) return true;
   const negativeGroup = /(?:no\s+(?:(?:se\s+)?(?:requiere|requieren|necesita|necesitan|solicita)|(?:requieres|necesitas)|es\s+(?:necesario|indispensable|obligatorio))|sin\s+(?:experiencia|conocimientos?))\b([^;.!?]*)/gu;
   for (const match of clause.matchAll(negativeGroup)) {
     const group = match[1].split(/\b(?:pero|aunque|sin embargo)\b/)[0];
     if (skillIn(group, skill)) return true;
   }
   // Exclude explicit nonrequirements without dropping other skills in the same sentence.
-  return new RegExp(`(?:no\\s+(?:(?:se\\s+)?(?:requiere|requieren|necesita|necesitan|solicita)|es\\s+(?:necesario|indispensable|obligatorio))|sin\\s+(?:experiencia|conocimientos?)\\s+(?:previa\\s+)?(?:en|de))\\s+(?:(?:dominio|experiencia|conocimientos?)\\s+(?:en|de)\\s+)?(?:${aliases})(?=$|[^\\p{L}\\p{N}_])`, 'u').test(clause)
-    || new RegExp(`(?:${aliases})\\s*[:—-]?\\s*(?:no\\s+(?:es\\s+)?(?:requerido|necesario|indispensable|obligatorio)|opcional)\\b`, 'u').test(clause);
+  return expressions[1].test(clause) || expressions[2].test(clause);
+}
+
+function skillMentions(text, skill) {
+  const mentions = [];
+  for (const alias of skill.aliases) {
+    if (!text.includes(alias)) continue;
+    if (!MENTION_EXPRESSIONS.has(alias)) MENTION_EXPRESSIONS.set(alias, new RegExp(aliasExpression(alias).source, 'gu'));
+    // matchAll clones the regex and never advances this cached instance.
+    const expression = MENTION_EXPRESSIONS.get(alias);
+    for (const match of text.matchAll(expression)) {
+      const start = match.index + match[1].length;
+      if (!mentions.some(item => item.start === start)) mentions.push({start, end: start + alias.length});
+    }
+  }
+  return mentions.sort((a, b) => a.start - b.start);
+}
+
+/** Optional wording is scoped, so "Python required, Docker preferred" keeps Python. */
+function optionalSkill(clause, skill) {
+  const text = clause.normalized;
+  const mentions = skillMentions(text, skill);
+  return mentions.every(mention => {
+    const before = text.slice(0, mention.start), after = text.slice(mention.end);
+    const mandatorySuffix = /^\s*(?:[(:—-]\s*)?(?:(?:is|are|es|son|sera|seran)\s+)?(?:required|mandatory|essential|obligatori[oa]s?|indispensable(?:s)?|requerid[oa]s?)\b/u;
+    if (mandatorySuffix.test(after)) return false;
+    const suffix = /^\s*(?:[(:—-]\s*)?(?:(?:is|are|would\s+be|could\s+be|experience\s+is|knowledge\s+is|es|son|sera|seran|seria)\s+)?(?:not\s+(?:required|necessary)|no\s+(?:es\s+)?(?:requerido|necesario|obligatorio)|opcional(?:es)?|deseable(?:s)?|valorable(?:s)?|preferid[oa]s?|preferred|optional|desirable|desired|(?:a|un)\s+(?:plus|bonus)|bonus|nice[- ]to[- ]have)\b/u;
+    if (suffix.test(after)) return true;
+    // A prefix such as "Deseable: Python y SQL" applies to its following list.
+    const prefix = [...before.matchAll(new RegExp(OPTIONAL.source, 'gu'))].at(-1);
+    if (prefix) {
+      const scope = before.slice(prefix.index + prefix[0].length);
+      if (!CONTRAST.test(scope) && !MANDATORY.test(scope) && !/[;.!?]/.test(scope)) return true;
+    }
+    // A plural trailing marker explicitly qualifies a whole preceding list.
+    const trailing = /\b(?:opcionales|deseables|valorables|preferidos|preferidas)\b/u.exec(after);
+    if (trailing && !CONTRAST.test(after.slice(0, trailing.index)) && !MANDATORY.test(after.slice(0, trailing.index))) return true;
+    // Section headings persist until the next requirements heading, unless this
+    // particular skill is explicitly mandatory.
+    return clause.optionalSection;
+  });
+}
+
+function jobSkillMatches(jobText) {
+  const clauses = relevantJobClauses(jobText);
+  return SKILLS.map((skill, order) => {
+    const mentions = clauses.flatMap((clause, clauseIndex) => {
+      if (!skillIn(clause.normalized, skill) || negatedSkill(clause.normalized, skill)) return [];
+      return [{clause, clauseIndex, position: skillMentions(clause.normalized, skill)[0].start, optional: optionalSkill(clause, skill)}];
+    });
+    const mention = mentions.find(item => !item.optional) || mentions[0];
+    return mention ? {skill, label: skill.label, order, ...mention} : null;
+  }).filter(Boolean).sort((a, b) => a.clauseIndex - b.clauseIndex || a.position - b.position || a.order - b.order).slice(0, DIAGNOSTIC_LIMITS.evidence);
 }
 
 /** Returns canonical skill labels explicitly present in requirement text, in mention order. */
 export function extractJobKeywords(jobText = '') {
-  const clauses = relevantJobClauses(jobText);
-  return SKILLS.map((skill, order) => {
-    const clauseIndex = clauses.findIndex(clause => skillIn(clause, skill) && !negatedSkill(clause, skill));
-    if (clauseIndex < 0) return null;
-    const position = Math.min(...skill.aliases.map(alias => {
-      const match = aliasExpression(alias).exec(clauses[clauseIndex]);
-      return match ? match.index : Infinity;
-    }));
-    return {label: skill.label, clauseIndex, position, order};
-  }).filter(Boolean).sort((a, b) => a.clauseIndex - b.clauseIndex || a.position - b.position || a.order - b.order).map(skill => skill.label);
+  return jobSkillMatches(jobText).filter(item => !item.optional).map(item => item.label);
+}
+
+/** Negation describes only the current clause, never a person's actual ability. */
+function affirmedCvSkill(clause, skill) {
+  const text = normalize(clause);
+  const parts = text.split(/\b(?:pero|aunque|sin embargo|but|however|whereas|yet)\b|(?:,\s*|\b(?:y|and)\s+)(?=(?:uso|utilizo|conozco|domino|manejo|trabajo|desarrolle|implemente|have\s+(?:used|experience)|i\s+(?:use|know|developed|built|have\s+experience))\b)/u);
+  return parts.some(part => {
+    if (!skillIn(part, skill)) return false;
+    const mentions = skillMentions(part, skill);
+    return mentions.some(({start, end}) => {
+      const before = part.slice(0, start), after = part.slice(end);
+      const negativePrefix = /\b(?:no\s+(?:(?:tengo|cuento\s+con|poseo|tenia|tuve)\s+(?:experiencia|conocimientos?|dominio|habilidad(?:es)?)|(?:he|habia)\s+(?:trabajado|utilizado|usado)|(?:se|conozco|domino|manejo|uso|utilizo))|(?:sin|carezco\s+de)\s+(?:experiencia|conocimientos?|dominio|habilidad(?:es)?)|nunca\s+(?:he\s+)?(?:trabaje|trabajado|utilice|utilizado|use|usado)|(?:have|has|had)\s+(?:no\s+(?:experience|knowledge|proficiency)|not\s+(?:used|worked|learned))|(?:no|lack(?:ed|ing)?)\s+(?:experience|knowledge|proficiency)|(?:do|does|did)\s+not\s+(?:know|use|have\s+(?:experience|knowledge))|(?:don['’]t|doesn['’]t|didn['’]t|haven['’]t|hasn['’]t|never)\s+(?:know|use|used|worked|work|have\s+experience)|not\s+(?:experienced|proficient|skilled|familiar))\b([^;.!?]*)$/u;
+      const negative = negativePrefix.exec(before);
+      if (negative && !/\b(?:no\s+solo|not\s+only)\b/u.test(negative[0])) return false;
+      if (/\b(?:no|not)\s*$/u.test(before) && !/^\s*(?:only|solo)\b/u.test(after)) return false;
+      if (/^\s*(?:[(:—-]\s*)?(?:(?:is|are|es)\s+)?(?:sin\s+(?:experiencia|conocimientos?)|no\s+(?:experience|knowledge)|not\s+(?:a\s+skill|experienced|proficient|known)|no\s+(?:(?:tengo|poseo)\s+(?:experiencia|conocimientos?)|(?:lo\s+)?(?:domino|conozco|manejo)))\b/u.test(after)) return false;
+      if (/\b(?:quiero|deseo|planeo)\s+(?:aprender|estudiar)|\b(?:want|plan|hope)\s+to\s+learn/u.test(before)) return false;
+      return true;
+    });
+  });
+}
+
+function currentProfileClauses(profile) {
+  const fields = [profile.headline, profile.summary, profile.skills, profile.education,
+    ...(Array.isArray(profile.experiences) ? profile.experiences.slice(0, DIAGNOSTIC_LIMITS.experiences) : []).flatMap(item => item && typeof item === 'object' ? [item.role, item.description] : []),
+  ];
+  // Keep the original affirmative fragment for evidence, not an earlier
+  // negated mention of the same skill in a long, contrastive sentence.
+  return fields.flatMap(value => splitClauses(bounded(value, DIAGNOSTIC_LIMITS.fieldCharacters)))
+    .flatMap(value => value.split(/\b(?:pero|aunque|sin embargo|but|however|whereas|yet)\b|(?:,\s*|\b(?:y|and)\s+)(?=(?:uso|utilizo|conozco|domino|manejo|trabajo|desarroll[eé]|implement[eé]|have\s+(?:used|experience)|i\s+(?:use|know|developed|built|have\s+experience))\b)/iu).map(string).filter(Boolean));
+}
+
+function excerptFor(value, skill) {
+  const text = string(value), maximum = DIAGNOSTIC_LIMITS.excerptCharacters;
+  if (text.length <= maximum) return text;
+  const position = skillMentions(normalize(text), skill)[0]?.start || 0;
+  const start = Math.max(0, Math.min(text.length - maximum, position - Math.floor(maximum / 3)));
+  return text.slice(start, start + maximum);
 }
 
 /** Flattens only current profile values; the imported source never masks later edits. */
@@ -194,19 +298,29 @@ function extractionQuality(sourceText, extraction) {
 
 /**
  * @param {{profile?: object, jobText?: string, sourceText?: string, extraction?: object}} input
- * @returns {{findings: object[], keywords: string[], matchedKeywords: string[], missingKeywords: string[], extraction: object}}
+ * @returns {{findings: object[], keywords: string[], matchedKeywords: string[], missingKeywords: string[], optionalKeywords: string[], evidence: object[], extraction: object}}
  */
 export function analyzeCv({profile = {}, jobText = '', sourceText = '', extraction} = {}) {
   profile = profile && typeof profile === 'object' ? profile : {};
   const quality = extractionQuality(sourceText, extraction);
   const findings = [...quality.issues];
-  const keywords = extractJobKeywords(jobText);
-  // Contact details and the person's name cannot establish a professional skill.
-  const evidence = normalize(flattenProfile({...profile, name: '', email: '', phone: '', location: ''}));
-  const matchedKeywords = keywords.filter(label => skillIn(evidence, SKILLS.find(skill => skill.label === label)));
+  const jobSkills = jobSkillMatches(jobText);
+  const required = jobSkills.filter(item => !item.optional);
+  const keywords = required.map(item => item.label);
+  const optionalKeywords = jobSkills.filter(item => item.optional).map(item => item.label);
+  // Only current, edited professional fields can establish a lexical match.
+  // An imported original, contact address or employer's name is not evidence.
+  const profileClauses = currentProfileClauses(profile);
+  const evidence = required.map(({skill, label, clause}) => {
+    const affirmative = profileClauses.find(text => affirmedCvSkill(text, skill));
+    const mention = affirmative || profileClauses.find(text => skillIn(normalize(text), skill));
+    return {keyword: label, matched: Boolean(affirmative), jobExcerpt: excerptFor(clause.text, skill), cvExcerpt: mention ? excerptFor(mention, skill) : '', status: affirmative ? 'matched' : 'missing'};
+  });
+  const matchedKeywords = evidence.filter(item => item.matched).map(item => item.keyword);
   const missingKeywords = keywords.filter(label => !matchedKeywords.includes(label));
   missingKeywords.forEach(keyword => findings.push({
     id: `keyword:${slug(keyword)}`, type: 'keyword', severity: 'info', keyword,
+    titleKey: 'cvQ_keywordTitle', detailKey: 'cvQ_keywordDetail', params: {x: keyword},
     title: `Revisa «${keyword}»`,
     detail: `La vacante menciona «${keyword}» y no aparece en los campos actuales de tu CV. Añádelo solo si puedes respaldarlo con tu experiencia.`,
     suggestion: `Si dominas ${keyword}, descríbelo con tus palabras en Habilidades y confirma el cambio.`,
@@ -243,7 +357,7 @@ export function analyzeCv({profile = {}, jobText = '', sourceText = '', extracti
   }
   const blindSpots = collectBlindSpots({findings, profile, hasVacancy:Boolean(string(jobText))});
   const {issues, ...extractionResult} = quality;
-  return {findings, keywords, matchedKeywords, missingKeywords, blindSpots, extraction: extractionResult};
+  return {findings, keywords, matchedKeywords, missingKeywords, optionalKeywords, evidence, blindSpots, extraction: extractionResult};
 }
 
 /** Pure, language-neutral, bounded observations suitable for translated UI. */
@@ -252,7 +366,7 @@ export function collectBlindSpots({findings=[],profile={},hasVacancy=false}={}) 
   const add=(id,key,params={})=>{if(!seen.has(id)){seen.add(id);result.push({id,key,params});}};
   // Extraction is critical: do not imply a reliable diagnosis of unreadable text.
   for(const f of findings.filter(f=>f.type==='extraction')) add('extraction','cvF_blindExtraction');
-  if(hasVacancy) for(const f of findings.filter(f=>f.type==='keyword')) add(f.id,'cvF_blindKeyword',{x:f.keyword});
+  if(hasVacancy) for(const f of findings.filter(f=>f.type==='keyword')) add(f.id,'cvQ_blindKeywordEvidence',{x:f.keyword});
   for(const f of findings.filter(f=>f.type==='date')) {
     const experience=(Array.isArray(profile.experiences)?profile.experiences:[]).find(item=>item?.id===f.experienceId);
     add('date:'+f.experienceId,'cvF_blindDate',{y:string(experience?.role)||string(experience?.company)});
@@ -269,7 +383,7 @@ export function collectBlindSpots({findings=[],profile={},hasVacancy=false}={}) 
 
 /** Stable UI keys. Never translate, parse or rewrite a visitor's experience text. */
 export function findingPresentation(finding={},profile={}) {
-  if(finding.type==='profile'&&finding.titleKey&&finding.detailKey)return {titleKey:finding.titleKey,detailKey:finding.detailKey,params:{...finding.params}};
+  if(finding.titleKey&&finding.detailKey)return {titleKey:finding.titleKey,detailKey:finding.detailKey,params:{...finding.params}};
   const experiences=Array.isArray(profile.experiences)?profile.experiences:[];
   const index=experiences.findIndex(item=>item?.id===finding.experienceId),experience=experiences[index];
   const params={x:string(finding.keyword),y:string(experience?.role)||string(experience?.company),n:index+1};
