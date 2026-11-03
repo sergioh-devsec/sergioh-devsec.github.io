@@ -6,12 +6,12 @@
   --surface-soft: #eeeee2;
   --surface-raised: #ffffff;
   --ink: #183b3d;
-  --muted: #5b706b;
-  --quiet: #768b81;
+  --muted: #53685f;
+  --quiet: #53685f;
   --line: #d2dbce;
   --line-strong: #aabeb0;
-  --accent: #187e72;
-  --accent-bright: #2c9c88;
+  --accent: #14766b;
+  --accent-bright: #146a60;
   --accent-wash: #e0eee5;
   --accent-ink: #ffffff;
   --gold: #b18b4d;
@@ -201,7 +201,9 @@ html[data-mode="oficina"] .skin-laboratorio .furniture-motion,html[data-mode="la
 .room-next p:last-child { font-size: .88rem; color: var(--muted); margin-bottom: 0; }
 .button, button.primary, button[type="submit"] { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 47px; padding: 12px 20px; font-size: .87rem; font-weight: 650; text-decoration: none; line-height: 1.3; }
 .button.primary, button.primary, button[type="submit"] { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+@media (hover: hover) and (pointer: fine) {
 .button.primary:hover, button.primary:hover, button[type="submit"]:hover { background: var(--accent-bright); border-color: var(--accent-bright); transform: translateY(-1px); }
+}
 .button.secondary { color: var(--ink); background: var(--surface); }
 .room-next .button { flex-shrink: 0; min-width: 205px; }
 .room-footer { display: grid; grid-template-columns: 1fr auto; gap: 16px 30px; align-items: center; padding: 26px 0 30px; border-top: 1px solid var(--line); }
@@ -242,7 +244,7 @@ html[data-mode="oficina"] .skin-laboratorio .furniture-motion,html[data-mode="la
 .field input, .field select, .field textarea, .tool-panel textarea, .tool-panel input[type="text"], .tool-panel input[type="number"], .tool-panel input[type="date"], .tool-panel select { width: 100%; min-height: 45px; padding: 11px 12px; border: 1px solid var(--line-strong); border-radius: 9px; color: var(--ink); background: var(--surface-raised); font-size: .9rem; line-height: 1.45; transition: border-color 180ms; }
 .field input:hover, .field select:hover, .field textarea:hover { border-color: var(--accent); }
 .field textarea, .tool-panel textarea { min-height: 114px; resize: vertical; }
-.field input::placeholder, .field textarea::placeholder { color: var(--quiet); opacity: .9; }
+.field input::placeholder, .field textarea::placeholder { color: var(--quiet); opacity: 1; }
 .field small, .field .hint { color: var(--quiet); font-size: .72rem; line-height: 1.5; }
 .field input[type="checkbox"], .field input[type="radio"] { width: 18px; height: 18px; min-height: 0; accent-color: var(--accent); }
 .tool-panel input[type="file"] { width: 100%; padding: 14px; border: 1px dashed var(--line-strong); border-radius: 10px; color: var(--muted); background: var(--surface-soft); font-size: .84rem; }
