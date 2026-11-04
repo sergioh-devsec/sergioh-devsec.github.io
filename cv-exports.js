@@ -16,7 +16,7 @@ export const CV_TEMPLATES = Object.freeze(['sobria', 'tecnica', 'ejecutiva']);
 const TEMPLATES = Object.freeze({
   sobria: { accent: '334155', font: 'Arial', bodyFont: 'Arial', bodySize: 10.5, leading: 1.42, pdfBody: 'F1', pdfBold: 'F2', pdfTitle: 'F2', titleSize: 27, sectionSize: 10.5, order: ['summary', 'experiences', 'education', 'skills'] },
   tecnica: { accent: '126177', font: 'Courier New', bodyFont: 'Arial', bodySize: 10.5, leading: 1.42, pdfBody: 'F1', pdfBold: 'F2', pdfTitle: 'F5', titleSize: 25, sectionSize: 10, order: ['summary', 'skills', 'experiences', 'education'] },
-  ejecutiva: { accent: '8A6535', font: 'Times New Roman', bodyFont: 'Times New Roman', bodySize: 11, leading: 1.36, pdfBody: 'F4', pdfBold: 'F3', pdfTitle: 'F3', titleSize: 29, sectionSize: 11, order: ['summary', 'experiences', 'skills', 'education'] },
+  ejecutiva: { accent: '5C48A0', font: 'Times New Roman', bodyFont: 'Times New Roman', bodySize: 11, leading: 1.36, pdfBody: 'F4', pdfBold: 'F3', pdfTitle: 'F3', titleSize: 29, sectionSize: 11, order: ['summary', 'experiences', 'skills', 'education'] },
 });
 const EXPORT_COPY = Object.freeze({
   es: { locale: 'es-MX', labels: { summary: 'Perfil profesional', experiences: 'Experiencia profesional', skills: 'Competencias', education: 'Formación' }, present: 'Actualidad', page: 'Página', of: 'de', cv: 'CV', letter: 'Carta de presentación', producer: 'Generador local de CV' },

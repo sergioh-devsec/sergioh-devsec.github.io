@@ -1,9 +1,9 @@
 import { analyzeCv, improveActionText, extractJobKeywords, findingPresentation } from './cv-diagnostics.js?v=cv23';
-import { buildPlainText, buildCvPdf, buildDocx, buildCoverLetterDocx, normalizeCvProfile, pdfCharacterIssues } from './cv-exports.js?v=cv23';
+import { buildPlainText, buildCvPdf, buildDocx, buildCoverLetterDocx, normalizeCvProfile, pdfCharacterIssues } from './cv-exports.js?v=2053bdee3ebd';
 import { readCvFile } from './cv-import.js';
 import { parseCvText, composeAchievement, readinessFor, buildCvProject, parseCvProject } from './cv-workflow.js?v=cv23';
 import { beginCheckout, verifyCheckout, supportUrl } from './cv-checkout.js';
-import { mountPageVoice } from './page-voice.js?v=voice-10';
+import { mountPageVoice } from './page-voice.js?v=voice-36';
 
 const cvVoice=mountPageVoice({page:'cv',initialKey:'welcome2'});
 

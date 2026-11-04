@@ -67,7 +67,7 @@ const $=id=>document.getElementById(id),node=(tag,text)=>{const n=document.creat
 const t=(key,values={})=>window.I18N.t(key,values);
 // Only a same-origin module is loaded. Neither the tool input nor its result is passed to a server.
 let toolsVoice=null;
-const reciprocityReady=Promise.all([import('./reciprocity.js?v=voice-5'),import('./page-voice.js?v=voice-10')]).then(([{createReciprocity},{mountPageVoice}])=>{const voice=mountPageVoice({page:'tools',initialKey:'automationTerm'});toolsVoice=voice;return createReciprocity({translate:t,links:()=>window.PORTFOLIO.supportLinks,voice});}).catch(()=>null);
+const reciprocityReady=Promise.all([import('./reciprocity.js?v=voice-5'),import('./page-voice.js?v=voice-36')]).then(([{createReciprocity},{mountPageVoice}])=>{const voice=mountPageVoice({page:'tools',initialKey:'automationTerm'});toolsVoice=voice;return createReciprocity({translate:t,links:()=>window.PORTFOLIO.supportLinks,voice});}).catch(()=>null);
 const errorKeys=new Map([
  ['El archivo supera el tamaño permitido.','toolsF_errorSize'],['Usa un archivo de texto UTF-8, no un documento binario.','toolsF_errorBinary'],
  ['Comillas CSV inválidas.','toolsF_errorQuotes'],['Texto fuera de comillas CSV.','toolsF_errorOutsideQuotes'],['Hay una celda con comillas sin cerrar.','toolsF_errorUnclosedQuotes'],

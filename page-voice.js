@@ -1,6 +1,7 @@
 import { createRoomVoice, ROOM_VOICES } from './room-voice.js?v=voice-5';
-import { mountAxiomPresence } from './axiom-presence.js?v=living-10';
+import { mountAxiomPresence } from './axiom-presence.js?v=voice-36';
 import { mountAxiomPortrait } from './axiom-portrait.js?v=living-10';
+import { shouldShowSpeechFallback } from './axiom-interaction.js?v=voice-36';
 
 export const VOICE_PREFERENCE = 'cyberserch-voice-session-v1';
 export const VOICE_REACTIONS = Object.freeze({
@@ -73,6 +74,10 @@ export function createVoiceHub({ createPlayer = createRoomVoice, read = readPref
     if (destroyed || !Object.hasOwn(ROOM_VOICES, key) || (!manual && !preferred)) return Promise.resolve(false);
     clearPending(); return start(key, manual);
   }
+  function describe(key) {
+    if (destroyed || doc?.hidden || snapshot.playing || snapshot.loading || !Object.hasOwn(ROOM_VOICES, key)) return false;
+    currentKey = key; publish({ caption: captionFor(key) }); return true;
+  }
   function cue(key, { priority = 2, maxAge = 15000, cooldown = 12000 } = {}) {
     if (destroyed || !preferred || doc?.hidden || !Object.hasOwn(ROOM_VOICES, key)) return Promise.resolve(false);
     cooldown = Number.isFinite(cooldown) ? Math.max(0, Math.min(120000, cooldown)) : 12000;
@@ -113,7 +118,7 @@ export function createVoiceHub({ createPlayer = createRoomVoice, read = readPref
     return play(key, { manual: false });
   }
   const hub = {
-    play, cue, react, begin,
+    play, cue, react, begin, describe,
     toggle(key = currentKey) { return preferred && !snapshot.error ? (disable(), Promise.resolve(false)) : play(key); },
     disable, stop,
     subscribe(listener) { listeners.add(listener); listener({ ...snapshot, pendingKey: pending?.key || null }); return () => listeners.delete(listener); },
@@ -209,7 +214,8 @@ export function mountPageVoice({ initialKey = 'welcome2', document: doc = global
     panel.classList.toggle('is-speaking', value.playing); panel.classList.toggle('is-awake', value.preferred);
     panel.classList.toggle('has-error', value.error);
     avatar.setAttribute('aria-label', voiceText('voice_greet')); avatar.title = voiceText('voice_greet');
-    bubble.textContent = value.caption; bubble.hidden = !value.playing || !value.caption;
+    bubble.textContent = value.caption;
+    bubble.hidden = !shouldShowSpeechFallback(value, Boolean(value.caption));
     state.textContent = value.error ? voiceText('voice_error') : '';
   });
   for (const dialog of doc.querySelectorAll('dialog')) {

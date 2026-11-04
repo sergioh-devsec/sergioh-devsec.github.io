@@ -7,7 +7,7 @@
 .cs-store-teaser-title{margin:0;font:750 clamp(22px,2.6vw,31px)/1.16 system-ui,sans-serif;letter-spacing:-.025em;color:var(--store-ink);text-wrap:balance}
 .cs-store-teaser-detail{margin:10px 0 0;font:400 16px/1.6 system-ui,sans-serif;color:var(--store-muted)}
 .cs-store-teaser-action{display:inline-flex;align-items:center;justify-content:center;min-height:48px;min-width:44px;flex-shrink:0;padding:13px 22px;border:1px solid var(--store-line);border-radius:14px;background:var(--store-button);color:var(--store-ink);font:750 15px/1.5 system-ui,sans-serif;text-decoration:none;text-align:center;touch-action:manipulation;transition:transform 160ms ease-out,background-color 160ms ease-out;}
-.cs-store-link:focus-visible,.cs-store-teaser-action:focus-visible{outline:3px solid #d49540;outline-offset:4px}
+.cs-store-link:focus-visible,.cs-store-teaser-action:focus-visible{outline:3px solid var(--accent,var(--cyan,#6de7c8));outline-offset:4px}
 html[data-mode="oficina"] .cs-store-teaser{--store-ink:#153e3f;--store-muted:#385e5a;--store-line:#6eaaa1;--store-glass:rgba(231,247,240,.66);--store-button:rgba(110,205,187,.22)}
 @supports(backdrop-filter:blur(1px)){.cs-store-teaser{backdrop-filter:blur(10px)}}
 @media(hover:hover) and (pointer:fine){.cs-store-teaser-action:hover{transform:translateY(-2px);background:rgba(108,219,199,.27)}.cs-store-link:hover{text-decoration-thickness:2px}}

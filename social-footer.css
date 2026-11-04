@@ -11,3 +11,6 @@ footer>.cs-social-footer>.cs-social-item{display:inline-flex!important;align-ite
 html[data-motion=paused] .cs-social-item svg,.motion-paused .cs-social-item svg{transition:none!important;transform:none!important}
 @media(prefers-reduced-motion:reduce){.cs-social-footer .cs-social-item,.cs-social-footer .cs-social-item svg{transition:none!important;transform:none!important}}
 @media print{footer>.cs-social-footer{display:none!important}}
+
+/* Keep the shared 3D world unchanged while matching all other page accents. */
+body:not(:has(#axiom-container)) .cs-social-footer>a:focus-visible{outline-color:var(--accent,var(--cyan,#14766b))}

@@ -1,4 +1,4 @@
-import { getPageVoice, voiceText, bindVoiceButton } from './page-voice.js?v=voice-10';
+import { getPageVoice, voiceText, bindVoiceButton } from './page-voice.js?v=voice-36';
 import { ROOM_VOICES } from './room-voice.js?v=voice-5';
 
 // A single fixed service endpoint. No keys and no visitor-selected URLs.

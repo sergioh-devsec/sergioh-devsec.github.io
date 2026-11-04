@@ -1,4 +1,5 @@
 import { supportUrl } from './reciprocity.js?v=voice-5';
+import { shouldShowSpeechFallback } from './axiom-interaction.js?v=voice-36';
 
 // Existing public destinations. No visitor text, payment processing or network calls.
 const DEFAULT_LINKS = Object.freeze({
@@ -18,7 +19,7 @@ const mounts = new WeakMap();
 export function mountAxiomSupport({ hub, document: doc = globalThis.document,
   now = Date.now, hour = () => new Date().getHours(), schedule = setTimeout, cancel = clearTimeout } = {}) {
   if (!hub || !doc?.body || mounts.has(doc)) return mounts.get(doc) || (() => {});
-  const start = now(); let last = start - 45000, dismissedUntil = 0, replies = 0, count = 0, timer, destroyed = false;
+  const start = now(); let last = start - 45000, dismissedUntil = 0, replies = 0, count = 0, timer, destroyed = false, active = false;
   const t = key => {
     const lang = String(doc.documentElement.lang).startsWith('en') ? 'en' : 'es';
     return globalThis.window?.TRANSLATIONS?.[lang]?.[key] || globalThis.window?.TRANSLATIONS?.es?.[key] || key;
@@ -43,26 +44,33 @@ export function mountAxiomSupport({ hub, document: doc = globalThis.document,
     patreon.textContent = t('presence_patreon'); close.setAttribute('aria-label', t('presence_closeSupport'));
   }
   function quiet() { return doc.hidden || doc.querySelector('dialog[open],#analytics-preferences:not([hidden])'); }
+  function syncPanel() {
+    const state = hub.state || hub;
+    panel.hidden = Boolean(!active || quiet() || !shouldShowSpeechFallback(state));
+  }
   function check() {
     timer = undefined; if (destroyed) return;
     const time = now(), editing = Boolean(doc.activeElement?.matches?.('input,textarea,select,[contenteditable="true"]'));
-    if (panel.hidden && count < 4 && mayInvite({ elapsed: time-start, sinceLast: time-last, usefulReplies: replies,
-      visible: !quiet(), busy: hub.playing || hub.loading || !hub.preferred || hub.state?.error,
+    if (active && time - last > 30000) { active = false; panel.hidden = true; }
+    if (!active && count < 4 && mayInvite({ elapsed: time-start, sinceLast: time-last, usefulReplies: replies,
+      visible: !quiet(), busy: hub.playing || hub.loading,
       editing, dismissedUntil, now: time })) {
-      render(); panel.hidden = false; last = time; replies = 0;
-      if (!String(doc.documentElement.lang).startsWith('en')) void hub.cue(INVITATIONS[count % INVITATIONS.length], { priority: 1, maxAge: 1800, cooldown: 65000 });
+      render(); active = true; syncPanel(); last = time; replies = 0;
+      if (hub.preferred && !hub.state?.error && !String(doc.documentElement.lang).startsWith('en')) void hub.cue(INVITATIONS[count % INVITATIONS.length], { priority: 1, maxAge: 1800, cooldown: 65000 });
       count++;
     }
+    syncPanel();
     timer = schedule(check, 5000);
   }
-  function dismiss() { panel.hidden = true; dismissedUntil = now() + 180000; }
+  function dismiss() { active = false; panel.hidden = true; dismissedUntil = now() + 180000; }
   function speech(event) { if (event.detail?.phase === 'end' && event.detail.key && !INVITATIONS.includes(event.detail.key)) replies++; }
   function visibility() { if (doc.hidden) panel.hidden = true; }
   close.addEventListener('click', dismiss); paypal.addEventListener('click', dismiss); patreon.addEventListener('click', dismiss);
   doc.addEventListener('axiom:speech', speech); doc.addEventListener('visibilitychange', visibility);
   doc.addEventListener('portfolio:language', render);
+  const unsubscribe = hub.subscribe(syncPanel);
   function destroy() {
-    if (destroyed) return; destroyed = true; cancel(timer);
+    if (destroyed) return; destroyed = true; cancel(timer); unsubscribe();
     doc.removeEventListener('axiom:speech', speech); doc.removeEventListener('visibilitychange', visibility);
     doc.removeEventListener('portfolio:language', render); doc.defaultView?.removeEventListener('pagehide', destroy);
     panel.remove(); mounts.delete(doc);

@@ -1,11 +1,11 @@
-import { initRoomAssistant } from './room-assistant.js?v=guide-21';
+import { initRoomAssistant } from './room-assistant.js?v=voice-36';
 import { createModeManager } from './modeManager.js';
 import { STATIONS } from './stationsConfig.js?v=furniture-10';
 import { validateConsent, consentHash, buildConsentPdf, CONSENT_SCHEMA } from './dentalConsent.js';
 import { professionConfig, professionSchema, validateProfessionDocument, professionDocumentHash, professionPreview, buildProfessionPdf } from './professionDocuments.js';
 import { createReciprocity } from './reciprocity.js?v=voice-5';
 import { mountProWaitlist } from './pro-waitlist.js';
-import { getPageVoice, mountPageVoice } from './page-voice.js?v=voice-10';
+import { getPageVoice, mountPageVoice } from './page-voice.js?v=voice-36';
 
 // Documents stay local. Only explicitly submitted service questions reach the fixed AI endpoint.
 const $ = id => document.getElementById(id);

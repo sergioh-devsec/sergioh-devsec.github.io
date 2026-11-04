@@ -1,5 +1,5 @@
 import { resolveLanguage, resolveMode } from './modeManager.js';
-import { mountPageVoice } from './page-voice.js';
+import { mountPageVoice } from './page-voice.js?v=voice-36';
 
 export const STORE_HOST = 'cyberserch.gumroad.com';
 export function purchaseUrl(value, source = 'tienda') {

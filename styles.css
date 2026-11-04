@@ -14,7 +14,7 @@
   --accent-bright: #146a60;
   --accent-wash: #e0eee5;
   --accent-ink: #ffffff;
-  --gold: #b18b4d;
+  --gold: #5c48a0;
   --office-opacity: 1;
   --lab-opacity: 0;
   --room-bg: #f7f7ef;
@@ -41,7 +41,7 @@
   --accent-bright: #88f7de;
   --accent-wash: #183e44;
   --accent-ink: #092b2e;
-  --gold: #dfbd7c;
+  --gold: #c3b3ff;
   --office-opacity: 0;
   --lab-opacity: 1;
   --room-bg: #0c2031;
@@ -253,7 +253,7 @@ html[data-mode="oficina"] .skin-laboratorio .furniture-motion,html[data-mode="la
 .tool-panel legend { padding: 0 6px; font-weight: 600; }
 .tool-panel button[type="submit"] { margin-top: 20px; }
 .tool-notice { padding: 13px 15px; margin: 16px 0; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); background: var(--surface-soft); font-size: .8rem; line-height: 1.6; }
-.tool-notice.error, [role="alert"] { border-color: #b76f59; color: var(--ink); }
+.tool-notice.error, [role="alert"] { border-color: #b45b75; color: var(--ink); }
 .tool-notice.success { border-color: var(--accent); }
 .document-preview { margin-top: 22px; padding: 25px; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--surface-raised); box-shadow: 0 10px 22px -20px #06201f75; overflow-wrap: anywhere; white-space: pre-wrap; font-family: var(--font); font-size: .88rem; line-height: 1.75; }
 .document-preview h3 { font-size: 1.25rem; margin-bottom: 17px; }
@@ -281,8 +281,8 @@ html[data-mode="oficina"] .skin-laboratorio .furniture-motion,html[data-mode="la
 .extra-fields summary, .technical-details summary { min-height: 44px; display: list-item; padding: 10px 0; font-size: .87rem; font-weight: 650; cursor: pointer; }
 .extra-fields[open] > .form-grid, .technical-details[open] > p { margin-top: 16px; }
 .technical-details h4 { margin-bottom: 12px; }
-.field-error { min-height: 1em; color: #a23e2e !important; }
-html[data-mode="laboratorio"] .field-error { color: #ffb29c !important; }
+.field-error { min-height: 1em; color: #9c3158 !important; }
+html[data-mode="laboratorio"] .field-error { color: #ffb4c9 !important; }
 .sample-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 18px 0 24px; }
 .sample-link { display: flex; align-items: center; min-height: 65px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-soft); text-decoration: none; font-weight: 650; font-size: .83rem; }
 .sample-link:hover { border-color: var(--accent); background: var(--accent-wash); }

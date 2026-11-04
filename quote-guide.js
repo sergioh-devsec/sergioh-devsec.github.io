@@ -7,7 +7,7 @@
   let step=1,kind='landing',hub;
   function render(){line.textContent=I.t('quoteGuide'+step);root.querySelectorAll('[data-guide-step]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.guideStep)===step)));hub?.refresh();}
   voice.disabled=true;
-  import('./page-voice.js?v=voice-10').then(({mountPageVoice,bindVoiceButton,voiceText})=>{
+  import('./page-voice.js?v=voice-36').then(({mountPageVoice,bindVoiceButton,voiceText})=>{
     hub=mountPageVoice({page:'quote',initialKey:'webTerm'});voice.disabled=false;
     voice.removeAttribute('data-i18n');
     bindVoiceButton(voice,{hub,key:()=>topics[kind],iconOnly:true});
