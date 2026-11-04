@@ -3445,3 +3445,25 @@ window.TRANSLATIONS = {
     "cvQ_exampleJob": "Requirements: Excel, SQL and Power BI. Responsibilities: data analysis and inventory monitoring."
   }
 };
+
+// Explicit visitor-initiated sharing; public canonical URL only.
+Object.assign(window.TRANSLATIONS.es, {
+  shareSiteAction: 'Compartir CyberSerch',
+  shareSiteTitle: 'CyberSerch | Software Engineer',
+  shareSiteText: 'Herramientas, recursos digitales y soluciones para tu próxima idea.',
+  shareSiteShared: 'Tu enlace está listo para compartir.',
+  shareSiteCopied: 'Enlace copiado. Ya puedes pegarlo donde quieras.',
+  shareSiteManual: 'No pude copiar automáticamente. Puedes seleccionar este enlace.',
+  shareSiteLinkLabel: 'Enlace del sitio',
+  shareSiteBusy: 'Preparando…'
+});
+Object.assign(window.TRANSLATIONS.en, {
+  shareSiteAction: 'Share CyberSerch',
+  shareSiteTitle: 'CyberSerch | Software Engineer',
+  shareSiteText: 'Tools, digital resources and solutions for your next idea.',
+  shareSiteShared: 'Your link is ready to share.',
+  shareSiteCopied: 'Link copied. You can paste it wherever you like.',
+  shareSiteManual: 'Automatic copying was unavailable. You can select this link.',
+  shareSiteLinkLabel: 'Website link',
+  shareSiteBusy: 'Preparing…'
+});
