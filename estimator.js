@@ -228,7 +228,7 @@
     if(contactBusy||!key)return;
     const attach = $('quote-attach-summary').checked;
     if(attach&&$('quote-download').disabled){status.textContent=tx('Revisa las cantidades o desmarca la estimación antes de enviar.','Check the estimate quantities or uncheck the estimate before sending.');return;}
-    if($('contact-website').value||!form.reportValidity())return;
+    if($('contact-website').value||$('contact-botcheck').checked||!form.reportValidity())return;
     const fields={name:$('contact-name').value.trim(),email:$('contact-email').value.trim(),message:$('contact-goal').value.trim(),consent:$('contact-consent').checked?'yes':'no',botcheck:false};
     if (attach) fields.estimate = brief(false);
     contactBusy=true;button.disabled=true;form.setAttribute('aria-busy','true');status.textContent=tx('Enviando tu consulta…','Sending your enquiry…');

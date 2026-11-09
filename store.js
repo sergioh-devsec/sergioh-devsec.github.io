@@ -13,8 +13,8 @@ export function purchaseUrl(value, source = 'tienda') {
 }
 export function canPurchase(product) { return product?.status === 'available' && purchaseUrl(product.checkout, product.slug) !== null; }
 export function interviewOrigin(search) {
-  const origin = new URLSearchParams(search).get('origen');
-  return ['cv', 'tienda', 'redes'].includes(origin) ? origin : 'tienda';
+  const origins = new URLSearchParams(search).getAll('origen');
+  return origins.length === 1 && ['cv', 'tienda', 'redes', 'portada'].includes(origins[0]) ? origins[0] : 'tienda';
 }
 function productCampaign(product, origin, fallback) {
   return product.id === 'entrevista' ? `entrevista-${origin}` : fallback;

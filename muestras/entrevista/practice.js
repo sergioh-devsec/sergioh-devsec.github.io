@@ -5,7 +5,7 @@
   const params = new URLSearchParams(location.search);
   const mode = params.get('modo') === 'laboratorio' ? 'laboratorio' : 'oficina';
   const origins = params.getAll('origen');
-  const source = origins.length === 1 && ['cv', 'tienda', 'redes'].includes(origins[0]) ? origins[0] : null;
+  const source = origins.length === 1 && ['cv', 'tienda', 'redes', 'portada'].includes(origins[0]) ? origins[0] : null;
 
   function contextualUrl(path, destinationLanguage) {
     const url = new URL(path, location.href);

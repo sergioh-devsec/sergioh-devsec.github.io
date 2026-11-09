@@ -1,0 +1,33 @@
+.cs-interview-promo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: clamp(16px, 2.6vw, 30px);
+}
+
+.cs-interview-promo-mark {
+  display: grid;
+  place-items: center;
+  width: clamp(60px, 8vw, 92px);
+  aspect-ratio: 1;
+  border: 1px solid var(--store-line);
+  border-radius: 14px;
+  background: var(--store-button);
+  color: var(--store-ink);
+  font: 700 clamp(24px, 4vw, 38px)/1 system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.cs-interview-promo-mark small { font-size: .5em; }
+.cs-interview-promo .cs-store-teaser-detail { margin-top: 6px; }
+.cs-interview-promo-actions { display: grid; justify-items: stretch; }
+.cs-interview-promo-shop { justify-content: center; color: var(--store-ink); font-size: .9rem; text-align: center; }
+
+@media (max-width: 760px) {
+  .cs-interview-promo { grid-template-columns: auto minmax(0, 1fr); align-items: center; }
+  .cs-interview-promo-actions { grid-column: 1 / -1; }
+}
+
+@media (max-width: 380px) {
+  .cs-interview-promo { padding-inline: 15px; gap: 12px; }
+  .cs-interview-promo-mark { width: 49px; }
+}
