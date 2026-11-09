@@ -103,7 +103,7 @@ function renderInterviewResource() {
  const language = document.documentElement.lang.startsWith('en') ? 'en' : 'es';
  const mode = new URLSearchParams(location.search).get('modo') === 'laboratorio' ? 'laboratorio' : 'oficina';
  const query = new URLSearchParams({ idioma: language, modo: mode, origen: 'cv' });
- const sample = language === 'en' ? 'index-en.html' : 'index.html';
+ const sample = language === 'en' ? 'index-en' : '';
  const resource = $('cv-interview-resource');
  for (const label of resource.querySelectorAll('[data-en]')) label.textContent = label.dataset[language];
  $('cv-interview-sample').href = `muestras/entrevista/${sample}?${query}`;

@@ -149,11 +149,11 @@
   function brief(includeIdea = true){const r=estimate(kind,selected);return ['CYBERSERCH · '+tx('Estimación orientativa','Indicative estimate'),label(packages[kind].label),label(packages[kind].scope),...(includeIdea ? [tx('Mi idea: ','My idea: ')+(($('quote-contact-form').hidden?$('local-goal'):$('contact-goal'))?.value.trim().slice(0,2000)||tx('Por definir','To be defined'))] : []),...r.lines.map(l=>`${l.id==='base'?tx('Base','Base'):label(packages[kind].options[l.id][2])}: ${l.quantity} × ${money(l.unit)} = ${money(l.total)}`),tx('Subtotal estimado: ','Estimated subtotal: ')+money(r.total),tx('Rango orientativo: ','Indicative range: ')+money(r.total)+' – '+money(r.upper),tax(),timing(),I.t('quoteAvailability'),I.t('quoteTimeNote'),I.t('quoteEvaluation'),I.t('quoteMargin'),...(selected.domain ? [label(explanations.domain)] : []),tx('No es una oferta final. Registro y renovación del dominio, hosting, licencias, consumo de APIs y recursos de voz/imagen se cotizan aparte. Alcance y plazo se confirman antes del pago.','Not a final offer. Domain registration and renewal, hosting, licenses, API usage and voice/image assets are separate. Scope and timeline confirmed before payment.')].join('\n');}
   function update(){const r=estimate(kind,selected),lines=$('quote-lines');lines.replaceChildren();for(const l of r.lines){const li=S.el('li');li.append(S.el('span','',l.id==='base'?label(packages[kind].label):`${label(packages[kind].options[l.id][2])} × ${l.quantity}`),S.el('strong','',money(l.total)));lines.append(li);}$('quote-total').textContent=money(r.total);$('quote-range').textContent=tx('Rango orientativo: ','Indicative range: ')+money(r.total)+' – '+money(r.upper);$('quote-tax').textContent=tax();$('quote-time').textContent=timing();$('quote-summary').value=brief();$('quote-contact-summary').value=brief(false);}
   const sampleLinks = {
-    landing: 'muestras/plantillas/index.html',
-    information: 'portafolio.html#cases',
-    custom: 'index.html#room-scene',
-    automation: 'herramientas.html#csv',
-    security: 'herramientas.html#logs',
+    landing: 'muestras/plantillas/',
+    information: 'portafolio#cases',
+    custom: './#room-scene',
+    automation: 'herramientas#csv',
+    security: 'herramientas#logs',
   };
   function renderDelivery() {
     const content = S.quoteCopy(I.language);

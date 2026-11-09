@@ -2,11 +2,11 @@
   'use strict';
 
   const products = new Map([
-    ['entrevista', 'entrevista-express.html'],
-    ['negocio', 'ordena-tu-negocio.html'],
-    ['soc', 'laboratorio-soc-inicial.html'],
-    ['plantillas', 'paginas-para-tres-negocios.html'],
-    ['ia-local', 'ia-local-privacidad.html#requisitos'],
+    ['entrevista', 'entrevista-express'],
+    ['negocio', 'ordena-tu-negocio'],
+    ['soc', 'laboratorio-soc-inicial'],
+    ['plantillas', 'paginas-para-tres-negocios'],
+    ['ia-local', 'ia-local-privacidad#requisitos'],
   ]);
   const query = new URLSearchParams(location.search);
   const mode = query.get('modo') === 'laboratorio' ? 'laboratorio' : 'oficina';
@@ -34,7 +34,7 @@
   }
 
   for (const link of document.querySelectorAll('[data-sample-english]')) {
-    link.href = contextualUrl('index-en.html', 'en');
+    link.href = contextualUrl('index-en', 'en');
   }
   if (languageToggle) {
     if (preferred !== pageLanguage()) languageToggle.click();

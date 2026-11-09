@@ -24,11 +24,11 @@ function contextQuery(language, mode) {
   return new URLSearchParams({ idioma: language === 'en' ? 'en' : 'es', modo: mode === 'laboratorio' ? 'laboratorio' : 'oficina' });
 }
 export function professionalsUrl(language, mode) {
-  return `profesionistas.html?${contextQuery(language, mode)}`;
+  return `profesionistas?${contextQuery(language, mode)}`;
 }
 function sampleUrl(product, language, mode, origin) {
   const hasEnglishPage = product.id === 'entrevista' || product.id === 'negocio';
-  const path = language === 'en' && hasEnglishPage ? product.sample.replace(/index\.html$/, 'index-en.html') : product.sample;
+  const path = language === 'en' && hasEnglishPage ? `${product.sample}index-en` : product.sample;
   const query = contextQuery(language, mode);
   if (product.id === 'entrevista') query.set('origen', origin);
   return `${path}?${query}`;

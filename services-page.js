@@ -45,7 +45,7 @@ function apply(root=document){
  for(const attr of ['aria-label','alt','title','placeholder'])root.querySelectorAll(`[data-i18n-${attr}]`).forEach(node=>{const key=node.getAttribute(`data-i18n-${attr}`);if(Object.hasOwn(COPY.es,key))node.setAttribute(attr,t(key));});
  root.querySelectorAll('[data-page-i18n]').forEach(node=>{node.textContent=pageText(node.dataset.pageI18n);});
  const sample=root.querySelector('[data-creator-bio-sample]');
- if(sample)sample.href=language==='en'?'muestras/creadoras/index-en.html':'muestras/creadoras/';
+ if(sample)sample.href=language==='en'?'muestras/creadoras/index-en':'muestras/creadoras/';
  const qr=document.getElementById('instagram-qr');if(qr)qr.alt=language==='en'?'QR code for the cyberserch.mx Instagram profile':'Código QR del perfil de Instagram cyberserch.mx';
 }
 function setLanguage(value,persist=true){

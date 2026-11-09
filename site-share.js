@@ -1,7 +1,7 @@
 // Sharing is always an explicit visitor action. Never share editor data or URL parameters.
 export const SITE_URL = 'https://cyberserch.com/';
-export const CREATORS_URL = 'https://cyberserch.com/portafolio.html#creadoras';
-export const CV_URL = 'https://cyberserch.com/cv.html';
+export const CREATORS_URL = 'https://cyberserch.com/portafolio#creadoras';
+export const CV_URL = 'https://cyberserch.com/cv';
 
 const shareTargets = new Map([
   ['site', {url: SITE_URL, keyPrefix: 'shareSite'}],

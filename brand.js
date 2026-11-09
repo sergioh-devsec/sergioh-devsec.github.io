@@ -2,14 +2,19 @@
 (() => {
  'use strict';
  const menus=Array.from(document.querySelectorAll('.cs-menu'));
+ const base=new URL('.',document.currentScript?.src||location.href);
+ function localRoute(url){
+  if(url.origin!==base.origin||!url.pathname.startsWith(base.pathname))return null;
+  return url.pathname.slice(base.pathname.length).replace(/(^|\/)index\.html$/,'$1').replace(/\.html$/,'');
+ }
  const labels={
-  'index.html':['Inicio · La Oficina','Home · The Office'],
-  'cotizador.html':['Impulsa tu negocio','Boost your business'],
-  'cv.html':['Crear mi CV','Build my CV'],
-  'herramientas.html':['Herramientas gratuitas','Free tools'],
-  'portafolio.html':['Servicios y casos','Services and case studies'],
-  'axiom-3d/index.html':['Conoce a Axiom en 3D','Meet Axiom in 3D'],
-  'core-explorer.html':['Núcleo de IA interactivo','Interactive AI core'],
+  '':['Inicio · La Oficina','Home · The Office'],
+  'cotizador':['Impulsa tu negocio','Boost your business'],
+  'cv':['Crear mi CV','Build my CV'],
+  'herramientas':['Herramientas gratuitas','Free tools'],
+  'portafolio':['Servicios y casos','Services and case studies'],
+  'axiom-3d/':['Conoce a Axiom en 3D','Meet Axiom in 3D'],
+  'core-explorer':['Núcleo de IA interactivo','Interactive AI core'],
  };
  function english(){return document.documentElement.lang.toLowerCase().startsWith('en');}
  function render(){
@@ -21,19 +26,20 @@
   for(const menu of menus){const summary=menu.querySelector('summary');if(summary)summary.textContent=en?'Explore':'Explorar';
    menu.querySelector('nav')?.setAttribute('aria-label',en?'Explore CyberSerch.mx':'Explorar CyberSerch.mx');
    for(const link of menu.querySelectorAll('a[href]')){
-    const url=new URL(link.getAttribute('href'),location.href),path=url.pathname;
-    const key=Object.keys(labels).sort((a,b)=>b.length-a.length).find(key=>path.endsWith('/'+key));if(key)link.textContent=labels[key][en?1:0];
-    const here=location.pathname.endsWith('/')?location.pathname+'index.html':location.pathname;
-    if(path===here)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
+    const route=localRoute(new URL(link.href));
+    if(route!==null&&Object.hasOwn(labels,route))link.textContent=labels[route][en?1:0];
+    if(route!==null&&route===localRoute(new URL(location.href)))link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
    }
    const nav=menu.querySelector('nav');
-   let core=Array.from(nav?.querySelectorAll('a[href]')||[]).find(link=>new URL(link.href,location.href).pathname.endsWith('/core-explorer.html'));
-   if(nav&&!core){core=document.createElement('a');const homeLink=Array.from(nav.querySelectorAll('a[href]')).find(link=>new URL(link.href,location.href).pathname.endsWith('/index.html'));core.href=new URL('core-explorer.html',homeLink?.href||location.href).href;nav.append(core);}
-   if(core){core.classList.add('cs-3d-link');core.textContent=labels['core-explorer.html'][en?1:0];const home=Array.from(nav.querySelectorAll('a[href]')).find(link=>new URL(link.href,location.href).pathname.endsWith('/index.html'));const next=home?home.nextSibling:nav.firstChild;if(next!==core)nav.insertBefore(core,next);}
-   const world=Array.from(nav?.querySelectorAll('a[href]')||[]).find(link=>new URL(link.href,location.href).pathname.endsWith('/axiom-3d/index.html'));
+   const navLinks=Array.from(nav?.querySelectorAll('a[href]')||[]);
+   const linkFor=route=>navLinks.find(link=>localRoute(new URL(link.href))===route);
+   const home=linkFor('');
+   let core=linkFor('core-explorer');
+   if(nav&&!core){core=document.createElement('a');core.href=new URL('core-explorer',base).href;nav.append(core);}
+   if(core){core.classList.add('cs-3d-link');core.textContent=labels['core-explorer'][en?1:0];const next=home?home.nextSibling:nav.firstChild;if(next!==core)nav.insertBefore(core,next);}
+   const world=linkFor('axiom-3d/');
    if(world){
     world.classList.add('cs-3d-link');
-    const home=Array.from(nav.querySelectorAll('a[href]')).find(link=>link!==world&&new URL(link.href,location.href).pathname.endsWith('/index.html'));
     const next=core?core.nextSibling:home?home.nextSibling:nav.firstChild;
     if(next!==world)nav.insertBefore(world,next);
    }

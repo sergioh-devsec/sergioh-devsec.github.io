@@ -38,9 +38,9 @@
     shop.textContent = words.shop;
 
     const context = new URLSearchParams({ idioma: language, modo: mode });
-    shop.href = `tienda.html?${context}`;
+    shop.href = `tienda?${context}`;
     context.set('origen', 'portada');
-    practice.href = `muestras/entrevista/${language === 'en' ? 'index-en.html' : ''}?${context}`;
+    practice.href = `muestras/entrevista/${language === 'en' ? 'index-en' : ''}?${context}`;
   }
 
   render();

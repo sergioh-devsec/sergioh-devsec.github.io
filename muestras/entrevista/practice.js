@@ -17,11 +17,11 @@
   for (const link of document.querySelectorAll('[data-interview-language]')) {
     const targetLanguage = link.dataset.interviewLanguage;
     if (targetLanguage !== 'es' && targetLanguage !== 'en') continue;
-    link.href = contextualUrl(targetLanguage === 'en' ? 'index-en.html' : 'index.html', targetLanguage);
+    link.href = contextualUrl(targetLanguage === 'en' ? 'index-en' : './', targetLanguage);
   }
   const product = document.querySelector('[data-product-return="entrevista"]');
   if (product) {
-    product.href = contextualUrl('../../entrevista-express.html', language);
+    product.href = contextualUrl('../../entrevista-express', language);
     product.textContent = product.dataset[language];
     product.lang = language;
   }

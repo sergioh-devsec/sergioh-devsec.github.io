@@ -1,0 +1,4 @@
+Contact: https://cyberserch.com/informacion#seguridad
+Expires: 2027-05-09T00:00:00Z
+Preferred-Languages: es, en
+Canonical: https://cyberserch.com/.well-known/security.txt

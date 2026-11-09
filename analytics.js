@@ -57,7 +57,7 @@
   const panel=create('aside','analytics-consent');panel.id='analytics-preferences';panel.setAttribute('aria-labelledby','analytics-title');panel.setAttribute('data-clarity-mask','true');
   const heading=create('h2');heading.id='analytics-title';heading.tabIndex=-1;
   const legal=create('nav','analytics-legal'),privacyNotice=create('a'),terms=create('a');
-  privacyNotice.href='informacion.html#privacidad';terms.href='informacion.html#condiciones';legal.append(privacyNotice,terms);
+  privacyNotice.href='informacion#privacidad';terms.href='informacion#condiciones';legal.append(privacyNotice,terms);
   const detail=create('details'),summary=create('summary'),explanation=create('p'),privacy=create('a');
   privacy.href='https://privacy.microsoft.com/privacystatement';privacy.target='_blank';privacy.rel='noopener noreferrer';
   detail.append(summary,explanation,privacy);
@@ -95,8 +95,8 @@
     if(element.matches('[data-open-axiom]'))controller.track('axiom_open');
     if(element.tagName==='A'){
       let url;try{url=new URL(element.href,location.href);}catch{return;}
-      if(url.origin===location.origin&&url.pathname.endsWith('/herramientas.html'))controller.track('open_local_tools');
-      if(url.origin===location.origin&&url.pathname.endsWith('/cotizador.html'))controller.track('open_estimator');
+      if(url.origin===location.origin&&['/herramientas','/herramientas.html'].includes(url.pathname))controller.track('open_local_tools');
+      if(url.origin===location.origin&&isEstimatorPath(url.pathname))controller.track('open_estimator');
       if(url.hostname==='www.paypal.com'&&url.pathname==='/donate/')controller.track('support_paypal_click');
       if(url.hostname==='www.patreon.com')controller.track('support_patreon_click');
       if(url.hostname==='github.com'&&/^\/sergioh-devsec\/(revisa-accesos|ordena-tareas-csv|paginas-para-negocios)(\/|$)/.test(url.pathname))controller.track('project_repository_click');

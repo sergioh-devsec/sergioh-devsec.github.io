@@ -4,7 +4,7 @@
   'use strict';
   const doc = document;
   const source = doc.currentScript?.src || new URL('store-entry.js', location.href).href;
-  const shop = new URL('tienda.html', source).href;
+  const shop = new URL('tienda', source).href;
   const TEXT = {
     es: { shop: 'Tienda', label: 'Recursos digitales', tag: 'PARA TU PRÓXIMO PASO', title: 'Recursos listos para usar',
       copy: 'Guías, herramientas y plantillas para pasar de la idea a la práctica.', action: 'Explorar la tienda' },

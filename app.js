@@ -1,6 +1,6 @@
 import { initRoomAssistant } from './room-assistant.js?v=voice-36';
 import { createModeManager } from './modeManager.js';
-import { STATIONS } from './stationsConfig.js?v=2ab157a65fb7';
+import { STATIONS } from './stationsConfig.js?v=1c097bc0c633';
 import { validateConsent, consentHash, buildConsentPdf, CONSENT_SCHEMA } from './dentalConsent.js';
 import { professionConfig, professionSchema, validateProfessionDocument, professionDocumentHash, professionPreview, buildProfessionPdf } from './professionDocuments.js';
 import { createReciprocity } from './reciprocity.js?v=voice-5';
@@ -179,7 +179,7 @@ function guideOptions(target) {
 }
 function render() {
   const dictionary = copy(), isLab = manager.getMode() === 'laboratorio';
-  document.title = text('CyberSerch | Páginas web, automatización y ciberseguridad', 'CyberSerch | Websites, automation and cybersecurity');
+  document.title = text('Páginas web y automatización para negocios | CyberSerch', 'Websites and automation for businesses | CyberSerch');
   assistant.render();
   document.querySelector('meta[name="theme-color"]').content = isLab ? '#091b27' : '#f3f1e8';
   $('mode-switch').checked = isLab;
@@ -258,7 +258,7 @@ function renderStation(preserve = false) {
     renderChecklist(body);
     if (station.id === 'security') renderSecurityExample(body);
     const actions = el('div', 'station-actions');
-    actions.append(link(data.cta, station.href), link(text('Revisar mi caso', 'Discuss my needs'), 'cotizador.html?tipo=security', 'button secondary'));
+    actions.append(link(data.cta, station.href), link(text('Revisar mi caso', 'Discuss my needs'), 'cotizador?tipo=security', 'button secondary'));
     body.append(actions);
   } else {
     if (['workstation','showcase'].includes(station.id)) {
@@ -266,7 +266,7 @@ function renderStation(preserve = false) {
       for (const [path, es, english] of [['dental','Consultorio dental','Dental practice'],['psicologia','Psicología','Psychology'],['unas','Estudio de uñas','Nail studio']]) samples.append(link(text(es, english), `https://sergioh-devsec.github.io/paginas-para-negocios/${path}/`, 'sample-link'));
       body.append(el('p', 'small', text('Muestras de diseño con marcas ficticias.', 'Design samples with fictional brands.')), samples);
     }
-    if (station.id === 'library' || station.id === 'showcase') body.append(link(text('Crear mi CV con Axiom', 'Build my CV with Axiom'), 'cv.html'));
+    if (station.id === 'library' || station.id === 'showcase') body.append(link(text('Crear mi CV con Axiom', 'Build my CV with Axiom'), 'cv'));
     body.append(link(data.cta, station.href));
     if (['comms','clock'].includes(station.id)) body.append(el('p', 'tool-notice', text('Diseñamos esta integración después de revisar tus herramientas y permisos. Esta demo no envía mensajes ni agenda citas.', 'We scope this integration after reviewing your tools and permissions. This demo does not send messages or book appointments.')));
   }
@@ -276,7 +276,7 @@ function renderSecurityExample(body) {
   panel.append(
     el('h3', '', text('Axiom te guía por una alerta de muestra', 'Axiom walks you through a sample alert')),
     el('p', 'small', text('Con el umbral de tres, la muestra señala 192.0.2.14 por sus tres rechazos. Compara las horas y revisa si hubo un acceso correcto después. Verifica el contexto antes de clasificar la señal.', 'At a threshold of three, the sample flags 192.0.2.14 for three denials. Compare the timestamps and look for a successful login afterward. Check the context before classifying the signal.')),
-    link(text('Abrir el analizador de accesos', 'Open the access analyzer'), 'herramientas.html#logs', 'button secondary'),
+    link(text('Abrir el analizador de accesos', 'Open the access analyzer'), 'herramientas#logs', 'button secondary'),
   );
   body.append(panel);
 }
@@ -299,7 +299,7 @@ function renderNumbers(body) {
   const update = () => { const valid = inputs.every(input => input.value !== '' && input.validity.valid); total.textContent = valid ? new Intl.NumberFormat(en()?'en-US':'es-MX',{style:'currency',currency:'MXN'}).format(Number(inputs[0].value)-Number(inputs[1].value)) : text('Revisa los importes.', 'Check the amounts.'); };
   inputs.forEach(input => input.addEventListener('input',update)); update();
   section.append(fields, el('p','small',text('Diferencia antes de impuestos, deudas u otros ajustes:', 'Difference before taxes, debts or other adjustments:')),total,el('p','tool-notice',text('Calculadora orientativa. No guarda cifras ni sustituye un registro contable.', 'An illustrative calculator. Figures are not stored; it does not replace accounting records.')));
-  body.append(section,link(text('Quiero un tablero para mi negocio', 'I want a dashboard for my business'),'cotizador.html?interes=tablero'));
+  body.append(section,link(text('Quiero un tablero para mi negocio', 'I want a dashboard for my business'),'cotizador?interes=tablero'));
 }
 
 function rememberDental() {
@@ -385,7 +385,7 @@ function renderDental(body) {
   for(const value of [text('Función','Feature'),text('Gratis','Free'),text('Pro · a cotizar','Pro · quoted separately')]){const th=el('th','',value);th.scope='col';headRow.append(th);}head.append(headRow);table.append(caption,head);
   const tbody=document.createElement('tbody');
   for(const row of [[text('PDF local de consentimiento','Local consent PDF'),text('Con marca discreta','With discreet watermark'),text('Con tu logo, sin marca','Your logo, no watermark')],[text('Web dental y sistema de citas','Dental website and booking'),text('No incluido','Not included'),text('Se diseña para tu clínica','Scoped for your clinic')],[text('Recordatorios y presupuestos','Reminders and treatment estimates'),text('No incluido','Not included'),text('Integración según alcance','Integration as scoped')]]){const tr=document.createElement('tr'); row.forEach((value,i)=>{const cell=el(i?'td':'th','',value);if(!i)cell.scope='row';tr.append(cell);});tbody.append(tr);} table.append(tbody);pro.append(table);
-  pro.append(el('p','small',text('Pro se desarrolla por encargo. El alcance, las licencias y el costo de mensajería se acuerdan antes de contratar.','Pro is built to order. Scope, licences and messaging costs are agreed before purchase.')),link(text('Quiero mi consultorio automatizado','Plan my automated practice'),'cotizador.html?giro=dentista&interes=paquete_pro')); body.append(pro);
+  pro.append(el('p','small',text('Pro se desarrolla por encargo. El alcance, las licencias y el costo de mensajería se acuerdan antes de contratar.','Pro is built to order. Scope, licences and messaging costs are agreed before purchase.')),link(text('Quiero mi consultorio automatizado','Plan my automated practice'),'cotizador?giro=dentista&interes=paquete_pro')); body.append(pro);
 }
 function createDocumentPreview(panel,read) {
   const details=el('details','extra-fields'); details.open=true;
@@ -441,7 +441,7 @@ function renderProfessionDocument(panel,body) {
     finally{busy=false;submit.disabled=false;}
   });
   updateHash();
-  const pro=el('section','pro-card');pro.append(el('h3','',text('Este documento puede formar parte de tu flujo de trabajo.','This document can become part of your workflow.')),el('p','',text('Podemos diseñar formularios con tu identidad, revisión de responsables, organización de archivos y avisos. La integración se cotiza según el alcance; esta versión gratuita no guarda expedientes ni envía mensajes.','We can scope branded forms, review responsibilities, file organization and reminders. Integrations are quoted by scope; this free version does not store case records or send messages.')),link(text('Explorar una solución para mi profesión','Explore a solution for my profession'),`cotizador.html?giro=${id}&interes=documentos`));body.append(pro);
+  const pro=el('section','pro-card');pro.append(el('h3','',text('Este documento puede formar parte de tu flujo de trabajo.','This document can become part of your workflow.')),el('p','',text('Podemos diseñar formularios con tu identidad, revisión de responsables, organización de archivos y avisos. La integración se cotiza según el alcance; esta versión gratuita no guarda expedientes ni envía mensajes.','We can scope branded forms, review responsibilities, file organization and reminders. Integrations are quoted by scope; this free version does not store case records or send messages.')),link(text('Explorar una solución para mi profesión','Explore a solution for my profession'),`cotizador?giro=${id}&interes=documentos`));body.append(pro);
 }
 async function updateDentalHash(){
   const node=$('consent-hash'); if(!node)return; rememberDental(); const revision=hashRevision,request=++hashRequest;
@@ -462,6 +462,6 @@ render();
 // Preserve previously shared portfolio anchors without duplicating its content.
 const legacyHashes=new Set(['home','services','creadoras','content','social','contact','apoyar','certifications','laboratory','automation','web-samples','descubrir','projects','about','soc-play','como-trabajamos','que-recibes','preguntas']);
 const hash=location.hash.slice(1);
-if(legacyHashes.has(hash))location.replace(`portafolio.html${location.search}${location.hash}`);
+if(legacyHashes.has(hash))location.replace(`portafolio${location.search}${location.hash}`);
 else if(STATIONS.some(station=>station.id===hash))openStation(hash);
 else if(hash==='nueva-pc')requestAnimationFrame(()=>$('nueva-pc').scrollIntoView({block:'start'}));
