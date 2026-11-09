@@ -36,6 +36,7 @@ function link(value, href, cls = 'button primary') {
   return node;
 }
 const UI = {
+  webDemoGallery: ['Ver ejemplos de páginas web', 'See website examples'],
   skip: ['Ir a las estaciones', 'Skip to stations'], brandLine: ['Ideas que trabajan contigo.', 'Ideas that work with you.'],
   portfolio: ['Servicios y casos', 'Services and case studies'], hint: ['Toca un objeto o elige una estación. Axiom te acompaña.', 'Tap an object or choose a station. Axiom will guide you.'],
   cvBuilder: ['Crear mi CV', 'Build my CV'],
@@ -263,8 +264,8 @@ function renderStation(preserve = false) {
   } else {
     if (['workstation','showcase'].includes(station.id)) {
       const samples = el('div', 'sample-links');
-      for (const [path, es, english] of [['dental','Consultorio dental','Dental practice'],['psicologia','Psicología','Psychology'],['unas','Estudio de uñas','Nail studio']]) samples.append(link(text(es, english), `https://sergioh-devsec.github.io/paginas-para-negocios/${path}/`, 'sample-link'));
-      body.append(el('p', 'small', text('Muestras de diseño con marcas ficticias.', 'Design samples with fictional brands.')), samples);
+      for (const [path, es, english] of [['dental','Consultorio dental','Dental practice'],['psicologia','Psicología','Psychology'],['unas','Estudio de uñas','Nail studio']]) samples.append(link(text(es, english), `/paginas-para-negocios/${path}/`, 'sample-link'));
+      body.append(el('p', 'small', text('Muestras de diseño con marcas ficticias.', 'Design samples with fictional brands.')), samples, link(text(...UI.webDemoGallery), '/paginas-para-negocios/', 'button secondary'));
     }
     if (station.id === 'library' || station.id === 'showcase') body.append(link(text('Crear mi CV con Axiom', 'Build my CV with Axiom'), 'cv'));
     body.append(link(data.cta, station.href));
