@@ -1,9 +1,16 @@
 // Sharing is always an explicit visitor action. Never share editor data or URL parameters.
 export const SITE_URL = 'https://cyberserch.com/';
 export const CREATORS_URL = 'https://cyberserch.com/portafolio.html#creadoras';
+export const CV_URL = 'https://cyberserch.com/cv.html';
+
+const shareTargets = new Map([
+  ['site', {url: SITE_URL, keyPrefix: 'shareSite'}],
+  ['creadoras', {url: CREATORS_URL, keyPrefix: 'shareCreator'}],
+  ['cv', {url: CV_URL, keyPrefix: 'shareCv'}],
+]);
 
 export async function shareSite({navigator:nav, title, text, destination} = {}) {
-  const url = destination === 'creadoras' ? CREATORS_URL : SITE_URL;
+  const {url} = shareTargets.get(destination) ?? shareTargets.get('site');
   const data = {title, text, url};
   if (typeof nav?.share === 'function') {
     try {
@@ -37,7 +44,7 @@ export function mountSiteShare(doc = globalThis.document) {
   const footer = doc.querySelector('footer');
   const win = doc.defaultView;
   if (!win?.TRANSLATIONS?.es?.shareSiteAction) return null;
-  const contextual = doc.querySelectorAll('[data-share-creadoras]');
+  const contextual = doc.querySelectorAll('[data-share-creadoras], [data-share-cv]');
   const placements = contextual.length ? [...contextual] : [footer, ...doc.querySelectorAll('.cs-menu nav')].filter(Boolean);
   if (!placements.length) return null;
   const controls = [];
@@ -46,16 +53,16 @@ export function mountSiteShare(doc = globalThis.document) {
   const copy = key => dictionary()[key] || '';
 
   for (const parent of placements) {
-    const creators = parent.hasAttribute('data-share-creadoras');
-    const destination = creators ? 'creadoras' : 'site';
-    const keyPrefix = creators ? 'shareCreator' : 'shareSite';
+    const destination = parent.hasAttribute('data-share-cv') ? 'cv'
+      : parent.hasAttribute('data-share-creadoras') ? 'creadoras' : 'site';
+    const {url, keyPrefix} = shareTargets.get(destination);
     const region = doc.createElement('div'); region.className = 'cs-site-share';
     const button = doc.createElement('button'); button.type = 'button'; button.className = 'cs-share-trigger';
     const label = doc.createElement('span'); button.append(shareIcon(doc),label);
     const status = doc.createElement('span'); status.className = 'cs-share-status';
     status.setAttribute('role','status'); status.setAttribute('aria-live','polite');
     const manual = doc.createElement('input'); manual.type = 'text'; manual.readOnly = true;
-    manual.value = creators ? CREATORS_URL : SITE_URL; manual.className = 'cs-share-manual'; manual.hidden = true;
+    manual.value = url; manual.className = 'cs-share-manual'; manual.hidden = true;
     const control = {region,button,label,status,manual,keyPrefix,statusKey:''};
     button.addEventListener('click', async () => {
       if (busy) return;

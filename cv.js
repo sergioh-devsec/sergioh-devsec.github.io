@@ -13,6 +13,7 @@ const $=id=>document.getElementById(id);
 const t=(key,values={})=>window.I18N?.t(key,values)||String(window.TRANSLATIONS?.[document.documentElement.lang==='en'?'en':'es']?.[key]||window.TRANSLATIONS?.es?.[key]||key).replace(/\{(\w+)\}/g,(_,name)=>String(values[name]??''));
 const track=name=>document.dispatchEvent(new CustomEvent('portfolio:measurement',{detail:name}));
 let started=false,diagnosisSeen=false,afterTxt=false,axiomMessageKey='cvF_greeting',axiomMessageValues={};
+let exampleProfile = null;
 function markStarted(){if(!started){started=true;track('cv_start');}}
 const fields=['name','headline','email','phone','location','summary','skills','education'];
 const steps=['profile','experience','vacancy','review'];
@@ -124,7 +125,11 @@ async function buy(plan){
  try{const result=await beginCheckout(plan);if(request!==paymentRevision)return;checkout=result;const a=document.createElement('a');a.href=checkout.url;a.target='_blank';a.rel='noopener noreferrer';document.body.append(a);a.click();a.remove();$('license-access').open=true;$('license-plan').value=plan;$('checkout-status').textContent=t('cvF_checkoutInstructions');const reopen=node('a','secondary',t('cvF_openGumroad'));reopen.href=checkout.url;reopen.target='_blank';reopen.rel='noopener noreferrer';$('checkout-status').append(document.createTextNode(' '),reopen);}
  catch(e){if(request===paymentRevision)$('checkout-status').textContent=t('cvF_checkoutError');}finally{if(request===paymentRevision){paymentBusy=false;$('buy-pro').disabled=false;$('buy-plus').disabled=false;}}
 }
-function reset(){clearTimeout(updateTimer);importRequest++;revision++;paymentRevision++;paymentBusy=false;afterTxt=false;$('buy-pro').disabled=false;$('buy-plus').disabled=false;$('verify-payment').disabled=false;$('cv-form').reset();$('experiences').replaceChildren();counter=0;addExperience();sourceText='';extraction=null;showUnassigned('');entitlement=null;checkout=null;previewLicense();$('source-text').value='';$('import-status').textContent='';$('paid-downloads').hidden=true;$('paid-downloads').replaceChildren();$('license-key').value='';$('license-access').open=false;setStep('profile');update();sayKey('cvF_resetMessage');}
+function reset(){
+ exampleProfile = null;
+ $('cv-example-files').hidden = true;
+ $('cv-example-status').textContent = '';
+ clearTimeout(updateTimer);importRequest++;revision++;paymentRevision++;paymentBusy=false;afterTxt=false;$('buy-pro').disabled=false;$('buy-plus').disabled=false;$('verify-payment').disabled=false;$('cv-form').reset();$('experiences').replaceChildren();counter=0;addExperience();sourceText='';extraction=null;showUnassigned('');entitlement=null;checkout=null;previewLicense();$('source-text').value='';$('import-status').textContent='';$('paid-downloads').hidden=true;$('paid-downloads').replaceChildren();$('license-key').value='';$('license-access').open=false;setStep('profile');update();sayKey('cvF_resetMessage');}
 
 function exportError(error){
  if(error?.code==='CV_PDF_UNSUPPORTED_CHARACTERS')return t('cvQ_pdfUnicode',{chars:(error.characters||[]).map(x=>typeof x==='string'?x:x.character).filter(Boolean).slice(0,12).join(' ')});
@@ -196,11 +201,72 @@ $('cv-form').addEventListener('submit',e=>{e.preventDefault();finish();});$('cv-
 $('add-experience').addEventListener('click',()=>{addExperience();changed();});$('export-document').addEventListener('click',finish);
 $('prepare-letter').addEventListener('click',()=>{if($('cover-letter').value.trim()&&!confirm(t('cvF_replaceLetter')))return;$('cover-letter').value=letterText();sayKey('cvF_preparedLetter');});
 $('clear-data').addEventListener('click',()=>{if(confirm(t('cvF_clearConfirm')))reset();});
-$('load-example').addEventListener('click',()=>{
- if(hasDocumentData()&&!confirm(t('cvF_replaceExample')))return;
- markStarted();reset();const demo={name:dt('cvQ_exampleName'),headline:dt('cvQ_exampleRole'),summary:dt('cvQ_exampleSummary'),skills:dt('cvQ_exampleSkills'),education:dt('cvQ_exampleEducation')};
- for(const key of fields)$('cv-'+key).value=demo[key]||'';$('experiences').replaceChildren();counter=0;
- addExperience({role:dt('cvQ_exampleRole'),company:dt('cvQ_exampleCompany'),start:'2022-03',end:'2025-06',description:dt('cvQ_exampleDescription')});$('job-title').value=dt('cvQ_exampleRole');$('job-text').value=dt('cvQ_exampleJob');update();sayKey('cvF_exampleMessage');
+function demoProfile() {
+ const english = documentLanguage === 'en';
+ return {
+  name: dt('cvQ_exampleName'),
+  headline: dt('cvQ_exampleRole'),
+  email: 'andrea@example.test',
+  location: english ? 'Example City' : 'Ciudad de ejemplo',
+  summary: english
+   ? 'Operations analyst with experience organizing inventories and preparing reports in Excel and SQL. I document processes so teams can identify discrepancies and resolve them.'
+   : 'Analista de operaciones con experiencia en organización de inventarios y preparación de reportes en Excel y SQL. Documento procesos para que el equipo identifique diferencias y pueda resolverlas.',
+  skills: english ? 'Excel, SQL, data analysis' : 'Excel, SQL, análisis de datos',
+  education: dt('cvQ_exampleEducation'),
+  experiences: [
+   {
+    role: dt('cvQ_exampleRole'),
+    company: dt('cvQ_exampleCompany'),
+    start: '2022-03', end: '2025-06',
+    description: english
+     ? 'Consolidated 12 weekly inventory reports in Excel and reduced preparation time from 5 to 3 hours.\nVerified 350 records with SQL and documented discrepancies for the operations team.'
+     : 'Consolidé 12 reportes semanales de inventario en Excel y reduje su preparación de 5 a 3 horas.\nVerifiqué 350 registros con SQL y documenté las diferencias para el equipo de operaciones.'
+   },
+   {
+    role: english ? 'Operations assistant' : 'Asistente de operaciones',
+    company: english ? 'Fictional Supply Project' : 'Proyecto de Abasto Ficticio',
+    start: '2020-09', end: '2022-02',
+    description: english
+     ? 'Organized weekly checks for 3 teams and prepared a guide for tracking pending orders.'
+     : 'Organicé revisiones semanales para 3 equipos y preparé una guía de seguimiento de pedidos pendientes.'
+   }
+  ]
+ };
+}
+
+function downloadExample(format) {
+ if (!exampleProfile) return;
+ const status = $('cv-example-status');
+ try {
+  // The file only ever uses the original fictional fixture, even if the visitor edits the form.
+  const pdf = format === 'pdf';
+  const data = pdf ? buildCvPdf(exampleProfile, exportOptions()) : buildDocx(exampleProfile, exportOptions());
+  download(data, `cv-${documentLanguage === 'en' ? 'sample' : 'ejemplo'}-${template}.${format}`,
+    pdf ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+  status.textContent = t('cvF_fileReady');
+ } catch (error) {
+  status.textContent = exportError(error);
+ }
+}
+
+$('cv-example-pdf').addEventListener('click', () => downloadExample('pdf'));
+$('cv-example-docx').addEventListener('click', () => downloadExample('docx'));
+$('load-example').addEventListener('click', () => {
+ if (hasDocumentData() && !confirm(t('cvF_replaceExample'))) return;
+ reset();
+ exampleProfile = demoProfile();
+ $('job-title').value = exampleProfile.headline;
+ $('job-text').value = dt('cvQ_exampleJob');
+ applyProfile(exampleProfile);
+ $('cv-example-files').hidden = false;
+ const evidence = $('keyword-evidence').closest('details');
+ evidence.open = true;
+ setStep('review');
+ const editorTitle = $('editor-title');
+ editorTitle.setAttribute('tabindex', '-1');
+ editorTitle.focus({preventScroll: true});
+ editorTitle.scrollIntoView({block: 'start', behavior: 'auto'});
+ sayKey('cvF_exampleMessage');
 });
 $('source-text').addEventListener('input',()=>{sourceText=$('source-text').value;extraction={status:'ok',format:'paste',imported:true,warnings:[]};changed();});
 $('use-source').addEventListener('click',()=>{const value=$('source-text').value.trim();if(!value){sayKey('cvF_pasteFirst');return;}if(value.length>2500){sayKey('cvF_sourceTooLong');return;}if($('cv-summary').value.trim()&&!confirm(t('cvF_replaceSummary')))return;$('cv-summary').value=value;changed();sayKey('cvF_sourceUsed');});
@@ -224,4 +290,7 @@ for(const dialog of [$('export-modal'),$('keyword-modal'),$('import-review-modal
 document.addEventListener('portfolio:language',refreshFunnelCopy);
 $('cv-preview').addEventListener('dragstart',e=>e.preventDefault());
 window.addEventListener('pagehide',()=>{clearTimeout(updateTimer);importRequest++;paymentRevision++;paymentBusy=false;$('buy-pro').disabled=false;$('buy-plus').disabled=false;$('verify-payment').disabled=false;});
+window.addEventListener('pageshow', event => {
+ if (event.persisted) reset();
+});
 addExperience();setStep('profile');previewLicense();refreshFunnelCopy();

@@ -1,5 +1,5 @@
 import { GAD7, scoreGad7, mountGad7 } from './psychology-instruments.js';
-import { professionalCopy } from './profesionistas-translations.js';
+import { professionalCopy } from './profesionistas-translations.js?v=19a23562b290';
 
 // The download has no asset dependencies. Only explicitly hashed code can run.
 export const standaloneCSS = `

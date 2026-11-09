@@ -52,9 +52,11 @@
   // Only an affirmative provider response counts as accepted. No retries or redirects.
   async function sendEnquiry(key, fields, {request=fetch,timeoutMs=20000}={}){
     if(!web3formsKey(key)||!fields||fields.consent!=='yes'||fields.botcheck)return 'invalid';
-    for(const [name,max] of Object.entries({name:80,email:180,message:2000,estimate:12000})){
+    for(const [name,max] of Object.entries({name:80,email:180,message:2000})){
       if(typeof fields[name]!=='string'||!fields[name].trim()||fields[name].length>max)return 'invalid';
     }
+    if (fields.estimate !== undefined &&
+        (typeof fields.estimate !== 'string' || !fields.estimate.trim() || fields.estimate.length > 12000)) return 'invalid';
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email))return 'invalid';
     const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeoutMs);
     try{
@@ -62,7 +64,8 @@
         method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},
         credentials:'omit',redirect:'error',signal:controller.signal,
         body:JSON.stringify({access_key:key,name:fields.name,email:fields.email,message:fields.message,
-          estimate:fields.estimate,consent:'yes',botcheck:false,
+          ...(fields.estimate === undefined ? {} : { estimate: fields.estimate }),
+          consent:'yes',botcheck:false,
           subject:'CyberSerchMX · Consulta de proyecto',from_name:'CyberSerchMX'})
       });
       if(!response.ok)return response.status===429?'limit':'error';
@@ -81,7 +84,24 @@
     if(interest==='tablero')return en?'I would like a dashboard for my business.':'Quiero un tablero de seguimiento para mi negocio.';
     return '';
   }
-  const api={packages,explanations,estimate,timeEstimate,formEndpoint,web3formsKey,sendEnquiry,paymentLink,bookingLink,enquiryContext};
+  const creatorGoals = ['automatizacion', 'oferta', 'datos'];
+  function quoteRoute(search) {
+    const params = new URLSearchParams(search);
+    const requestedKind = params.get('tipo');
+    const interest = params.get('interes');
+    const creator = interest === 'creator-business';
+    const requestedGoal = params.get('objetivo');
+    const knownKind = Object.hasOwn(packages, requestedKind) ? requestedKind : '';
+    const interestKind = creator || interest === 'tablero' ? 'automation' : interest === 'seguridad' ? 'security' : '';
+    const offer = knownKind || interestKind;
+    return {
+      kind: offer || 'landing',
+      offerContext: Boolean(offer),
+      creator,
+      goal: creator && creatorGoals.includes(requestedGoal) ? requestedGoal : '',
+    };
+  }
+  const api={packages,explanations,estimate,timeEstimate,formEndpoint,web3formsKey,sendEnquiry,paymentLink,bookingLink,enquiryContext,quoteRoute};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   if(typeof document==='undefined')return;
   const I=window.I18N,S=window.Site,C=window.COMMERCE,$=id=>document.getElementById(id),root=$('quote-builder');
@@ -96,15 +116,66 @@
   }
   renderReview();document.addEventListener('portfolio:language',renderReview);
   if(!root||!$('quote-packages'))return;
-  let kind='landing',selected={};
+  const route = quoteRoute(location.search);
+  let kind = route.kind;
+  let selected = {};
+  let offerContext = route.offerContext;
+  let creatorGoal = route.goal;
+  let previousSuggestion = '';
   const en=()=>I.language==='en',label=arr=>arr[en()?1:0],money=n=>new Intl.NumberFormat(en()?'en-US':'es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0}).format(n)+' MXN';
   const tx=(es,english)=>en()?english:es;
   function tax(){return C.taxMode==='included'?tx('Precios con impuestos incluidos.','Prices include taxes.'):C.taxMode==='excluded'?tx('Importes antes de IVA; se detallará en la propuesta final.','Amounts before VAT; itemized in the final proposal.'):tx('IVA: esta estimación todavía no añade impuestos. El tratamiento de IVA, la factura y el total final se confirmarán por escrito antes de contratar.','VAT: this estimate does not yet add taxes. Applicable VAT, invoicing and the final total will be confirmed in writing before purchase.');}
   function timing(){const t=timeEstimate(kind,selected);return tx('Plazo orientativo: ','Indicative timeline: ')+t.min+'–'+t.max+tx(' días hábiles. Referencia de planificación: ',' business days. Planning reference: ')+t.reference+tx(' días; no es un promedio histórico.',' days; not a historical average.');}
-  function brief(){const r=estimate(kind,selected);return ['CYBERSERCH · '+tx('Estimación orientativa','Indicative estimate'),label(packages[kind].label),label(packages[kind].scope),tx('Mi idea: ','My idea: ')+(($('quote-contact-form').hidden?$('local-goal'):$('contact-goal'))?.value.trim().slice(0,2000)||tx('Por definir','To be defined')),...r.lines.map(l=>`${l.id==='base'?tx('Base','Base'):label(packages[kind].options[l.id][2])}: ${l.quantity} × ${money(l.unit)} = ${money(l.total)}`),tx('Subtotal estimado: ','Estimated subtotal: ')+money(r.total),tx('Rango orientativo: ','Indicative range: ')+money(r.total)+' – '+money(r.upper),tax(),timing(),I.t('quoteAvailability'),I.t('quoteTimeNote'),I.t('quoteEvaluation'),I.t('quoteMargin'),tx('No es una oferta final. Dominio, hosting, licencias, consumo de APIs y recursos de voz/imagen se cotizan aparte. Alcance y plazo se confirman antes del pago.','Not a final offer. Domain, hosting, licenses, API usage and voice/image assets are separate. Scope and timeline confirmed before payment.')].join('\n');}
-  function update(){const r=estimate(kind,selected),lines=$('quote-lines');lines.replaceChildren();for(const l of r.lines){const li=S.el('li');li.append(S.el('span','',l.id==='base'?label(packages[kind].label):`${label(packages[kind].options[l.id][2])} × ${l.quantity}`),S.el('strong','',money(l.total)));lines.append(li);}$('quote-total').textContent=money(r.total);$('quote-range').textContent=tx('Rango orientativo: ','Indicative range: ')+money(r.total)+' – '+money(r.upper);$('quote-tax').textContent=tax();$('quote-time').textContent=timing();$('quote-summary').value=brief();$('quote-contact-summary').value=brief();}
+  function brief(includeIdea = true){const r=estimate(kind,selected);return ['CYBERSERCH · '+tx('Estimación orientativa','Indicative estimate'),label(packages[kind].label),label(packages[kind].scope),...(includeIdea ? [tx('Mi idea: ','My idea: ')+(($('quote-contact-form').hidden?$('local-goal'):$('contact-goal'))?.value.trim().slice(0,2000)||tx('Por definir','To be defined'))] : []),...r.lines.map(l=>`${l.id==='base'?tx('Base','Base'):label(packages[kind].options[l.id][2])}: ${l.quantity} × ${money(l.unit)} = ${money(l.total)}`),tx('Subtotal estimado: ','Estimated subtotal: ')+money(r.total),tx('Rango orientativo: ','Indicative range: ')+money(r.total)+' – '+money(r.upper),tax(),timing(),I.t('quoteAvailability'),I.t('quoteTimeNote'),I.t('quoteEvaluation'),I.t('quoteMargin'),tx('No es una oferta final. Dominio, hosting, licencias, consumo de APIs y recursos de voz/imagen se cotizan aparte. Alcance y plazo se confirman antes del pago.','Not a final offer. Domain, hosting, licenses, API usage and voice/image assets are separate. Scope and timeline confirmed before payment.')].join('\n');}
+  function update(){const r=estimate(kind,selected),lines=$('quote-lines');lines.replaceChildren();for(const l of r.lines){const li=S.el('li');li.append(S.el('span','',l.id==='base'?label(packages[kind].label):`${label(packages[kind].options[l.id][2])} × ${l.quantity}`),S.el('strong','',money(l.total)));lines.append(li);}$('quote-total').textContent=money(r.total);$('quote-range').textContent=tx('Rango orientativo: ','Indicative range: ')+money(r.total)+' – '+money(r.upper);$('quote-tax').textContent=tax();$('quote-time').textContent=timing();$('quote-summary').value=brief();$('quote-contact-summary').value=brief(false);}
+  const sampleLinks = {
+    landing: 'muestras/plantillas/index.html',
+    information: 'portafolio.html#cases',
+    custom: 'index.html#room-scene',
+    automation: 'herramientas.html#csv',
+    security: 'herramientas.html#logs',
+  };
+  function renderDelivery() {
+    const content = S.quoteCopy(I.language);
+    const [materials] = content.offers[kind];
+    for (const [id, value] of Object.entries({
+      'quote-delivery-title': content.delivery,
+      'quote-delivery-includes-label': content.includes,
+      'quote-delivery-includes': label(packages[kind].scope),
+      'quote-delivery-materials-label': content.materials,
+      'quote-delivery-materials': materials,
+      'quote-delivery-next-label': content.next,
+      'quote-delivery-next': content.nextCopy,
+      'quote-delivery-contact': content.consult,
+      'quote-delivery-sample': content.sample,
+    })) $(id).textContent = value;
+    $('quote-delivery-sample').href = sampleLinks[kind];
+    $('quote-delivery').hidden = false;
+  }
+  function renderContactContext() {
+    const content = S.quoteCopy(I.language);
+    $('quote-creator-context').hidden = !route.creator;
+    $('quote-creator-goal-label').textContent = content.creatorLabel;
+    $('quote-creator-goal-help').textContent = content.creatorHint;
+    const goalSelect = $('quote-creator-goal');
+    for (const option of goalSelect.options) option.textContent = content.goals[option.value];
+    goalSelect.value = creatorGoal;
+    $('quote-attach-label').textContent = content.attach;
+    $('quote-attach-help').textContent = content.attachHelp;
+    $('quote-contact-privacy').textContent = content.privacy;
+    const suggestion = route.creator
+      ? content.creatorMessages[creatorGoal]
+      : enquiryContext(location.search, I.language) || (offerContext ? content.offers[kind][1] : '');
+    for (const id of ['local-goal', 'contact-goal']) {
+      const field = $(id);
+      if (field.value === previousSuggestion) field.value = suggestion;
+    }
+    previousSuggestion = suggestion;
+  }
   function render(){
-    const choices=$('quote-packages');choices.replaceChildren();Object.entries(packages).forEach(([id,p])=>{const b=S.el('button','quote-package');b.type='button';b.dataset.quoteKind=id;b.setAttribute('aria-pressed',String(id===kind));b.append(S.el('strong','',label(p.label)),S.el('small','quote-help',label(explanations[id])),S.el('span','',tx('Desde ','From ')+money(p.price)),S.el('small','quote-help',schedules[id][0]+'–'+schedules[id][1]+tx(' días hábiles orientativos',' estimated business days')));b.addEventListener('click',()=>{kind=id;selected={};render();$('quote-options-title').focus({preventScroll:true});});choices.append(b);});
+    renderDelivery();
+    renderContactContext();
+    const choices=$('quote-packages');choices.replaceChildren();Object.entries(packages).forEach(([id,p])=>{const b=S.el('button','quote-package');b.type='button';b.dataset.quoteKind=id;b.setAttribute('aria-pressed',String(id===kind));b.append(S.el('strong','',label(p.label)),S.el('small','quote-help',label(explanations[id])),S.el('span','',tx('Desde ','From ')+money(p.price)),S.el('small','quote-help',schedules[id][0]+'–'+schedules[id][1]+tx(' días hábiles orientativos',' estimated business days')));b.addEventListener('click',()=>{kind=id;selected={};offerContext=true;render();$('quote-options-title').focus({preventScroll:true});});choices.append(b);});
     $('quote-scope').textContent=label(packages[kind].scope);const options=$('quote-options');options.replaceChildren();
     for(const [id,[price,max,names]] of Object.entries(packages[kind].options)){
       const row=S.el('div','quote-option'),input=S.el('input'),lab=S.el('label');input.id='quote-'+id;input.name=id;lab.htmlFor=input.id;
@@ -116,27 +187,43 @@
   }
   function download(){if($('quote-download').disabled){$('local-feedback').textContent=tx('Revisa las cantidades del cotizador antes de descargar.','Check estimate quantities before downloading.');return;}const blob=new Blob([brief()],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='cyberserch-estimacion.txt';a.click();document.dispatchEvent(new CustomEvent('portfolio:measurement',{detail:'estimate_download'}));setTimeout(()=>URL.revokeObjectURL(url),1000);$('quote-feedback').textContent=tx('Resumen preparado para descargar. No se ha enviado a nadie.','Summary prepared for download. It has not been sent.');}
   $('quote-download').addEventListener('click',download);$('local-download').addEventListener('click',()=>{download();$('local-feedback').textContent=$('quote-feedback').textContent;});for(const id of ['local-goal','contact-goal'])$(id).addEventListener('input',()=>{if(!$('quote-download').disabled)update();});
-  $('quote-reset').addEventListener('click',()=>{kind='landing';selected={};render();$('quote-feedback').textContent='';});
+  $('quote-reset').addEventListener('click',()=>{kind=route.kind;selected={};offerContext=route.offerContext;render();$('quote-feedback').textContent='';});
+  $('quote-creator-goal').addEventListener('change', event => {
+    const value = event.currentTarget.value;
+    creatorGoal = creatorGoals.includes(value) ? value : '';
+    renderContactContext();
+    if (!$('quote-download').disabled) update();
+  });
+  function syncSummaryAttachment() {
+    const checked = $('quote-attach-summary').checked;
+    $('quote-contact-attachment').hidden = !checked;
+    $('quote-contact-summary').disabled = !checked;
+  }
+  $('quote-attach-summary').addEventListener('change', syncSummaryAttachment);
+  syncSummaryAttachment();
   let contactBusy=false;
   function configureContact(){const active=Boolean(web3formsKey(C.web3formsAccessKey)),form=$('quote-contact-form');form.hidden=!active;$('local-enquiry').hidden=active;$('quote-contact-pending').hidden=active;form.removeAttribute('action');$('quote-contact-ready').hidden=!active;}
   $('quote-contact-form').addEventListener('submit',async event=>{
     event.preventDefault();const form=event.currentTarget,key=web3formsKey(C.web3formsAccessKey),status=$('quote-contact-result'),button=form.querySelector('[type=submit]');
     if(contactBusy||!key)return;
-    if($('quote-download').disabled){status.textContent=tx('Revisa las cantidades del cotizador antes de enviar.','Check the estimate quantities before sending.');return;}
+    const attach = $('quote-attach-summary').checked;
+    if(attach&&$('quote-download').disabled){status.textContent=tx('Revisa las cantidades o desmarca la estimación antes de enviar.','Check the estimate quantities or uncheck the estimate before sending.');return;}
     if($('contact-website').value||!form.reportValidity())return;
-    const fields={name:$('contact-name').value.trim(),email:$('contact-email').value.trim(),message:$('contact-goal').value.trim(),estimate:brief(),consent:$('contact-consent').checked?'yes':'no',botcheck:false};
+    const fields={name:$('contact-name').value.trim(),email:$('contact-email').value.trim(),message:$('contact-goal').value.trim(),consent:$('contact-consent').checked?'yes':'no',botcheck:false};
+    if (attach) fields.estimate = brief(false);
     contactBusy=true;button.disabled=true;form.setAttribute('aria-busy','true');status.textContent=tx('Enviando tu consulta…','Sending your enquiry…');
     const result=await sendEnquiry(key,fields);
     contactBusy=false;button.disabled=false;form.removeAttribute('aria-busy');
     if(result==='accepted'){
       document.dispatchEvent(new CustomEvent('portfolio:measurement',{detail:'enquiry_accepted'}));
-      form.reset();update();status.textContent=tx('Tu consulta fue recibida por Web3Forms. No se realizó ningún cobro. Serch revisará el contexto para responderte; este envío no reserva una cita.','Web3Forms received your enquiry. No payment was made. Serch will review it before replying; this does not book an appointment.');
+      form.reset();
+      syncSummaryAttachment();
+      update();
+      status.textContent = S.quoteCopy(I.language).accepted;
     }else{
       const message=result==='timeout'?tx('La conexión tardó demasiado; no podemos confirmar el envío.','The connection timed out; we cannot confirm the submission.'):result==='limit'?tx('El proveedor ha limitado temporalmente los envíos.','The provider has temporarily limited submissions.'):result==='invalid'?tx('Revisa el nombre, correo y descripción de tu proyecto.','Check your name, email and project description.'):tx('No pudimos confirmar el envío.','We could not confirm the submission.');
       status.textContent=message+' '+tx('Tus datos siguen en el formulario. Puedes descargar el resumen o volver a intentarlo más tarde.','Your entries remain in the form. Download the summary or try again later.');
     }
   });
-  const requestedContext=enquiryContext(location.search,I.language);
-  if(requestedContext)for(const id of ['local-goal','contact-goal'])if(!$(id).value)$(id).value=requestedContext;
   document.addEventListener('portfolio:language',render);render();
 })();

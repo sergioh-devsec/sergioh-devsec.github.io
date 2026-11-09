@@ -39,7 +39,11 @@ const UI = {
   skip: ['Ir a las estaciones', 'Skip to stations'], brandLine: ['Ideas que trabajan contigo.', 'Ideas that work with you.'],
   portfolio: ['Servicios y casos', 'Services and case studies'], hint: ['Toca un objeto o elige una estación. Axiom te acompaña.', 'Tap an object or choose a station. Axiom will guide you.'],
   cvBuilder: ['Crear mi CV', 'Build my CV'],
-  boostBusiness: ['Impulsa tu negocio', 'Boost your business'], boostNote: ['Una web, menos tareas, mejores decisiones.', 'A website, fewer tasks, better decisions.'],
+  startWebsite: ['Quiero una web', 'I need a website'],
+  startWebsiteNote: ['Elige el alcance y calcula una referencia.', 'Choose a scope and get an estimate.'],
+  startAutomation: ['Necesito automatizar una tarea', 'I need to automate a task'],
+  startAutomationNote: ['Empieza con un proceso que repites.', 'Start with a process you repeat.'],
+  startLocalTool: ['Quiero probar una herramienta', 'I want to try a tool'],
   cvNote: ['Tu experiencia, bien contada.', 'Your experience, well told.'], tryTools: ['Prueba las herramientas', 'Try the tools'], toolsNote: ['Resuelve algo y mira el resultado.', 'Solve a task and see the result.'],
   stationCount: ['12 estaciones · un solo espacio', '12 stations · one shared space'], hoverHint: ['Cada objeto tiene algo para ti.', 'Every object has something for you.'],
   companion: ['/ TU CIBERASISTENTE', '/ YOUR CYBER ASSISTANT'], meet3d: ['Conoce mis gestos en 3D', 'Meet my 3D personality'],
@@ -251,7 +255,11 @@ function renderStation(preserve = false) {
     body.append(actions, el('p', 'small', text('PayPal: importe libre en MXN. Patreon: apoyo mensual. Revisa el importe, la recurrencia y los datos del destinatario en el proveedor.', 'PayPal: choose an amount in MXN. Patreon: monthly support. Review the amount, recurrence and recipient information with the provider.')));
   } else if (station.id === 'register') renderNumbers(body);
   else if (station.id === 'security' || station.id === 'vault') {
-    renderChecklist(body); const actions = el('div', 'station-actions'); actions.append(link(data.cta, station.href), link(text('Revisar mi caso', 'Discuss my needs'), `cotizador.html?interes=seguridad`, 'button secondary')); body.append(actions);
+    renderChecklist(body);
+    if (station.id === 'security') renderSecurityExample(body);
+    const actions = el('div', 'station-actions');
+    actions.append(link(data.cta, station.href), link(text('Revisar mi caso', 'Discuss my needs'), 'cotizador.html?tipo=security', 'button secondary'));
+    body.append(actions);
   } else {
     if (['workstation','showcase'].includes(station.id)) {
       const samples = el('div', 'sample-links');
@@ -262,6 +270,15 @@ function renderStation(preserve = false) {
     body.append(link(data.cta, station.href));
     if (['comms','clock'].includes(station.id)) body.append(el('p', 'tool-notice', text('Diseñamos esta integración después de revisar tus herramientas y permisos. Esta demo no envía mensajes ni agenda citas.', 'We scope this integration after reviewing your tools and permissions. This demo does not send messages or book appointments.')));
   }
+}
+function renderSecurityExample(body) {
+  const panel = el('section', 'tool-panel');
+  panel.append(
+    el('h3', '', text('Axiom te guía por una alerta de muestra', 'Axiom walks you through a sample alert')),
+    el('p', 'small', text('Con el umbral de tres, la muestra señala 192.0.2.14 por sus tres rechazos. Compara las horas y revisa si hubo un acceso correcto después. Verifica el contexto antes de clasificar la señal.', 'At a threshold of three, the sample flags 192.0.2.14 for three denials. Compare the timestamps and look for a successful login afterward. Check the context before classifying the signal.')),
+    link(text('Abrir el analizador de accesos', 'Open the access analyzer'), 'herramientas.html#logs', 'button secondary'),
+  );
+  body.append(panel);
 }
 function renderChecklist(body) {
   const section = el('section', 'tool-panel'), title = el('h3', '', text('Una primera revisión, sin tecnicismos.', 'A first check, without the jargon.'));

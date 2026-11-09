@@ -129,6 +129,16 @@ html[data-mode="oficina"] #mode-office-label, html[data-mode="laboratorio"] #mod
 .station-hitbox .station-marker, .station-hitbox .hotspot-marker { opacity: .9; transition: opacity 180ms, filter 180ms; }
 .station-hitbox:hover .station-marker, .station-hitbox:focus-visible .station-marker { opacity: 1; }
 /* Named signposts replace the numeric pins. Their leaders preserve the shared map. */
+.station-hitbox[data-station="coffee"] {
+  --line-strong: #8a6900;
+  --accent: #745800;
+  --accent-wash: #fff0b9;
+}
+html[data-mode="laboratorio"] .station-hitbox[data-station="coffee"] {
+  --line-strong: #f5cc50;
+  --accent: #f5cc50;
+  --accent-wash: #423617;
+}
 .station-sign { pointer-events: none; transition: filter 180ms; }
 .station-sign rect { fill: var(--surface); fill-opacity: .96; stroke: var(--line-strong); stroke-width: 3; }
 .station-hitbox .station-sign-label { font-family: var(--font); font-size: 40px; font-weight: 750; letter-spacing: .4px; dominant-baseline: central; stroke: none; fill: var(--ink); }

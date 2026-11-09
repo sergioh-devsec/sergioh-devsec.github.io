@@ -7,3 +7,39 @@ html[data-mode=laboratorio]{color-scheme:dark;--prof-bg:#161d2b;--prof-surface:#
 @media(max-width:360px){.prof-logo{width:126px}.prof-controls{gap:5px}.prof-controls select{font-size:14px;padding:6px}.prof-choices{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}.prof-button:active,.prof-button:hover{transform:none!important}}
 @media print{body{background:white;color:black;font-size:11pt}.prof-header,.prof-hero,.prof-professions,.prof-library,.prof-workflow,.prof-other,.prof-footer,#psychology-heading,#psychology-heading+p,.prof-questionnaire form,.prof-actions,.prof-questionnaire>p,.prof-questionnaire>h3{display:none!important}.prof-wrap{width:100%;max-width:none}.prof-section{border:0;padding:0}.prof-questionnaire{margin:0;max-width:none}.prof-result{padding:0;margin:0;border:0}.prof-answers::details-content{content-visibility:visible!important}.prof-answers ol{display:block!important}.prof-answers summary{display:none}.prof-sources{margin-top:30px;max-width:none}.prof-sources h2{font-size:16pt}.prof-sources p,.prof-sources li{font-size:9pt}.prof-sources a::after,.prof-result a::after{content:' (' attr(href) ')';font-size:9pt;overflow-wrap:anywhere}a{color:black}.prof-note{color:#333}h2,h3{break-after:avoid}li{break-inside:avoid}}
+
+.prof-budget {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 40rem;
+  margin-top: 1rem;
+}
+.prof-budget label { display: grid; gap: 6px; }
+.prof-budget input {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 11px;
+  border: 1px solid var(--prof-line);
+  border-radius: 9px;
+  background: var(--prof-surface);
+  color: var(--prof-ink);
+  font: inherit;
+  font-size: max(1rem, 16px);
+}
+.prof-budget-service,
+.prof-budget-actions,
+.prof-budget-output,
+.prof-budget .prof-note { grid-column: 1 / -1; }
+.prof-budget-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.prof-budget-output {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--prof-line);
+  border-radius: 10px;
+  background: var(--prof-tint);
+}
+.prof-budget-output[hidden] { display: none; }
+.prof-budget-output output { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.prof-budget-output button { justify-self: start; }

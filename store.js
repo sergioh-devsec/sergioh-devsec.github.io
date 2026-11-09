@@ -13,9 +13,16 @@ export function purchaseUrl(value, source = 'tienda') {
 }
 export function canPurchase(product) { return product?.status === 'available' && purchaseUrl(product.checkout, product.slug) !== null; }
 export function selectProducts(products, category) { return products.filter(p => category === 'all' || p.category === category); }
+function contextQuery(language, mode) {
+  return new URLSearchParams({ idioma: language === 'en' ? 'en' : 'es', modo: mode === 'laboratorio' ? 'laboratorio' : 'oficina' });
+}
 export function professionalsUrl(language, mode) {
-  const query = new URLSearchParams({ idioma: language === 'en' ? 'en' : 'es', modo: mode === 'laboratorio' ? 'laboratorio' : 'oficina' });
-  return `profesionistas.html?${query}`;
+  return `profesionistas.html?${contextQuery(language, mode)}`;
+}
+function sampleUrl(product, language, mode) {
+  const hasEnglishPage = product.id === 'entrevista' || product.id === 'negocio';
+  const path = language === 'en' && hasEnglishPage ? product.sample.replace(/index\.html$/, 'index-en.html') : product.sample;
+  return `${path}?${contextQuery(language, mode)}`;
 }
 
 export const CART_MAX_QUANTITY = 1;
@@ -137,12 +144,21 @@ function start() {
   document.documentElement.dataset.mode=resolveMode(location.search,read('site_mode'));
   const mode=document.getElementById('shop-mode');
   mode.value=document.documentElement.dataset.mode;
-  mode.addEventListener('change',()=>{document.documentElement.dataset.mode=mode.value;try{localStorage.setItem('site_mode',mode.value);}catch{}renderProfessionalLink();document.dispatchEvent(new CustomEvent('site:mode',{detail:{mode:mode.value}}));});
+  mode.addEventListener('change',()=>{document.documentElement.dataset.mode=mode.value;try{localStorage.setItem('site_mode',mode.value);}catch{}renderContextLinks();document.dispatchEvent(new CustomEvent('site:mode',{detail:{mode:mode.value}}));});
   I.setLanguage(resolveLanguage(location.search,read('cyberserch-language'),navigator.language),false);
   const cart = mountCart({ document, catalogue, I });
   let selected='all';
-  function renderProfessionalLink() {
-    for (const link of document.querySelectorAll('[data-professionals-link]')) link.href = professionalsUrl(I.language, document.documentElement.dataset.mode);
+  function renderContextLinks() {
+    const currentMode = document.documentElement.dataset.mode;
+    for (const link of document.querySelectorAll('[data-professionals-link]')) link.href = professionalsUrl(I.language, currentMode);
+    for (const row of document.querySelectorAll('[data-product]')) {
+      const product = catalogue.find(p => p.id === row.dataset.product);
+      if (!product?.sample) continue;
+      const href = sampleUrl(product, I.language, currentMode);
+      for (const link of row.querySelectorAll('[data-product-sample]')) link.href = href;
+      const primary = row.querySelector('[data-product-buy]');
+      if (primary && !canPurchase(product)) primary.href = href;
+    }
   }
   function render() {
     const lang=I.language;
@@ -155,7 +171,7 @@ function start() {
       const active=canPurchase(product);
       if(status) status.textContent=I.t(active?'shopStatusReady':product.status==='validation'?'shopStatusValidation':'shopStatusPreview');
       if(buy) {
-        buy.href=active?purchaseUrl(product.checkout,product.slug):product.sample;
+        if (active) buy.href=purchaseUrl(product.checkout,product.slug);
         buy.textContent=active?I.t('shopBuy',{price:product.price}):I.t('shopSample');
         if(active){buy.target='_blank';buy.rel='noopener noreferrer';}else{buy.removeAttribute('target');buy.removeAttribute('rel');}
       }
@@ -167,7 +183,7 @@ function start() {
     }
     filter(selected);
     cart.render();
-    renderProfessionalLink();
+    renderContextLinks();
   }
   function filter(category) {
     selected=category;

@@ -23,3 +23,20 @@ html[data-motion="paused"] .axiom-access-art img,.motion-paused .axiom-access-ar
 @media(max-width:640px){.axiom-access{grid-template-columns:76px minmax(0,1fr);gap:10px 14px;padding:16px;border-radius:18px;margin-bottom:14px}.axiom-access-art{height:100px}.axiom-access-art img{width:76px;height:100px}.axiom-access-dimension{left:-3px;top:-3px;font-size:9px;padding:2px 6px}.axiom-access h2{font-size:1.35rem;line-height:1.1}.axiom-access .axiom-access-tag{font-size:.52rem;letter-spacing:.08em;margin-bottom:5px}.axiom-access-copy>p:last-child{font-size:.76rem;line-height:1.45}.axiom-access-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;min-width:0}.axiom-access-actions>a{font-size:.8rem;padding:10px 12px}.axiom-access-primary{flex:1 1 165px}.axiom-access-secondary{flex:1 1 90px}}
 @media(prefers-reduced-motion:reduce){.axiom-access-art img{animation:none!important;transform:none!important}.axiom-access-actions>a{transition:none!important}.axiom-access-actions>a:hover{transform:none}}
 @media print{.axiom-access{display:none!important}}
+
+/* Violet identifies the AI core and Axiom in either room. */
+.axiom-access,
+.axiom-guide {
+  --accent: #65448a;
+  --accent-wash: #eee4f8;
+  --cabinet-blue: #a782d5;
+  --cabinet-blue-ink: #1d1828;
+  border-color: var(--accent);
+}
+html[data-mode="laboratorio"] :is(.axiom-access, .axiom-guide) {
+  --accent: #c9adf2;
+  --accent-wash: #3b2c51;
+  --surface: #292139;
+  --surface-soft: #30253f;
+}
+.axiom-access .axiom-access-dimension { border-color: var(--accent); }

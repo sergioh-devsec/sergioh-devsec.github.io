@@ -22,3 +22,22 @@
   font-weight: 700;
 }.quote-guide button:focus-visible{outline:2px solid #adcaf6;outline-offset:3px}.quote-guide #quote-guide-line{max-width:65rem;min-height:3em}.quote-schedule{border-top:1px solid #466b89;margin-top:1.4rem;padding-top:1.1rem}.quote-schedule h3{font-size:1rem;margin:0 0 .5rem}.quote-schedule #quote-time{color:#c3d8fb;font-weight:700}.quote-tax{padding:1rem;border-radius:.6rem;background:#172d45;border:1px solid #446688}.quote-schedule .small{font-size:.85rem}.quote-guide #quote-guide-status{display:block;color:#c8dcef}
 @media(max-width:600px){.quote-guide{gap:.7rem;padding:1rem;align-items:start}.quote-guide>img{width:62px;height:82px;align-self:flex-start}.quote-guide h2{font-size:1.05rem}.quote-guide-steps{gap:.3rem}.quote-guide-steps button{padding:.5rem .65rem;font-size:.8rem}.quote-guide p{font-size:.85rem}}
+
+/* Quote delivery and contact preferences share the estimate's existing palette. */
+.quote-delivery {
+  border-top: 1px solid var(--line);
+  margin-block: 1.35rem 1rem;
+  padding-top: 1.1rem;
+}
+.quote-delivery h3 { margin: 0 0 .8rem; font-size: 1.03rem; }
+.quote-delivery dl { margin: 0; }
+.quote-delivery dt { margin: .72rem 0 .18rem; font-size: .85rem; font-weight: 700; }
+.quote-delivery dd { margin: 0; color: var(--muted); font-size: .84rem; line-height: 1.5; }
+.quote-delivery-links { display: flex; flex-wrap: wrap; gap: 0 1rem; margin-top: .5rem; }
+.quote-delivery-links a { display: inline-flex; min-height: 44px; align-items: center; font-size: .83rem; }
+#preparar-consulta { scroll-margin-top: 7rem; }
+.quote-creator-context { margin-top: 1rem; max-width: 38rem; }
+.quote-creator-context select { width: min(100%, 24rem); min-height: 44px; font-size: 1rem; }
+.quote-creator-context p, .quote-attach p { margin-top: .25rem; }
+.quote-attach .contact-consent { min-height: 44px; align-items: center; margin-bottom: 0; }
+#quote-contact-attachment[hidden], #quote-creator-context[hidden], #quote-delivery[hidden] { display: none; }

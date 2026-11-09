@@ -57,3 +57,24 @@ html:is([data-mode=laboratorio],[data-mode=lab]) .pc-support .pc-lucky-clover,.p
 .axiom-support .axiom-support-title{color:var(--accent,#3c567e)}
 .axiom-support .axiom-support-patreon{background:#405779;color:#f3f8ff;border-color:#7086a7}
 .axiom-support a:focus-visible,.axiom-support button:focus-visible{outline-color:var(--accent,#3c567e)}
+
+/* Warm yellow is specific to coffee and voluntary support. */
+.pc-support {
+  --cabinet-blue: #f5cc50;
+  --pc-accent: #745800;
+  --pc-emphasis: #745800;
+  --pc-fill-start: #886900;
+  --pc-fill-end: #a78305;
+}
+html:is([data-mode=laboratorio], [data-mode=lab]) .pc-support,
+.pc-support[data-pc-theme=dark] {
+  --pc-accent: #f5cc50;
+  --pc-emphasis: #f5cc50;
+  --pc-fill-start: #f5cc50;
+  --pc-fill-end: #ffe18b;
+}
+.pc-support .pc-support-actions > .pc-support-paypal {
+  --donate-border: #a78305;
+  --donate-edge: #f5cc50;
+  --donate-glow: rgba(245, 204, 80, .12);
+}
