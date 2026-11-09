@@ -11,7 +11,10 @@
 .axiom-access-copy>p:last-child{max-width:540px;margin:0;color:var(--muted,#bac6da);font-size:.88rem;line-height:1.55}
 .axiom-access-actions{display:grid;gap:7px;min-width:185px}
 .axiom-access-actions>a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:11px 16px;border:1px solid var(--accent,#b0cdf8);border-radius:12px;text-decoration:none;line-height:1.35;font-size:.86rem;font-weight:700;text-align:center;touch-action:manipulation;transition:transform .18s ease,background .18s ease}
-.axiom-access-primary{background:var(--accent,#b0cdf8);color:var(--accent-ink,#17243b)}
+.axiom-access-primary {
+  background: var(--cabinet-blue, #299bd7);
+  color: var(--cabinet-blue-ink, #081e33);
+}
 .axiom-access-secondary{background:transparent;color:var(--accent,#b0cdf8)}
 .axiom-access-actions>a:hover{transform:translateY(-2px);box-shadow:0 5px 14px #06202714}
 .axiom-access-actions>a:focus-visible{outline:3px solid var(--accent,#b0cdf8);outline-offset:4px}
