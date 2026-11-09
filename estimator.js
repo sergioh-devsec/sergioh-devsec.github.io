@@ -76,7 +76,21 @@
   }
   function paymentLink(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&u.hostname==='www.paypal.com'&&/^\/ncp\/payment\/[A-Za-z0-9]+\/?$/.test(u.pathname)&&!u.search&&!u.hash?u.href:null;}catch{return null;}}
   function bookingLink(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&u.hostname==='cal.com'&&/^\/[a-z0-9_-]+\/[a-z0-9_-]+\/?$/i.test(u.pathname)&&!u.search&&!u.hash?u.href:null;}catch{return null;}}
-  function enquiryContext(search,language='es'){
+  const sampleEnquiries = {
+    dentista: [
+      'Quiero cotizar una página para mi consultorio dental. Me interesa explicar mis servicios y facilitar las consultas.',
+      'I would like an estimate for a dental practice website that explains my services and makes it easy to get in touch.',
+    ],
+    psicologia: [
+      'Quiero cotizar una página para mi consulta de psicología. Me interesa explicar mi enfoque y cómo contactarme.',
+      'I would like an estimate for a psychology practice website that explains my approach and how to get in touch.',
+    ],
+    unas: [
+      'Quiero cotizar una página para mi estudio de uñas. Me interesa mostrar mis servicios y explicar cómo pedir cita.',
+      'I would like an estimate for a nail studio website that shows my services and explains how to request an appointment.',
+    ],
+  };
+  function enquiryContext(search, language = 'es', kind = 'landing') {
     const params=new URLSearchParams(search),en=language==='en';
     const professions={dentista:['consultorio dental','dental practice'],psicologia:['psicología','psychology practice'],medicina:['consultorio médico','medical practice'],abogacia:['despacho jurídico','law firm'],contabilidad:['despacho contable','accounting practice']};
     const giro=params.get('giro'),interest=params.get('interes');
@@ -84,6 +98,9 @@
     if(Object.hasOwn(professions,giro)&&interest==='documentos')return (en?'I need a document workflow for my ':'Necesito un flujo de documentos para mi ')+professions[giro][en?1:0]+'.';
     if(interest==='seguridad')return en?'I would like to discuss a security and backup review.':'Quiero revisar una solución de seguridad y respaldos.';
     if(interest==='tablero')return en?'I would like a dashboard for my business.':'Quiero un tablero de seguimiento para mi negocio.';
+    if (kind === 'landing' && params.get('tipo') === 'landing' && Object.hasOwn(sampleEnquiries, giro)) {
+      return sampleEnquiries[giro][en ? 1 : 0];
+    }
     return '';
   }
   const creatorGoals = ['automatizacion', 'oferta', 'datos'];
@@ -168,7 +185,7 @@
     $('quote-contact-privacy').textContent = content.privacy;
     const suggestion = route.creator
       ? content.creatorMessages[creatorGoal]
-      : enquiryContext(location.search, I.language) || (offerContext ? content.offers[kind][1] : '');
+      : enquiryContext(location.search, I.language, kind) || (offerContext ? content.offers[kind][1] : '');
     for (const id of ['local-goal', 'contact-goal']) {
       const field = $(id);
       if (field.value === previousSuggestion) field.value = suggestion;

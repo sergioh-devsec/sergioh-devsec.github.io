@@ -99,12 +99,25 @@ function renderFindings(){
 function renderBlindSpots(){for(const id of ['vacancy-blind-spots','review-blind-spots']){const list=$(id);list.replaceChildren();const spots=analysis.blindSpots||[];for(const item of spots)list.append(node('li','',t(item.key,item.params)));if(!spots.length)list.append(node('li','',t('cvF_blindNone')));}}
 function update(){if(!documentLanguageChosen)documentLanguage=document.documentElement.lang.startsWith('en')?'en':'es';const p=profile();renderPreview(p);analysis=analyzeCv({profile:p,jobText:$('job-text').value,sourceText,extraction});renderFindings();renderBlindSpots();$('review-summary').textContent=t('cvF_summaryReview',{n:p.experiences.length,count:analysis.findings.length,template:t('cvF_'+template)});updateQuality(p);}
 function changed(){markStarted();revision++;clearTimeout(updateTimer);updateTimer=setTimeout(update,160);}
+function renderInterviewResource() {
+ const language = document.documentElement.lang.startsWith('en') ? 'en' : 'es';
+ const mode = new URLSearchParams(location.search).get('modo') === 'laboratorio' ? 'laboratorio' : 'oficina';
+ const query = new URLSearchParams({ idioma: language, modo: mode });
+ const sample = language === 'en' ? 'index-en.html' : 'index.html';
+ const resource = $('cv-interview-resource');
+ for (const label of resource.querySelectorAll('[data-en]')) label.textContent = label.dataset[language];
+ $('cv-interview-sample').href = `muestras/entrevista/${sample}?${query}`;
+}
+function showInterviewResource() {
+ renderInterviewResource();
+ $('cv-interview-resource').hidden = false;
+}
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type})),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
 let modalOpener;
 function openModal(dialog){modalOpener=document.activeElement;if(!dialog.open)dialog.showModal();document.body.classList.add('modal-open');}
 function closeModal(dialog){dialog.close();document.body.classList.remove('modal-open');modalOpener?.focus();}
 function validateForExport(){try{normalizeCvProfile(profile());if(!$('cv-email').validity.valid)throw new Error(t('cvF_validEmail'));return true;}catch(error){sayKey('cvF_exportError');status(t('cvF_exportError'));setStep('profile');$('cv-name').focus();return false;}}
-function finish(){clearTimeout(updateTimer);update();if(!validateForExport())return;afterTxt=false;$('checkout-dialogue').textContent=t('cvF_conversion');$('checkout-status').textContent='';$('support-after-download').hidden=true;openModal($('export-modal'));track('cv_paywall_seen');void cvVoice.react('finish',{priority:3,maxAge:6000});}
+function finish(){clearTimeout(updateTimer);update();if(!validateForExport())return;afterTxt=false;$('checkout-dialogue').textContent=t('cvF_conversion');$('checkout-status').textContent='';$('support-after-download').hidden=true;$('cv-interview-resource').hidden=true;openModal($('export-modal'));track('cv_paywall_seen');void cvVoice.react('finish',{priority:3,maxAge:6000});}
 function letterText(){const p=profile(),title=$('job-title').value.trim()||p.headline;return [dt('cvF_letterSalutation'),title?dt('cvF_letterInterest',{title}):dt('cvF_letterGeneral'),p.summary||[p.headline,p.skills?dt('cvF_letterSkills',{skills:p.skills}):''].filter(Boolean).join('. '),dt('cvF_letterBody'),dt('cvF_letterClosing'),p.name].filter(Boolean).join('\n\n');}
 function tailored(p,job){const keywords=extractJobKeywords(job),norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();const skills=p.skills.split(/[,;\n]/).map(s=>s.trim()).filter(Boolean);skills.sort((a,b)=>Number(keywords.some(k=>norm(b).includes(norm(k))))-Number(keywords.some(k=>norm(a).includes(norm(k)))));return {...p,skills:skills.join(', ')};}
 function paidFiles(plan){
@@ -118,7 +131,7 @@ function paidFiles(plan){
   root.append(action(t('cvF_editableLetter'),()=>{try{if(!entitlement)throw new Error(t('cvF_verifyBeforeDownload'));const letter=$('cover-letter').value.trim()||letterText();download(buildCoverLetterDocx(profile(),letter,exportOptions()),'carta-presentacion.docx','application/vnd.openxmlformats-officedocument.wordprocessingml.document');$('checkout-status').textContent=t('cvF_letterReady');}catch(e){$('checkout-status').textContent=exportError(e);}}));
  }
 }
-function exportPaid(p,tpl,format,name){try{if(!entitlement)throw new Error(t('cvF_verifyBeforeDownload'));const data=format==='pdf'?buildCvPdf(p,exportOptions(tpl)):buildDocx(p,exportOptions(tpl));download(data,name+'.'+format,format==='pdf'?'application/pdf':'application/vnd.openxmlformats-officedocument.wordprocessingml.document');$('checkout-status').textContent=t('cvF_fileReady');}catch(e){$('checkout-status').textContent=exportError(e);}}
+function exportPaid(p,tpl,format,name){$('cv-interview-resource').hidden=true;try{if(!entitlement)throw new Error(t('cvF_verifyBeforeDownload'));const data=format==='pdf'?buildCvPdf(p,exportOptions(tpl)):buildDocx(p,exportOptions(tpl));download(data,name+'.'+format,format==='pdf'?'application/pdf':'application/vnd.openxmlformats-officedocument.wordprocessingml.document');$('checkout-status').textContent=t('cvF_fileReady');if(!entitlement.test)showInterviewResource();}catch(e){$('checkout-status').textContent=exportError(e);}}
 async function buy(plan){
  if(paymentBusy)return;try{buildCvPdf(profile(),exportOptions());}catch(e){$('checkout-status').textContent=exportError(e);return;}track(plan==='pro'?'cv_checkout_pro_click':'cv_checkout_plus_click');paymentBusy=true;const request=++paymentRevision;
  $('checkout-status').textContent=t('cvF_checkoutPreparing');$('buy-pro').disabled=true;$('buy-plus').disabled=true;
@@ -126,6 +139,7 @@ async function buy(plan){
  catch(e){if(request===paymentRevision)$('checkout-status').textContent=t('cvF_checkoutError');}finally{if(request===paymentRevision){paymentBusy=false;$('buy-pro').disabled=false;$('buy-plus').disabled=false;}}
 }
 function reset(){
+ $('cv-interview-resource').hidden = true;
  exampleProfile = null;
  $('cv-example-files').hidden = true;
  $('cv-example-status').textContent = '';
@@ -271,7 +285,7 @@ $('load-example').addEventListener('click', () => {
 $('source-text').addEventListener('input',()=>{sourceText=$('source-text').value;extraction={status:'ok',format:'paste',imported:true,warnings:[]};changed();});
 $('use-source').addEventListener('click',()=>{const value=$('source-text').value.trim();if(!value){sayKey('cvF_pasteFirst');return;}if(value.length>2500){sayKey('cvF_sourceTooLong');return;}if($('cv-summary').value.trim()&&!confirm(t('cvF_replaceSummary')))return;$('cv-summary').value=value;changed();sayKey('cvF_sourceUsed');});
 $('cv-file').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;const request=++importRequest,started=revision;$('import-status').textContent=t('cvF_importReading');const result=await readCvFile(file);if(request!==importRequest)return;if(started!==revision){$('import-status').textContent=t('cvF_importStale');return;}if(result.extraction.status==='error'){$('import-status').textContent=t('cvF_importFailed');return;}extraction=result.extraction;sourceText=result.text;$('source-text').value=result.text;showUnassigned('');$('import-status').textContent=t('cvF_importRead',{n:result.text.length})+(result.extraction.warnings.length?' '+t('cvF_importWarning'):'');changed();});
-$('free-download').addEventListener('click',e=>{e.preventDefault();try{download('\uFEFF'+buildPlainText(profile(),exportOptions()),'mi-cv.txt','text/plain;charset=utf-8');track('cv_txt_download');afterTxt=true;$('checkout-dialogue').textContent=t('cvF_afterTxt');$('support-copy').hidden=true;$('support-after-download').hidden=false;$('checkout-status').textContent=t('cvF_txtReady');sayKey('cvF_afterTxt');$('support-after-download').scrollIntoView({block:'nearest',behavior:'auto'});}catch(error){$('checkout-status').textContent=exportError(error);}});
+$('free-download').addEventListener('click',e=>{e.preventDefault();$('cv-interview-resource').hidden=true;try{download('\uFEFF'+buildPlainText(profile(),exportOptions()),'mi-cv.txt','text/plain;charset=utf-8');track('cv_txt_download');afterTxt=true;$('checkout-dialogue').textContent=t('cvF_afterTxt');$('support-copy').hidden=true;$('support-after-download').hidden=false;$('checkout-status').textContent=t('cvF_txtReady');showInterviewResource();sayKey('cvF_afterTxt');$('support-after-download').scrollIntoView({block:'nearest',behavior:'auto'});}catch(error){$('checkout-status').textContent=exportError(error);}});
 $('support-two').href=supportUrl(2);$('support-five').href=supportUrl(5);
 $('buy-pro').addEventListener('click',()=>buy('pro'));$('buy-plus').addEventListener('click',()=>buy('plus'));
 $('verify-payment').addEventListener('click',async()=>{
@@ -288,6 +302,7 @@ $('cancel-keyword').addEventListener('click',()=>closeModal($('keyword-modal')))
 for(const dialog of [$('export-modal'),$('keyword-modal'),$('import-review-modal'),$('achievement-modal')]){dialog.addEventListener('close',()=>{document.body.classList.remove('modal-open');modalOpener?.focus();});dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeModal(dialog);}});}
 // Decorative CSS overlay is never part of exported TXT/PDF/DOCX content.
 document.addEventListener('portfolio:language',refreshFunnelCopy);
+document.addEventListener('portfolio:language',renderInterviewResource);
 $('cv-preview').addEventListener('dragstart',e=>e.preventDefault());
 window.addEventListener('pagehide',()=>{clearTimeout(updateTimer);importRequest++;paymentRevision++;paymentBusy=false;$('buy-pro').disabled=false;$('buy-plus').disabled=false;$('verify-payment').disabled=false;});
 window.addEventListener('pageshow', event => {
