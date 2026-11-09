@@ -150,6 +150,46 @@ main { padding-block: clamp(1.8rem, 4vw, 3.5rem); }
 .channels { display: flex; flex-wrap: wrap; gap: .5rem 1.3rem; list-style: none; padding: 0; color: var(--rose); }
 .studio { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .85rem 1.5rem; border-top: 1px solid var(--line); padding-top: 1.5rem; }
 .studio p { margin-bottom: 0; }
+.domain-addon {
+  flex: 1 1 100%;
+  margin-top: .8rem;
+  padding-block: 1.35rem .4rem;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 1rem;
+}
+.domain-addon h3 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .35rem .7rem;
+  margin: 0 0 .45rem;
+  font-size: 1.3rem;
+  font-weight: 650;
+}
+.domain-addon h3 span {
+  padding: .12rem .45rem;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--rose);
+  font-size: .75rem;
+}
+.domain-addon dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+  gap: 1.1rem 1.5rem;
+  margin: 1.1rem 0 .85rem;
+}
+.domain-addon dt { font-weight: 650; }
+.domain-addon dd { margin: .15rem 0 0; color: var(--muted); }
+.domain-addon dd strong { color: var(--rose); }
+.domain-addon .domain-note { font-size: .9rem; }
+.domain-button {
+  margin-top: .9rem;
+  border: 1px solid var(--rose);
+  background: transparent;
+  color: var(--rose);
+}
+.domain-button:hover { color: var(--ground); }
 .footer { padding-block: 1rem 2rem; border-top: 1px solid var(--line); align-items: center; }
 @media (max-width: 38rem) {
   .hero { grid-template-columns: 1fr; padding-block: 1.15rem .8rem; gap: 0; }
