@@ -1,18 +1,18 @@
 /* A compact visitor action in the existing Explore menu and footer. */
-.cs-site-share{--share-ink:#146d66;--share-line:#5d9b9275;--share-wash:#d0f3eb78;display:grid;gap:8px;min-width:0;max-width:100%;color:var(--ink,var(--text,#183b3d))}
+.cs-site-share{--share-ink:#115c88;--share-line:#719cc375;--share-wash:#c9e2f678;display:grid;gap:8px;min-width:0;max-width:100%;color:var(--ink,var(--text,#1b3046))}
 footer>.cs-site-share{flex:1 0 100%;grid-column:1/-1;order:100;margin-top:16px;justify-items:start}
-html:is([data-mode=laboratorio],[data-mode=lab]) .cs-site-share{--share-ink:#96eddf;--share-line:#74c5c085;--share-wash:#18474878}
+html:not([data-mode=oficina]) .cs-site-share{--share-ink:#a3ddff;--share-line:#77acd685;--share-wash:#234a7378}
 .cs-site-share .cs-share-trigger{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;min-width:44px;max-width:100%;box-sizing:border-box;margin:0;padding:11px 16px;border:1px solid var(--share-line);border-radius:12px;background:var(--share-wash);color:var(--share-ink);font-family:inherit;font-size:.84rem;font-weight:650;line-height:1.4;text-align:center;cursor:pointer;touch-action:manipulation;transition:background-color .18s ease,transform .18s ease}
 .cs-share-trigger svg{flex:none;pointer-events:none}.cs-share-trigger span{overflow-wrap:anywhere}
 .cs-site-share .cs-share-trigger:focus-visible,.cs-site-share .cs-share-manual:focus-visible{outline:3px solid var(--share-ink);outline-offset:3px}
 .cs-site-share .cs-share-trigger:disabled{opacity:.7;cursor:progress}
-.cs-share-status{display:block;max-width:42ch;min-width:0;color:var(--ink,var(--text,#183b3d));font-size:.8rem;line-height:1.5}
+.cs-share-status{display:block;max-width:42ch;min-width:0;color:var(--ink,var(--text,#1b3046));font-size:.8rem;line-height:1.5}
 .cs-share-status:empty{display:none}
 .cs-share-manual{box-sizing:border-box;min-width:0;width:min(100%,320px);min-height:44px;padding:10px;border:1px solid var(--share-line);border-radius:8px;background:var(--surface,#fffdf6);color:inherit;font-family:inherit;font-size:16px;font-weight:400;line-height:1.4}
 .cs-share-manual[hidden]{display:none!important}
 .cs-menu nav>.cs-site-share{margin-top:8px;padding-top:10px;border-top:1px solid var(--share-line)}
 .cs-menu .cs-share-trigger{width:100%;justify-content:flex-start}
-@media(hover:hover) and (pointer:fine){.cs-site-share .cs-share-trigger:not(:disabled):hover{background:var(--surface-soft,var(--surface,#e0f3ed));transform:translateY(-1px)}}
+@media(hover:hover) and (pointer:fine){.cs-site-share .cs-share-trigger:not(:disabled):hover{background:var(--surface-soft,var(--surface,#e3edf8));transform:translateY(-1px)}}
 .cs-site-share .cs-share-trigger:not(:disabled):active{transform:translateY(1px)}
 @media(max-width:640px){footer>.cs-site-share{justify-items:center}.cs-share-status{text-align:center}}
 @media(prefers-reduced-motion:reduce){.cs-site-share .cs-share-trigger{transition:none}.cs-site-share .cs-share-trigger:not(:disabled):is(:hover,:active){transform:none}}

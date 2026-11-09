@@ -3,20 +3,20 @@
 .room-voice-controls { display: grid; gap: 10px; margin: 18px 0; }
 .room-voice-controls .button { justify-content: center; width: 100%; }
 .room-gesture-actions { display: flex; flex-wrap: wrap; gap: 7px; }
-.room-gesture-actions button { border: 1px solid var(--border-color, #6a969b); background: transparent; color: inherit; border-radius: 10px; padding: 9px 11px; cursor: pointer; font: inherit; font-size: .78rem; min-height: 42px; }
-.room-caption { margin: 0; font-size: .8rem; border-left: 2px solid var(--accent-color, #34c8bd); padding-left: 11px; line-height: 1.55; }
-.room-chat { margin: 20px 0; padding-top: 15px; border-top: 1px solid var(--border-color, #6a969b); }
+.room-gesture-actions button { border: 1px solid var(--border-color, #779bbd); background: transparent; color: inherit; border-radius: 10px; padding: 9px 11px; cursor: pointer; font: inherit; font-size: .78rem; min-height: 42px; }
+.room-caption { margin: 0; font-size: .8rem; border-left: 2px solid var(--accent, #76c9fb); padding-left: 11px; line-height: 1.55; }
+.room-chat { margin: 20px 0; padding-top: 15px; border-top: 1px solid var(--border-color, #779bbd); }
 .room-chat summary { cursor: pointer; font-weight: 700; padding: 8px 0; }
 .room-chat > .button { margin-top: 12px; width: 100%; justify-content: center; }
 .room-chat-messages { max-height: 320px; overflow-y: auto; overscroll-behavior: contain; margin: 10px 0; }
-.room-chat-message { border-radius: 12px; padding: 12px; margin: 8px 0; font-size: .85rem; white-space: pre-wrap; overflow-wrap: anywhere; background: color-mix(in srgb, var(--accent-color, #20a99e) 9%, transparent); }
-.room-chat-message.user { border-left: 2px solid var(--accent-color, #20a99e); }
+.room-chat-message { border-radius: 12px; padding: 12px; margin: 8px 0; font-size: .85rem; white-space: pre-wrap; overflow-wrap: anywhere; background: color-mix(in srgb, var(--accent, #76c9fb) 9%, transparent); }
+.room-chat-message.user { border-left: 2px solid var(--accent, #76c9fb); }
 .room-chat-link { display: block; padding: 7px 9px; font-size: .84rem; }
 #axiom-chat-form { display: grid; gap: 10px; }
 #axiom-chat-form[hidden], #axiom-chat-stop[hidden], #axiom-chat-activate[hidden], #axiom-caption[hidden] { display: none; }
 #axiom-chat-form label { font-size: .85rem; font-weight: 600; }
-#axiom-chat-input { width: 100%; box-sizing: border-box; border-radius: 10px; background: var(--panel-bg, transparent); color: inherit; border: 1px solid var(--border-color, #6a969b); padding: 12px; resize: vertical; font: inherit; font-size: 16px; }
-.room-chat :focus-visible, .room-voice-controls :focus-visible { outline: 3px solid var(--accent-color, #20a99e); outline-offset: 3px; }
+#axiom-chat-input { width: 100%; box-sizing: border-box; border-radius: 10px; background: var(--panel-bg, transparent); color: inherit; border: 1px solid var(--border-color, #779bbd); padding: 12px; resize: vertical; font: inherit; font-size: 16px; }
+.room-chat :focus-visible, .room-voice-controls :focus-visible { outline: 3px solid var(--accent, #76c9fb); outline-offset: 3px; }
 /* Keep one reading order at every width: introduction, 3D, useful choices. */
 .axiom-guide { display: block; }
 .axiom-guide .room-voice-controls { margin: 18px 0 22px; }
@@ -24,13 +24,13 @@
 .axiom-guide .axiom-intro-actions #axiom-3d-start { min-width: 0; min-height: 44px; padding: 10px 12px; font-size: .82rem; line-height: 1.4; text-align: center; }
 .axiom-guide .axiom-intro-actions #axiom-voice { display: inline-grid; place-items: center; inline-size: 44px; block-size: 44px; width: 44px; height: 44px; min-width: 44px; max-width: 44px; min-height: 44px; max-height: 44px; flex: 0 0 44px; justify-self: end; align-self: center; padding: 9px; border-radius: 50%; aspect-ratio: 1; }
 .axiom-guide #axiom-voice svg { display: block; width: 23px; height: 23px; }
-.axiom-guide .guide-task { display: block; width: 100%; min-width: 0; padding-top: 19px; border-top: 1px solid var(--line, #6a969b); }
+.axiom-guide .guide-task { display: block; width: 100%; min-width: 0; padding-top: 19px; border-top: 1px solid var(--line, #779bbd); }
 .axiom-guide .guide-task h3 { margin: 0 0 13px; font-size: 1.08rem; line-height: 1.35; letter-spacing: -.025em; }
 .axiom-guide .guide-task .guide-options { grid-column: auto; grid-row: auto; margin: 0; }
 .axiom-guide .guide-task .rescue-button { min-height: 44px; margin: 12px 0 0; }
 .axiom-guide .room-secondary-actions { display: grid; gap: 14px; margin: 17px 0 0; }
 .axiom-guide .room-secondary-actions .room-gesture-actions { gap: 8px; }
 .axiom-guide .room-secondary-actions button { min-height: 44px; margin: 0; font-size: .76rem; line-height: 1.4; }
-.axiom-guide .room-secondary-actions :focus-visible { outline: 3px solid var(--accent, #20a99e); outline-offset: 3px; }
+.axiom-guide .room-secondary-actions :focus-visible { outline: 3px solid var(--accent, #115c88); outline-offset: 3px; }
 @media (max-width: 700px) { .axioma-avatar { width: 19%; height: 43%; } .room-chat-messages { max-height: 240px; } }
 @media print { .room-chat, .room-voice-controls { display: none !important; } }
