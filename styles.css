@@ -1,24 +1,24 @@
 /* CyberSerch room — one shared layout, two intentional material palettes. */
 :root {
   color-scheme: light;
-  --page: #f4f2e9;
-  --surface: #fffdf6;
-  --surface-soft: #eef1f3;
+  --page: #eff2f7;
+  --surface: #f9fbff;
+  --surface-soft: #e8edf5;
   --surface-raised: #ffffff;
-  --ink: #1b3046;
-  --muted: #506277;
-  --quiet: #506277;
-  --line: #ccd7e2;
-  --line-strong: #8fa7bc;
-  --accent: #115c88;
-  --accent-bright: #104b70;
-  --accent-wash: #e6eef5;
+  --ink: #222e42;
+  --muted: #4b5b72;
+  --quiet: #4b5b72;
+  --line: #cbd3e2;
+  --line-strong: #929fba;
+  --accent: #3c567e;
+  --accent-bright: #32496d;
+  --accent-wash: #e4eaf5;
   --accent-ink: #ffffff;
-  --gold: #295985;
+  --gold: #435b80;
   --office-opacity: 1;
   --lab-opacity: 0;
-  --room-bg: #f7f7ef;
-  --room-light: #dce8f1;
+  --room-bg: #f2f5fa;
+  --room-light: #e1e6f1;
   --shadow: 0 22px 65px -45px #263f5975;
   --radius: 22px;
   --font: "Aptos", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -28,24 +28,24 @@
 }
 :root[data-mode="laboratorio"], :root[data-mode="lab"] {
   color-scheme: dark;
-  --page: #0b1727;
-  --surface: #14273d;
-  --surface-soft: #172e47;
-  --surface-raised: #1d3651;
-  --ink: #eef6fe;
-  --muted: #acc2d9;
-  --quiet: #94acc6;
-  --line: #2e4a65;
-  --line-strong: #537696;
-  --accent: #76c9fb;
-  --accent-bright: #a3ddff;
-  --accent-wash: #1a3a55;
-  --accent-ink: #092237;
-  --gold: #a0c7f1;
+  --page: #141b28;
+  --surface: #212d43;
+  --surface-soft: #26364e;
+  --surface-raised: #303e56;
+  --ink: #f0f4fb;
+  --muted: #bac6da;
+  --quiet: #a3b2ca;
+  --line: #465670;
+  --line-strong: #657b9e;
+  --accent: #b0cdf8;
+  --accent-bright: #d1e7ff;
+  --accent-wash: #303f5c;
+  --accent-ink: #17243b;
+  --gold: #c2d3f5;
   --office-opacity: 0;
   --lab-opacity: 1;
-  --room-bg: #10223a;
-  --room-light: #224366;
+  --room-bg: #1b2436;
+  --room-light: #3a4b69;
   --shadow: 0 26px 72px -40px #010910;
 }
 * { box-sizing: border-box; }

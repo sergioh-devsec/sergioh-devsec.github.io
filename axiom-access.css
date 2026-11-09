@@ -1,20 +1,20 @@
 /* A direct, light entrance to the 3D world. No model is downloaded by this card. */
-.axiom-access{position:relative;display:grid;grid-template-columns:136px minmax(0,1fr) auto;align-items:center;gap:24px;margin:0 0 18px;padding:18px 24px 18px 16px;overflow:hidden;border:1px solid var(--accent,#76c9fb);border-radius:22px;background:linear-gradient(115deg,var(--accent-wash,#1a3a55),var(--surface,#14273d));color:var(--ink,#eef6fe);isolation:isolate}
-.axiom-access::after{content:"";position:absolute;inset:-85% auto auto -12%;width:360px;height:360px;border:1px solid var(--accent,#76c9fb);border-radius:50%;opacity:.14;z-index:-1;pointer-events:none}
+.axiom-access{position:relative;display:grid;grid-template-columns:136px minmax(0,1fr) auto;align-items:center;gap:24px;margin:0 0 18px;padding:18px 24px 18px 16px;overflow:hidden;border:1px solid var(--accent,#b0cdf8);border-radius:22px;background:linear-gradient(115deg,var(--accent-wash,#303f5c),var(--surface,#212d43));color:var(--ink,#f0f4fb);isolation:isolate}
+.axiom-access::after{content:"";position:absolute;inset:-85% auto auto -12%;width:360px;height:360px;border:1px solid var(--accent,#b0cdf8);border-radius:50%;opacity:.14;z-index:-1;pointer-events:none}
 .axiom-access-art{position:relative;display:grid;place-items:center;min-width:0;height:138px}
-.axiom-access-art::before{content:"";position:absolute;left:10%;right:10%;bottom:2px;height:19px;border:1px solid var(--accent,#76c9fb);border-radius:50%;opacity:.32;transform:rotate(-6deg)}
+.axiom-access-art::before{content:"";position:absolute;left:10%;right:10%;bottom:2px;height:19px;border:1px solid var(--accent,#b0cdf8);border-radius:50%;opacity:.32;transform:rotate(-6deg)}
 .axiom-access-art img{display:block;width:120px;height:138px;object-fit:contain;filter:drop-shadow(0 9px 12px #061c2930);animation:axiom-access-float 5s ease-in-out infinite;transform-origin:50% 80%}
-.axiom-access-dimension{position:absolute;left:0;top:2px;padding:3px 8px;border:1px solid var(--line-strong,#537696);border-radius:8px;background:var(--surface,#14273d);color:var(--accent,#76c9fb);font:750 11px/1.5 ui-monospace,monospace;letter-spacing:.08em;z-index:1}
+.axiom-access-dimension{position:absolute;left:0;top:2px;padding:3px 8px;border:1px solid var(--line-strong,#657b9e);border-radius:8px;background:var(--surface,#212d43);color:var(--accent,#b0cdf8);font:750 11px/1.5 ui-monospace,monospace;letter-spacing:.08em;z-index:1}
 .axiom-access-copy{min-width:0}
-.axiom-access .axiom-access-tag{margin:0 0 7px;color:var(--accent,#76c9fb);font-size:.62rem;font-weight:750;letter-spacing:.12em;line-height:1.45}
+.axiom-access .axiom-access-tag{margin:0 0 7px;color:var(--accent,#b0cdf8);font-size:.62rem;font-weight:750;letter-spacing:.12em;line-height:1.45}
 .axiom-access h2{margin:0 0 7px;font-size:clamp(1.35rem,2.4vw,2.05rem);line-height:1.12;letter-spacing:-.035em}
-.axiom-access-copy>p:last-child{max-width:540px;margin:0;color:var(--muted,#acc2d9);font-size:.88rem;line-height:1.55}
+.axiom-access-copy>p:last-child{max-width:540px;margin:0;color:var(--muted,#bac6da);font-size:.88rem;line-height:1.55}
 .axiom-access-actions{display:grid;gap:7px;min-width:185px}
-.axiom-access-actions>a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:11px 16px;border:1px solid var(--accent,#76c9fb);border-radius:12px;text-decoration:none;line-height:1.35;font-size:.86rem;font-weight:700;text-align:center;touch-action:manipulation;transition:transform .18s ease,background .18s ease}
-.axiom-access-primary{background:var(--accent,#76c9fb);color:var(--accent-ink,#092237)}
-.axiom-access-secondary{background:transparent;color:var(--accent,#76c9fb)}
+.axiom-access-actions>a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:11px 16px;border:1px solid var(--accent,#b0cdf8);border-radius:12px;text-decoration:none;line-height:1.35;font-size:.86rem;font-weight:700;text-align:center;touch-action:manipulation;transition:transform .18s ease,background .18s ease}
+.axiom-access-primary{background:var(--accent,#b0cdf8);color:var(--accent-ink,#17243b)}
+.axiom-access-secondary{background:transparent;color:var(--accent,#b0cdf8)}
 .axiom-access-actions>a:hover{transform:translateY(-2px);box-shadow:0 5px 14px #06202714}
-.axiom-access-actions>a:focus-visible{outline:3px solid var(--accent,#76c9fb);outline-offset:4px}
+.axiom-access-actions>a:focus-visible{outline:3px solid var(--accent,#b0cdf8);outline-offset:4px}
 @keyframes axiom-access-float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-4px) rotate(1deg)}}
 html[data-motion="paused"] .axiom-access-art img,.motion-paused .axiom-access-art img{animation-play-state:paused}
 @media(max-width:640px){.axiom-access{grid-template-columns:76px minmax(0,1fr);gap:10px 14px;padding:16px;border-radius:18px;margin-bottom:14px}.axiom-access-art{height:100px}.axiom-access-art img{width:76px;height:100px}.axiom-access-dimension{left:-3px;top:-3px;font-size:9px;padding:2px 6px}.axiom-access h2{font-size:1.35rem;line-height:1.1}.axiom-access .axiom-access-tag{font-size:.52rem;letter-spacing:.08em;margin-bottom:5px}.axiom-access-copy>p:last-child{font-size:.76rem;line-height:1.45}.axiom-access-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;min-width:0}.axiom-access-actions>a{font-size:.8rem;padding:10px 12px}.axiom-access-primary{flex:1 1 165px}.axiom-access-secondary{flex:1 1 90px}}

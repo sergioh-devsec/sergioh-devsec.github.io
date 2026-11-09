@@ -4,19 +4,19 @@
 .room-voice-controls .button { justify-content: center; width: 100%; }
 .room-gesture-actions { display: flex; flex-wrap: wrap; gap: 7px; }
 .room-gesture-actions button { border: 1px solid var(--border-color, #779bbd); background: transparent; color: inherit; border-radius: 10px; padding: 9px 11px; cursor: pointer; font: inherit; font-size: .78rem; min-height: 42px; }
-.room-caption { margin: 0; font-size: .8rem; border-left: 2px solid var(--accent, #76c9fb); padding-left: 11px; line-height: 1.55; }
+.room-caption { margin: 0; font-size: .8rem; border-left: 2px solid var(--accent, #b0cdf8); padding-left: 11px; line-height: 1.55; }
 .room-chat { margin: 20px 0; padding-top: 15px; border-top: 1px solid var(--border-color, #779bbd); }
 .room-chat summary { cursor: pointer; font-weight: 700; padding: 8px 0; }
 .room-chat > .button { margin-top: 12px; width: 100%; justify-content: center; }
 .room-chat-messages { max-height: 320px; overflow-y: auto; overscroll-behavior: contain; margin: 10px 0; }
-.room-chat-message { border-radius: 12px; padding: 12px; margin: 8px 0; font-size: .85rem; white-space: pre-wrap; overflow-wrap: anywhere; background: color-mix(in srgb, var(--accent, #76c9fb) 9%, transparent); }
-.room-chat-message.user { border-left: 2px solid var(--accent, #76c9fb); }
+.room-chat-message { border-radius: 12px; padding: 12px; margin: 8px 0; font-size: .85rem; white-space: pre-wrap; overflow-wrap: anywhere; background: color-mix(in srgb, var(--accent, #b0cdf8) 9%, transparent); }
+.room-chat-message.user { border-left: 2px solid var(--accent, #b0cdf8); }
 .room-chat-link { display: block; padding: 7px 9px; font-size: .84rem; }
 #axiom-chat-form { display: grid; gap: 10px; }
 #axiom-chat-form[hidden], #axiom-chat-stop[hidden], #axiom-chat-activate[hidden], #axiom-caption[hidden] { display: none; }
 #axiom-chat-form label { font-size: .85rem; font-weight: 600; }
 #axiom-chat-input { width: 100%; box-sizing: border-box; border-radius: 10px; background: var(--panel-bg, transparent); color: inherit; border: 1px solid var(--border-color, #779bbd); padding: 12px; resize: vertical; font: inherit; font-size: 16px; }
-.room-chat :focus-visible, .room-voice-controls :focus-visible { outline: 3px solid var(--accent, #76c9fb); outline-offset: 3px; }
+.room-chat :focus-visible, .room-voice-controls :focus-visible { outline: 3px solid var(--accent, #b0cdf8); outline-offset: 3px; }
 /* Keep one reading order at every width: introduction, 3D, useful choices. */
 .axiom-guide { display: block; }
 .axiom-guide .room-voice-controls { margin: 18px 0 22px; }
@@ -31,6 +31,6 @@
 .axiom-guide .room-secondary-actions { display: grid; gap: 14px; margin: 17px 0 0; }
 .axiom-guide .room-secondary-actions .room-gesture-actions { gap: 8px; }
 .axiom-guide .room-secondary-actions button { min-height: 44px; margin: 0; font-size: .76rem; line-height: 1.4; }
-.axiom-guide .room-secondary-actions :focus-visible { outline: 3px solid var(--accent, #115c88); outline-offset: 3px; }
+.axiom-guide .room-secondary-actions :focus-visible { outline: 3px solid var(--accent, #3c567e); outline-offset: 3px; }
 @media (max-width: 700px) { .axioma-avatar { width: 19%; height: 43%; } .room-chat-messages { max-height: 240px; } }
 @media print { .room-chat, .room-voice-controls { display: none !important; } }
