@@ -5,3 +5,27 @@
 .mobile-motion{display:none}@media(max-width:680px){.site-footer .mobile-motion{display:block}}
 #instagram-qr{display:block;width:min(340px,100%);height:auto;margin:20px auto 24px;background:white;border-radius:16px}.social-links .qr-button{grid-column:1/-1;padding:3px 0;width:fit-content;min-height:40px;font-size:.78rem}
 @media print{.site-header,.site-footer,.social-section,.support-section,.creator-teaser,.intro-action,dialog,.analytics-consent{display:none!important}body{color:#162d34;background:white}.wrap{width:100%}.case-card,.service-card{break-inside:avoid;border-color:#777}.case-card p,.muted{color:#333}}
+
+.creator-teaser-actions {
+  display: grid;
+  gap: 8px;
+  flex: 0 0 auto;
+  max-width: 100%;
+}
+#creadoras .cs-site-share {
+  --share-ink: #ffe1d5;
+  --share-line: #be7176;
+  --share-wash: #55253b50;
+}
+.creator-teaser-actions .cs-share-trigger { width: 100%; }
+.creator-teaser-actions .cs-share-status { max-width: 28ch; }
+.creator-teaser-actions .cs-share-manual { width: 100%; }
+@media (hover: hover) and (pointer: fine) {
+  .creator-teaser-actions .cs-site-share .cs-share-trigger:not(:disabled):hover {
+    background: #512534;
+  }
+}
+@media (max-width: 680px) {
+  .creator-teaser-actions { margin-top: 17px; }
+  .creator-teaser-actions button { margin-top: 0; }
+}

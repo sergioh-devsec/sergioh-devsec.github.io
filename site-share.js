@@ -1,8 +1,10 @@
 // Sharing is always an explicit visitor action. Never share editor data or URL parameters.
 export const SITE_URL = 'https://cyberserch.com/';
+export const CREATORS_URL = 'https://cyberserch.com/portafolio.html#creadoras';
 
-export async function shareSite({navigator:nav, title, text} = {}) {
-  const data = {title, text, url:SITE_URL};
+export async function shareSite({navigator:nav, title, text, destination} = {}) {
+  const url = destination === 'creadoras' ? CREATORS_URL : SITE_URL;
+  const data = {title, text, url};
   if (typeof nav?.share === 'function') {
     try {
       if (typeof nav.canShare !== 'function' || nav.canShare(data)) {
@@ -15,7 +17,7 @@ export async function shareSite({navigator:nav, title, text} = {}) {
     }
   }
   if (typeof nav?.clipboard?.writeText === 'function') {
-    try { await nav.clipboard.writeText(SITE_URL); return 'copied'; }
+    try { await nav.clipboard.writeText(url); return 'copied'; }
     catch { /* Keep a selectable URL available when clipboard permission is denied. */ }
   }
   return 'manual';
@@ -34,28 +36,36 @@ export function mountSiteShare(doc = globalThis.document) {
   if (!doc || mounted.has(doc)) return mounted.get(doc) || null;
   const footer = doc.querySelector('footer');
   const win = doc.defaultView;
-  if (!footer || !win?.TRANSLATIONS?.es?.shareSiteAction) return null;
-  const placements = [footer, ...doc.querySelectorAll('.cs-menu nav')];
+  if (!win?.TRANSLATIONS?.es?.shareSiteAction) return null;
+  const contextual = doc.querySelectorAll('[data-share-creadoras]');
+  const placements = contextual.length ? [...contextual] : [footer, ...doc.querySelectorAll('.cs-menu nav')].filter(Boolean);
+  if (!placements.length) return null;
   const controls = [];
   let busy = false;
   const dictionary = () => win.TRANSLATIONS[String(doc.documentElement.lang).startsWith('en')?'en':'es'];
   const copy = key => dictionary()[key] || '';
 
   for (const parent of placements) {
+    const creators = parent.hasAttribute('data-share-creadoras');
+    const destination = creators ? 'creadoras' : 'site';
+    const keyPrefix = creators ? 'shareCreator' : 'shareSite';
     const region = doc.createElement('div'); region.className = 'cs-site-share';
     const button = doc.createElement('button'); button.type = 'button'; button.className = 'cs-share-trigger';
     const label = doc.createElement('span'); button.append(shareIcon(doc),label);
     const status = doc.createElement('span'); status.className = 'cs-share-status';
     status.setAttribute('role','status'); status.setAttribute('aria-live','polite');
     const manual = doc.createElement('input'); manual.type = 'text'; manual.readOnly = true;
-    manual.value = SITE_URL; manual.className = 'cs-share-manual'; manual.hidden = true;
-    const control = {region,button,label,status,manual,statusKey:''};
+    manual.value = creators ? CREATORS_URL : SITE_URL; manual.className = 'cs-share-manual'; manual.hidden = true;
+    const control = {region,button,label,status,manual,keyPrefix,statusKey:''};
     button.addEventListener('click', async () => {
       if (busy) return;
       busy = true; manual.hidden = true; control.statusKey = '';
       controls.forEach(item => { item.button.disabled = true; item.button.setAttribute('aria-busy','true'); });
       render();
-      const result = await shareSite({navigator:win.navigator,title:copy('shareSiteTitle'),text:copy('shareSiteText')});
+      const result = await shareSite({
+        navigator: win.navigator, destination,
+        title: copy(keyPrefix + 'Title'), text: copy(keyPrefix + 'Text')
+      });
       control.statusKey = ({shared:'shareSiteShared',copied:'shareSiteCopied',manual:'shareSiteManual'})[result] || '';
       busy = false;
       controls.forEach(item => { item.button.disabled = false; item.button.removeAttribute('aria-busy'); });
@@ -67,9 +77,9 @@ export function mountSiteShare(doc = globalThis.document) {
   }
   function render() {
     for (const control of controls) {
-      control.label.textContent = copy(busy?'shareSiteBusy':'shareSiteAction');
+      control.label.textContent = copy(busy ? 'shareSiteBusy' : control.keyPrefix + 'Action');
       control.status.textContent = control.statusKey ? copy(control.statusKey) : '';
-      control.manual.setAttribute('aria-label',copy('shareSiteLinkLabel'));
+      control.manual.setAttribute('aria-label',copy(control.keyPrefix + 'LinkLabel'));
     }
   }
   const observer = win.MutationObserver ? new win.MutationObserver(render) : null;

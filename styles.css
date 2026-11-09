@@ -131,7 +131,7 @@ html[data-mode="oficina"] #mode-office-label, html[data-mode="laboratorio"] #mod
 /* Named signposts replace the numeric pins. Their leaders preserve the shared map. */
 .station-sign { pointer-events: none; transition: filter 180ms; }
 .station-sign rect { fill: var(--surface); fill-opacity: .96; stroke: var(--line-strong); stroke-width: 3; }
-.station-hitbox .station-sign-label { font-family: var(--font); font-size: 48px; font-weight: 750; letter-spacing: .6px; stroke: none; fill: var(--ink); }
+.station-hitbox .station-sign-label { font-family: var(--font); font-size: 40px; font-weight: 750; letter-spacing: .4px; dominant-baseline: central; stroke: none; fill: var(--ink); }
 .station-sign-leader { fill:none; stroke:var(--accent); stroke-width:3; stroke-opacity:.55; pointer-events:none; }
 .station-hitbox:hover .station-sign rect,.station-hitbox:focus-visible .station-sign rect,.station-hitbox[aria-expanded="true"] .station-sign rect { stroke:var(--accent); fill:var(--accent-wash); }
 .station-hitbox:hover .station-sign,.station-hitbox:focus-visible .station-sign { filter:drop-shadow(0 5px 9px #071b2928); }
@@ -167,7 +167,8 @@ html[data-mode="oficina"] .skin-laboratorio .furniture-motion,html[data-mode="la
 @keyframes room-orbit { to { stroke-dashoffset:-110; } }
 @keyframes room-receipt { 0%,10%,100% { transform:translateY(0); } 35%,65% { transform:translateY(-11px); } }
 @keyframes room-steam { 0% { transform:translateY(4px) scaleX(.9); opacity:0; } 25% { opacity:.75; } 100% { transform:translateY(-25px) scaleX(1.15); opacity:0; } }
-@media(max-width:640px) { .station-hitbox .station-sign-label { font-size:54px; letter-spacing:0; } }
+@media(max-width:640px) { .station-hitbox .station-sign-label { font-size:46px; letter-spacing:0; } }
+@media(max-width:400px) { .station-hitbox .station-sign-label { font-size:50px; } }
 @media(prefers-reduced-motion:reduce) { .room-art .furniture-motion { animation:none!important; transform:none!important; } .station-sign { transition:none; } }
 .axiom-guide { align-self: center; position: relative; padding: 27px 23px; border: 1px solid var(--line); border-radius: 21px; background: var(--surface); box-shadow: var(--shadow); transition: background-color 400ms, border-color 400ms; }
 .axiom-guide::before { content: ""; position: absolute; left: -7px; top: 83px; width: 13px; height: 13px; background: var(--surface); border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); transform: rotate(45deg); transition: background-color 400ms; }

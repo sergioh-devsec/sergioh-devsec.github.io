@@ -3455,7 +3455,11 @@ Object.assign(window.TRANSLATIONS.es, {
   shareSiteCopied: 'Enlace copiado. Ya puedes pegarlo donde quieras.',
   shareSiteManual: 'No pude copiar automáticamente. Puedes seleccionar este enlace.',
   shareSiteLinkLabel: 'Enlace del sitio',
-  shareSiteBusy: 'Preparando…'
+  shareSiteBusy: 'Preparando…',
+  shareCreatorAction: 'Compartir enlace +18',
+  shareCreatorTitle: 'Servicios para creadoras +18 | CyberSerch',
+  shareCreatorText: 'Herramientas y asesoría técnica para creadoras de contenido adulto.',
+  shareCreatorLinkLabel: 'Enlace a la sección de creadoras +18'
 });
 Object.assign(window.TRANSLATIONS.en, {
   shareSiteAction: 'Share CyberSerch',
@@ -3465,5 +3469,9 @@ Object.assign(window.TRANSLATIONS.en, {
   shareSiteCopied: 'Link copied. You can paste it wherever you like.',
   shareSiteManual: 'Automatic copying was unavailable. You can select this link.',
   shareSiteLinkLabel: 'Website link',
-  shareSiteBusy: 'Preparing…'
+  shareSiteBusy: 'Preparing…',
+  shareCreatorAction: 'Share 18+ link',
+  shareCreatorTitle: 'Services for adult creators | CyberSerch',
+  shareCreatorText: 'Tools and technical guidance for adult content creators.',
+  shareCreatorLinkLabel: 'Link to the 18+ creators section'
 });

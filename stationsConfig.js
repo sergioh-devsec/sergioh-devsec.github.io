@@ -1,9 +1,9 @@
 // Sign anchors share the room coordinates; concise text comes from the active dictionary.
 const SIGN_LAYOUT = Object.freeze({
-  axiom: [980, 1018, 240], workstation: [680, 752, 265], security: [285, 526, 360],
-  comms: [1375, 574, 345], printer: [410, 916, 360], board: [1275, 284, 360],
-  clock: [803, 143, 330], register: [1315, 970, 325], vault: [1655, 508, 375],
-  library: [516, 278, 280], showcase: [1110, 402, 355], coffee: [1660, 868, 250],
+  axiom: [980, 1018, 192], workstation: [680, 752, 252], security: [285, 526, 276],
+  comms: [1375, 574, 266], printer: [410, 916, 334], board: [1275, 284, 290],
+  clock: [803, 143, 248], register: [1315, 970, 252], vault: [1655, 508, 282],
+  library: [516, 278, 196], showcase: [1110, 402, 288], coffee: [1660, 868, 190],
 });
 // Hotspot geometry shares the 1920 × 1080 viewBox of both room illustrations.
 // The room's dialog is the first step; href is the destination of its CTA.

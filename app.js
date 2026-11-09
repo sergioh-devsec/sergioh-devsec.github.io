@@ -1,6 +1,6 @@
 import { initRoomAssistant } from './room-assistant.js?v=voice-36';
 import { createModeManager } from './modeManager.js';
-import { STATIONS } from './stationsConfig.js?v=furniture-10';
+import { STATIONS } from './stationsConfig.js?v=2ab157a65fb7';
 import { validateConsent, consentHash, buildConsentPdf, CONSENT_SCHEMA } from './dentalConsent.js';
 import { professionConfig, professionSchema, validateProfessionDocument, professionDocumentHash, professionPreview, buildProfessionPdf } from './professionDocuments.js';
 import { createReciprocity } from './reciprocity.js?v=voice-5';
@@ -96,6 +96,7 @@ function engageFurniture(id, active) {
 }
 
 // A single SVG map, created once. Changing mode only replaces labels and paint.
+const signHeight = 56;
 for (const station of STATIONS) {
   const group = document.createElementNS(NS, 'g');
   group.classList.add('station-hitbox'); group.dataset.station = station.id;
@@ -103,10 +104,24 @@ for (const station of STATIONS) {
   group.setAttribute('aria-haspopup', 'dialog'); group.setAttribute('aria-controls', 'station-dialog');
   const polygon = document.createElementNS(NS, 'polygon'); polygon.setAttribute('points', station.polygon);
   const [sx,sy,sw] = station.sign || [station.x, Math.min(1018, station.y + 90), 280];
-  const leader = document.createElementNS(NS,'path'); leader.setAttribute('d',`M${station.x} ${station.id === 'axiom' ? 920 : station.y}L${sx} ${sy > station.y ? sy-31 : sy+31}`); leader.classList.add('station-sign-leader');
-  const sign = document.createElementNS(NS,'g'); sign.classList.add('station-sign');
-  const plate = document.createElementNS(NS,'rect'); plate.setAttribute('x',sx-sw/2); plate.setAttribute('y',sy-31); plate.setAttribute('width',sw); plate.setAttribute('height','62'); plate.setAttribute('rx','18');
-  const label = document.createElementNS(NS,'text'); label.setAttribute('x',sx); label.setAttribute('y',sy+16); label.classList.add('station-sign-label');
+  const signTop = sy - signHeight / 2;
+  const signEdge = sy > station.y ? signTop : signTop + signHeight;
+  const leader = document.createElementNS(NS, 'path');
+  leader.setAttribute('d', `M${station.x} ${station.id === 'axiom' ? 920 : station.y}L${sx} ${signEdge}`);
+  leader.classList.add('station-sign-leader');
+  const sign = document.createElementNS(NS, 'g');
+  sign.classList.add('station-sign');
+  const plate = document.createElementNS(NS, 'rect');
+  plate.setAttribute('x', sx - sw / 2);
+  plate.setAttribute('y', signTop);
+  plate.setAttribute('width', sw);
+  plate.setAttribute('height', signHeight);
+  plate.setAttribute('rx', '14');
+  const label = document.createElementNS(NS, 'text');
+  label.setAttribute('x', sx);
+  label.setAttribute('y', sy);
+  label.setAttribute('dy', '-.14em');
+  label.classList.add('station-sign-label');
   sign.append(plate,label); group.append(polygon,leader,sign); $('station-map').append(group);
   group.addEventListener('click', () => openStation(station.id, group));
   group.addEventListener('keydown', event => { if (['Enter', ' '].includes(event.key)) { event.preventDefault(); openStation(station.id, group); } });
