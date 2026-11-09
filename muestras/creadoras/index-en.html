@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; base-uri 'none'; form-action 'none'; script-src 'sha256-1T5cl6AZyj6pR8e7iRghkhxw9MoBa9WUpbsZstR/nBM='">
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#20131f">
   <title>Medianoche · Creator Demo | CyberSerch</title>
-  <link rel="stylesheet" href="demo.css?v=5cd3f8775fab">
+  <link rel="stylesheet" href="demo.css?v=58ae4d5e5201">
 </head>
 <body>
   <a class="skip" href="#perfil">Skip to profile</a>
@@ -37,13 +37,44 @@
       <span class="demo-note">Demo view · No payment</span>
     </section>
     <section id="galeria" class="section" aria-labelledby="gallery-title">
-      <h2 id="gallery-title">Gallery</h2>
-      <p>Three covers illustrate how you can feature collections, previews and new releases.</p>
+      <h2 id="gallery-title">Premium gallery</h2>
+      <p>Explore the covers and see how a simulated payment unlocks each piece.</p>
       <div class="gallery">
-        <figure><div class="art art-rose" aria-hidden="true"></div><figcaption>The collection</figcaption></figure>
-        <figure><div class="art art-lilac" aria-hidden="true"></div><figcaption>A sneak peek</figcaption></figure>
-        <figure><div class="art art-gold" aria-hidden="true"></div><figcaption>The latest</figcaption></figure>
+        <figure class="premium-tile" data-premium-card>
+          <div class="art art-rose" aria-hidden="true"></div>
+          <button class="premium-trigger" type="button" data-premium-trigger disabled aria-haspopup="dialog" aria-controls="premium-checkout" aria-labelledby="collection-action collection-title">
+            <svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="7.5" y="14" width="17" height="14" rx="3"/><path d="M11 14V9a5 5 0 0 1 10 0v5M16 19.5v3"/></svg>
+            <strong>Exclusive content</strong><span id="collection-action">Unlock</span>
+          </button>
+          <figcaption>
+            <strong id="collection-title" data-premium-title>The collection</strong>
+            <span class="premium-result" data-premium-result tabindex="-1" hidden>Unlocked for this visit</span>
+          </figcaption>
+        </figure>
+        <figure class="premium-tile" data-premium-card>
+          <div class="art art-lilac" aria-hidden="true"></div>
+          <button class="premium-trigger" type="button" data-premium-trigger disabled aria-haspopup="dialog" aria-controls="premium-checkout" aria-labelledby="preview-action preview-title">
+            <svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="7.5" y="14" width="17" height="14" rx="3"/><path d="M11 14V9a5 5 0 0 1 10 0v5M16 19.5v3"/></svg>
+            <strong>Exclusive content</strong><span id="preview-action">Unlock</span>
+          </button>
+          <figcaption>
+            <strong id="preview-title" data-premium-title>A sneak peek</strong>
+            <span class="premium-result" data-premium-result tabindex="-1" hidden>Unlocked for this visit</span>
+          </figcaption>
+        </figure>
+        <figure class="premium-tile" data-premium-card>
+          <div class="art art-gold" aria-hidden="true"></div>
+          <button class="premium-trigger" type="button" data-premium-trigger disabled aria-haspopup="dialog" aria-controls="premium-checkout" aria-labelledby="latest-action latest-title">
+            <svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="7.5" y="14" width="17" height="14" rx="3"/><path d="M11 14V9a5 5 0 0 1 10 0v5M16 19.5v3"/></svg>
+            <strong>Exclusive content</strong><span id="latest-action">Unlock</span>
+          </button>
+          <figcaption>
+            <strong id="latest-title" data-premium-title>The latest</strong>
+            <span class="premium-result" data-premium-result tabindex="-1" hidden>Unlocked for this visit</span>
+          </figcaption>
+        </figure>
       </div>
+      <noscript><p>Enable JavaScript to try the simulated unlock.</p></noscript>
     </section>
     <section id="redes" class="section" aria-labelledby="social-title">
       <h2 id="social-title">Social channels</h2>
@@ -56,5 +87,16 @@
     </section>
   </main>
   <footer class="wrap footer"><span>Medianoche is a fictional profile.</span><a href="../../portafolio.html?idioma=en#creadoras">CyberSerch · Creators 18+</a></footer>
+  <dialog class="premium-checkout" id="premium-checkout" aria-labelledby="checkout-title" aria-describedby="checkout-note">
+    <h2 id="checkout-title">Unlock content</h2>
+    <p class="checkout-item" data-checkout-item></p>
+    <p class="checkout-price">Example price · MX$99</p>
+    <p id="checkout-note">This is a simulated purchase. Try unlocking it without paying or entering personal details.</p>
+    <div class="checkout-actions">
+      <button type="button" class="button" data-checkout-confirm>Simulate payment and unlock</button>
+      <button type="button" class="secondary" data-checkout-cancel autofocus>Go back</button>
+    </div>
+  </dialog>
+  <script src="premium.js?v=d53e5c97a019" defer integrity="sha256-1T5cl6AZyj6pR8e7iRghkhxw9MoBa9WUpbsZstR/nBM="></script>
 </body>
 </html>

@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; base-uri 'none'; form-action 'none'; script-src 'sha256-1T5cl6AZyj6pR8e7iRghkhxw9MoBa9WUpbsZstR/nBM='">
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#20131f">
   <title>Medianoche · Muestra para Creadoras | CyberSerch</title>
-  <link rel="stylesheet" href="demo.css?v=5cd3f8775fab">
+  <link rel="stylesheet" href="demo.css?v=58ae4d5e5201">
 </head>
 <body>
   <a class="skip" href="#perfil">Ir al perfil</a>
@@ -37,13 +37,44 @@
       <span class="demo-note">Vista de ejemplo · Sin cobro</span>
     </section>
     <section id="galeria" class="section" aria-labelledby="gallery-title">
-      <h2 id="gallery-title">Galería</h2>
-      <p>Tres portadas ilustran cómo se pueden destacar colecciones, adelantos y novedades.</p>
+      <h2 id="gallery-title">Galería premium</h2>
+      <p>Explora las portadas y prueba cómo se desbloquea cada pieza con un pago simulado.</p>
       <div class="gallery">
-        <figure><div class="art art-rose" aria-hidden="true"></div><figcaption>La colección</figcaption></figure>
-        <figure><div class="art art-lilac" aria-hidden="true"></div><figcaption>Un adelanto</figcaption></figure>
-        <figure><div class="art art-gold" aria-hidden="true"></div><figcaption>Lo más reciente</figcaption></figure>
+        <figure class="premium-tile" data-premium-card>
+          <div class="art art-rose" aria-hidden="true"></div>
+          <button class="premium-trigger" type="button" data-premium-trigger disabled aria-haspopup="dialog" aria-controls="premium-checkout" aria-labelledby="collection-action collection-title">
+            <svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="7.5" y="14" width="17" height="14" rx="3"/><path d="M11 14V9a5 5 0 0 1 10 0v5M16 19.5v3"/></svg>
+            <strong>Contenido exclusivo</strong><span id="collection-action">Desbloquear</span>
+          </button>
+          <figcaption>
+            <strong id="collection-title" data-premium-title>La colección</strong>
+            <span class="premium-result" data-premium-result tabindex="-1" hidden>Desbloqueado en esta visita</span>
+          </figcaption>
+        </figure>
+        <figure class="premium-tile" data-premium-card>
+          <div class="art art-lilac" aria-hidden="true"></div>
+          <button class="premium-trigger" type="button" data-premium-trigger disabled aria-haspopup="dialog" aria-controls="premium-checkout" aria-labelledby="preview-action preview-title">
+            <svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="7.5" y="14" width="17" height="14" rx="3"/><path d="M11 14V9a5 5 0 0 1 10 0v5M16 19.5v3"/></svg>
+            <strong>Contenido exclusivo</strong><span id="preview-action">Desbloquear</span>
+          </button>
+          <figcaption>
+            <strong id="preview-title" data-premium-title>Un adelanto</strong>
+            <span class="premium-result" data-premium-result tabindex="-1" hidden>Desbloqueado en esta visita</span>
+          </figcaption>
+        </figure>
+        <figure class="premium-tile" data-premium-card>
+          <div class="art art-gold" aria-hidden="true"></div>
+          <button class="premium-trigger" type="button" data-premium-trigger disabled aria-haspopup="dialog" aria-controls="premium-checkout" aria-labelledby="latest-action latest-title">
+            <svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="7.5" y="14" width="17" height="14" rx="3"/><path d="M11 14V9a5 5 0 0 1 10 0v5M16 19.5v3"/></svg>
+            <strong>Contenido exclusivo</strong><span id="latest-action">Desbloquear</span>
+          </button>
+          <figcaption>
+            <strong id="latest-title" data-premium-title>Lo más reciente</strong>
+            <span class="premium-result" data-premium-result tabindex="-1" hidden>Desbloqueado en esta visita</span>
+          </figcaption>
+        </figure>
       </div>
+      <noscript><p>Activa JavaScript para probar el desbloqueo simulado.</p></noscript>
     </section>
     <section id="redes" class="section" aria-labelledby="social-title">
       <h2 id="social-title">Redes sociales</h2>
@@ -56,5 +87,16 @@
     </section>
   </main>
   <footer class="wrap footer"><span>Medianoche es un perfil ficticio.</span><a href="../../portafolio.html?idioma=es#creadoras">CyberSerch · Creadoras +18</a></footer>
+  <dialog class="premium-checkout" id="premium-checkout" aria-labelledby="checkout-title" aria-describedby="checkout-note">
+    <h2 id="checkout-title">Desbloquear contenido</h2>
+    <p class="checkout-item" data-checkout-item></p>
+    <p class="checkout-price">Importe de ejemplo · $99 MXN</p>
+    <p id="checkout-note">Esta compra es una simulación. Puedes probar el desbloqueo sin pagar ni introducir datos.</p>
+    <div class="checkout-actions">
+      <button type="button" class="button" data-checkout-confirm>Simular pago y desbloquear</button>
+      <button type="button" class="secondary" data-checkout-cancel autofocus>Volver</button>
+    </div>
+  </dialog>
+  <script src="premium.js?v=d53e5c97a019" defer integrity="sha256-1T5cl6AZyj6pR8e7iRghkhxw9MoBa9WUpbsZstR/nBM="></script>
 </body>
 </html>

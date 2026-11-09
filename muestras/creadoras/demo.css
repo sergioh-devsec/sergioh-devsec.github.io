@@ -51,12 +51,110 @@ main { padding-block: clamp(1.8rem, 4vw, 3.5rem); }
 .art-rose { background: radial-gradient(ellipse at 50% 110%, #f9aebd 0 28%, #ae5976 29% 47%, #65354e 48% 68%, #41263d 69%); }
 .art-lilac { background: radial-gradient(ellipse at 52% 42%, #e7cdf8 0 16%, #756393 17% 29%, #52436d 30% 43%, #352943 44%); }
 .art-gold { background: conic-gradient(from 25deg at 65% 65%, #c88663 0 22%, #edbe8e 22% 45%, #874963 45% 68%, #542d48 68%); }
+.premium-tile {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  overflow: hidden;
+  min-height: 18rem;
+  border: 1px solid #9f5da7;
+  border-radius: 14px;
+  background: #241426;
+}
+.premium-tile:focus-within { outline: 2px solid var(--rose); outline-offset: 4px; }
+.premium-tile .art {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  aspect-ratio: auto;
+  filter: blur(22px) brightness(.64);
+  transform: scale(1.15);
+}
+.premium-tile::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(180deg, #20131f38, #20131f68 40%, #20131f 95%);
+  content: "";
+}
+.premium-tile[data-unlocked] .art { filter: none; transform: none; }
+.premium-tile[data-unlocked]::after { background: linear-gradient(180deg, transparent 44%, #20131f 96%); }
+.premium-trigger {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: .6rem;
+  width: 100%;
+  padding: .8rem .6rem 3.1rem;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 730;
+  cursor: pointer;
+}
+.premium-trigger[hidden] { display: none; }
+.premium-trigger:focus-visible { outline: none; }
+.premium-trigger:disabled { cursor: default; }
+.premium-trigger svg { width: 2.45rem; color: #ffbfe4; }
+.premium-trigger span {
+  padding: .28rem .7rem;
+  border: 1px solid #c17bad;
+  border-radius: 5px;
+  background: #321b37;
+  color: #ffd0eb;
+  font-size: .85rem;
+}
+.premium-trigger:hover:not(:disabled) span { background: #ffc3e1; color: var(--ground); }
+.premium-tile figcaption {
+  grid-row: 2;
+  margin: 0;
+  padding: .8rem 1rem;
+  color: var(--ink);
+  font-weight: 650;
+  pointer-events: none;
+}
+.premium-result { display: block; margin-top: .2rem; color: #ffd0eb; font-size: .82rem; font-weight: 500; }
+.premium-result[hidden] { display: none; }
+.premium-checkout {
+  width: min(28rem, calc(100% - 2rem));
+  max-height: calc(100% - 2rem);
+  padding: clamp(1.1rem, 5vw, 2rem);
+  border: 1px solid #9f5da7;
+  border-radius: 14px;
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: 0 20px 54px #100a12b0;
+}
+.premium-checkout::backdrop { background: #130b17c7; }
+.premium-checkout h2 { margin: 0 0 .75rem; font-size: 2rem; }
+.premium-checkout p { margin: 0 0 .95rem; color: var(--muted); }
+.premium-checkout .checkout-item { color: var(--ink); font-weight: 700; }
+.premium-checkout .checkout-price { color: var(--rose); font-weight: 700; }
+.checkout-actions { display: flex; flex-wrap: wrap; gap: .65rem; }
+.checkout-actions button { font: inherit; font-weight: 700; cursor: pointer; }
+.checkout-actions .button { border: 1px solid transparent; }
+.checkout-actions .secondary {
+  min-height: 48px;
+  padding: .55rem .85rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--ground);
+  color: var(--ink);
+}
+.checkout-actions button:focus-visible { outline: 2px solid var(--rose); outline-offset: 3px; }
+.checkout-actions .secondary:hover { background: #3d2540; }
 .channels { display: flex; flex-wrap: wrap; gap: .5rem 1.3rem; list-style: none; padding: 0; color: var(--rose); }
 .studio { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .85rem 1.5rem; border-top: 1px solid var(--line); padding-top: 1.5rem; }
 .studio p { margin-bottom: 0; }
 .footer { padding-block: 1rem 2rem; border-top: 1px solid var(--line); align-items: center; }
 @media (max-width: 38rem) {
   .hero { grid-template-columns: 1fr; padding-block: 1.15rem .8rem; gap: 0; }
+  .gallery { grid-template-columns: 1fr; gap: 1rem; }
+  .premium-tile { min-height: min(24rem, 105vw); }
   .cover { min-height: 11rem; }
   .cover i:first-child { width: min(52%, 10rem); }
   .cover i:nth-child(2) { width: min(72%, 14rem); }
