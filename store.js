@@ -12,6 +12,13 @@ export function purchaseUrl(value, source = 'tienda') {
   } catch { return null; }
 }
 export function canPurchase(product) { return product?.status === 'available' && purchaseUrl(product.checkout, product.slug) !== null; }
+export function interviewOrigin(search) {
+  const origin = new URLSearchParams(search).get('origen');
+  return ['cv', 'tienda', 'redes'].includes(origin) ? origin : 'tienda';
+}
+function productCampaign(product, origin, fallback) {
+  return product.id === 'entrevista' ? `entrevista-${origin}` : fallback;
+}
 export function selectProducts(products, category) { return products.filter(p => category === 'all' || p.category === category); }
 function contextQuery(language, mode) {
   return new URLSearchParams({ idioma: language === 'en' ? 'en' : 'es', modo: mode === 'laboratorio' ? 'laboratorio' : 'oficina' });
@@ -19,10 +26,12 @@ function contextQuery(language, mode) {
 export function professionalsUrl(language, mode) {
   return `profesionistas.html?${contextQuery(language, mode)}`;
 }
-function sampleUrl(product, language, mode) {
+function sampleUrl(product, language, mode, origin) {
   const hasEnglishPage = product.id === 'entrevista' || product.id === 'negocio';
   const path = language === 'en' && hasEnglishPage ? product.sample.replace(/index\.html$/, 'index-en.html') : product.sample;
-  return `${path}?${contextQuery(language, mode)}`;
+  const query = contextQuery(language, mode);
+  if (product.id === 'entrevista') query.set('origen', origin);
+  return `${path}?${query}`;
 }
 
 export const CART_MAX_QUANTITY = 1;
@@ -73,7 +82,7 @@ export function cartSummary(lines, catalogue) {
     distinctCount: entries.length, totalCents: entries.reduce((n, line) => n + line.lineCents, 0) };
 }
 
-function mountCart({ document: doc, catalogue, I }) {
+function mountCart({ document: doc, catalogue, I, origin }) {
   const dialog = doc.getElementById('shop-cart'), trigger = doc.getElementById('shop-cart-open');
   if (!dialog || !trigger) return { render() {} };
   const list = doc.getElementById('shop-cart-items'), empty = doc.getElementById('shop-cart-empty');
@@ -99,7 +108,7 @@ function mountCart({ document: doc, catalogue, I }) {
       const remove = node('button', 'shop-cart-remove', I.t('shopCartRemove')); remove.type = 'button';
       remove.setAttribute('aria-label', I.t('shopCartRemoveNamed', { name }));
       remove.addEventListener('click', () => { lines = setCartQuantity(lines, line.id, 0, catalogue); render(); announce('shopCartRemoved', { name }); dialog.querySelector('[data-cart-close]').focus(); });
-      const buy = node('a', 'shop-button', I.t('shopCartCheckout')); buy.href = purchaseUrl(product.checkout, 'carrito'); buy.target = '_blank'; buy.rel = 'noopener noreferrer';
+      const buy = node('a', 'shop-button', I.t('shopCartCheckout')); buy.href = purchaseUrl(product.checkout, productCampaign(product, origin, 'carrito')); buy.target = '_blank'; buy.rel = 'noopener noreferrer';
       buy.setAttribute('aria-label', I.t('shopCartCheckoutNamed', { name }));
       item.append(heading, detail, remove, buy); fragment.append(item);
     }
@@ -146,7 +155,8 @@ function start() {
   mode.value=document.documentElement.dataset.mode;
   mode.addEventListener('change',()=>{document.documentElement.dataset.mode=mode.value;try{localStorage.setItem('site_mode',mode.value);}catch{}renderContextLinks();document.dispatchEvent(new CustomEvent('site:mode',{detail:{mode:mode.value}}));});
   I.setLanguage(resolveLanguage(location.search,read('cyberserch-language'),navigator.language),false);
-  const cart = mountCart({ document, catalogue, I });
+  const origin = interviewOrigin(location.search);
+  const cart = mountCart({ document, catalogue, I, origin });
   let selected='all';
   function renderContextLinks() {
     const currentMode = document.documentElement.dataset.mode;
@@ -154,7 +164,7 @@ function start() {
     for (const row of document.querySelectorAll('[data-product]')) {
       const product = catalogue.find(p => p.id === row.dataset.product);
       if (!product?.sample) continue;
-      const href = sampleUrl(product, I.language, currentMode);
+      const href = sampleUrl(product, I.language, currentMode, origin);
       for (const link of row.querySelectorAll('[data-product-sample]')) link.href = href;
       const primary = row.querySelector('[data-product-buy]');
       if (primary && !canPurchase(product)) primary.href = href;
@@ -171,7 +181,7 @@ function start() {
       const active=canPurchase(product);
       if(status) status.textContent=I.t(active?'shopStatusReady':product.status==='validation'?'shopStatusValidation':'shopStatusPreview');
       if(buy) {
-        if (active) buy.href=purchaseUrl(product.checkout,product.slug);
+        if (active) buy.href=purchaseUrl(product.checkout,productCampaign(product,origin,product.slug));
         buy.textContent=active?I.t('shopBuy',{price:product.price}):I.t('shopSample');
         if(active){buy.target='_blank';buy.rel='noopener noreferrer';}else{buy.removeAttribute('target');buy.removeAttribute('rel');}
       }
