@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'; font-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="description" content="Explora Marea Nail Studio, un sitio de muestra de CyberSerch con catálogo de manicure, agenda de demostración y precio orientativo de desarrollo.">
+  <meta name="theme-color" content="#f6f3eb">
+  <link rel="canonical" href="https://cyberserch.com/paginas-para-negocios/luna-nail-studio/">
+  <title>Marea Nail Studio · Muestra web de CyberSerch</title>
+  <link rel="icon" href="../assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css?v=5d18c59fa2d1">
+  <script src="booking.js?v=f6202e791cd3" defer></script>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="studio-header wrap">
+    <a class="wordmark" href="#contenido" aria-label="Marea Nail Studio, inicio">marea<span>nail studio</span></a>
+    <nav aria-label="Navegación de la muestra">
+      <a href="../">Ver más ejemplos</a>
+      <a href="#costo">Precio de la web</a>
+    </nav>
+  </header>
+  <main id="contenido">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <h1 id="hero-title">Uñas que van <em>contigo.</em></h1>
+        <p>Desde un tono discreto hasta un diseño que se hace notar. Explora los servicios y encuentra tu próximo look.</p>
+        <a class="button button-primary" href="#agenda">Probar la agenda</a>
+        <p class="demo-label">Estudio ficticio · muestra web de CyberSerch</p>
+      </div>
+      <figure class="hero-photo">
+        <img src="assets/marea-hero.jpg" alt="Manicure rosado con puntas color vino sobre lino claro" width="1122" height="1402" fetchpriority="high">
+        <figcaption>French en vino <span>Acabado de muestra</span></figcaption>
+      </figure>
+    </section>
+    <section class="booking" id="agenda" aria-labelledby="booking-title">
+      <header class="booking-header">
+        <h2 id="booking-title">Prueba la agenda.</h2>
+        <p class="booking-note">Elige un servicio, un horario de ejemplo y un nombre ficticio. La simulación termina aquí, sin guardar ni enviar tus datos.</p>
+      </header>
+      <noscript><p class="booking-note">Activa JavaScript para explorar los cuatro pasos de la agenda de muestra.</p></noscript>
+      <div class="booking-shell" hidden>
+        <ol class="booking-progress" aria-label="Pasos de la agenda">
+          <li aria-current="step">Servicio</li>
+          <li>Horario</li>
+          <li>Datos</li>
+          <li>Resumen</li>
+        </ol>
+        <form class="booking-form" novalidate autocomplete="off">
+          <div class="booking-step" data-booking-step>
+            <h3 tabindex="-1">Elige tu servicio</h3>
+            <p class="booking-note">Precios ilustrativos del estudio, en pesos mexicanos.</p>
+            <fieldset class="booking-services" aria-label="Servicios de ejemplo">
+              <label class="booking-option">
+                <input type="radio" name="marea-service" value="gel" data-label="Gel semipermanente" data-duration="60 min" data-price="$380 MXN">
+                <span class="booking-option-copy"><strong>Gel semipermanente</strong><small>60 min · color uniforme y brillo</small></span>
+                <strong class="booking-option-price">$380 MXN</strong>
+              </label>
+              <label class="booking-option">
+                <input type="radio" name="marea-service" value="studio" data-label="Manicura de estudio" data-duration="45 min" data-price="$320 MXN">
+                <span class="booking-option-copy"><strong>Manicura de estudio</strong><small>45 min · forma, cutícula y pulido</small></span>
+                <strong class="booking-option-price">$320 MXN</strong>
+              </label>
+              <label class="booking-option">
+                <input type="radio" name="marea-service" value="nail-art" data-label="Nail art de autor" data-duration="75 min" data-price="Desde $540 MXN">
+                <span class="booking-option-copy"><strong>Nail art de autor</strong><small>75 min · acentos a mano sobre gel</small></span>
+                <strong class="booking-option-price">Desde $540 MXN</strong>
+              </label>
+              <label class="booking-option">
+                <input type="radio" name="marea-service" value="extensions" data-label="Extensiones soft gel" data-duration="90 min" data-price="Desde $680 MXN">
+                <span class="booking-option-copy"><strong>Extensiones soft gel</strong><small>90 min · largo y forma a medida</small></span>
+                <strong class="booking-option-price">Desde $680 MXN</strong>
+              </label>
+            </fieldset>
+          </div>
+          <div class="booking-step" data-booking-step hidden>
+            <h3 tabindex="-1">Elige día y hora</h3>
+            <p class="booking-note">Estos horarios son ficticios. Cambia de día para explorar otras opciones.</p>
+            <fieldset class="booking-slot-group">
+              <legend>Fecha</legend>
+              <div class="booking-slot-options" data-booking-dates></div>
+            </fieldset>
+            <fieldset class="booking-slot-group" data-booking-time-group hidden>
+              <legend>Hora</legend>
+              <div class="booking-slot-options" data-booking-times></div>
+            </fieldset>
+          </div>
+          <div class="booking-step" data-booking-step hidden>
+            <h3 tabindex="-1">Agrega un nombre de prueba</h3>
+            <p class="booking-note">Usa datos inventados para simular cómo se vería una reserva.</p>
+            <label class="booking-field" for="marea-alias">
+              <span>Nombre ficticio (obligatorio)</span>
+              <input id="marea-alias" type="text" placeholder="Ej. Alex de prueba" maxlength="60" required>
+            </label>
+            <label class="booking-field" for="marea-note">
+              <span>Nota de ejemplo (opcional)</span>
+              <textarea id="marea-note" rows="3" maxlength="140" placeholder="Ej. Prefiero un acabado natural"></textarea>
+            </label>
+          </div>
+          <div class="booking-step" data-booking-step hidden>
+            <h3 tabindex="-1">Revisa la cita de prueba</h3>
+            <dl class="booking-summary">
+              <div><dt>Servicio</dt><dd data-booking-summary="service"></dd></div>
+              <div><dt>Fecha y hora</dt><dd data-booking-summary="slot"></dd></div>
+              <div><dt>Nombre ficticio</dt><dd data-booking-summary="name"></dd></div>
+              <div><dt>Precio de muestra</dt><dd data-booking-summary="price"></dd></div>
+              <div data-booking-summary-note hidden><dt>Nota</dt><dd data-booking-summary="note"></dd></div>
+            </dl>
+            <p class="booking-note">Al continuar verás la pantalla que recibiría una clienta al completar la agenda.</p>
+          </div>
+          <p class="booking-error" data-booking-error role="alert" hidden></p>
+          <div class="booking-actions">
+            <button class="booking-button booking-button-secondary" type="button" data-booking-back hidden>Volver</button>
+            <button class="booking-button" type="submit" data-booking-next>Continuar</button>
+          </div>
+        </form>
+        <div class="booking-complete" data-booking-complete hidden>
+          <h3 tabindex="-1">Simulación completada</h3>
+          <p data-booking-result></p>
+          <p class="booking-note">La cita era de muestra. Puedes probar otro horario o servicio.</p>
+          <button class="booking-button booking-button-secondary" type="button" data-booking-reset>Probar otra cita</button>
+        </div>
+      </div>
+    </section>
+    <section class="offer wrap" id="costo" aria-labelledby="offer-title">
+      <div class="offer-intro">
+        <h2 id="offer-title">Una web así para tu estudio</h2>
+        <p>CyberSerch puede adaptar el diseño a tu marca y dejar tus servicios, precios y contacto listos para que tus clientas los encuentren desde el celular.</p>
+      </div>
+      <div class="offer-plans">
+        <article>
+          <h3>Web con enlace de citas</h3>
+          <p class="offer-price">$7,000–$8,750 <span>MXN</span></p>
+          <p>Diseño adaptable, catálogo de servicios, fotos y enlace a WhatsApp o a tu agenda existente.</p>
+          <a class="button button-secondary" href="/cotizador?tipo=information">Cotizar mi sitio</a>
+        </article>
+        <article>
+          <h3>Web con agenda a medida</h3>
+          <p class="offer-price">$30,000–$37,500 <span>MXN</span></p>
+          <p>Referencia para una agenda propia con disponibilidad real y registro de citas. Panel de gestión, recordatorios y pagos se cotizan según el alcance.</p>
+          <a class="button button-secondary" href="/cotizador?tipo=custom">Cotizar mi agenda</a>
+        </article>
+      </div>
+      <p class="offer-note">Rangos orientativos de desarrollo. Dominio, alojamiento, licencias e impuestos aplicables se consideran por separado.</p>
+    </section>
+  </main>
+  <footer class="studio-footer wrap">
+    <span>Marea Nail Studio · Concepto de CyberSerch</span>
+    <a href="../">Volver a la galería</a>
+  </footer>
+</body>
+</html>
