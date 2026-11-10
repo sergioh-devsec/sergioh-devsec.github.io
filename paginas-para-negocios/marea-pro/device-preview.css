@@ -8,21 +8,12 @@
   --device-height: 915px;
 }
 
-html[data-theme] body[data-experience] {
-  display: block;
-  min-height: 100svh;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-}
-
 .device-controls {
   display: none;
   align-items: center;
   justify-content: space-between;
   gap: .5rem;
-  width: 100%;
   min-height: 3.85rem;
-  padding: max(.4rem, env(safe-area-inset-top)) .85rem .4rem;
-  background: var(--experience-surround);
   color: var(--cover-image-ink);
 }
 
@@ -35,7 +26,6 @@ html[data-theme] body[data-experience] {
 }
 
 #device-width {
-  display: none;
   color: var(--cover-image-accent);
   font-size: .72rem;
   font-variant-numeric: tabular-nums;
@@ -46,10 +36,6 @@ html[data-theme] body[data-experience] {
   display: flex;
   flex: none;
   gap: .15rem;
-  padding: .15rem;
-  border: 1px solid var(--cover-badge-line);
-  border-radius: .9rem;
-  background: var(--cover-badge-bg);
 }
 
 .device-options button {
@@ -83,36 +69,55 @@ html[data-theme] body[data-experience] {
   container: demo-phone / inline-size;
   width: 100%;
   min-width: 0;
-  background: var(--paper);
 }
 
-body[data-experience="welcome"] .demo-device { background: var(--experience-cover-sheet); }
+@media (width < 38rem) {
+  html[data-theme] body[data-experience] {
+    display: block;
+    min-height: 100svh;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+}
 
 @media (min-width: 38rem) {
-  :root:has(.demo-device) { background: var(--experience-surround); }
-
-  html[data-theme] body[data-experience] {
-    display: grid;
-    align-content: start;
-    justify-items: center;
-    gap: .75rem;
-    padding: 1rem;
-    background: var(--experience-surround);
-  }
-
   .device-controls {
     display: flex;
-    width: min(100%, calc(var(--device-width) + 1.5rem));
+    width: min(calc(100% - 2rem), 68rem);
+    margin: .75rem auto;
     padding: .3rem .4rem .3rem .75rem;
     border: 1px solid var(--cover-badge-line);
     border-radius: 1.05rem;
     background: var(--cover-badge-bg);
   }
 
-  #device-width { display: inline; }
-  .device-options { padding: 0; border: 0; }
+  body[data-experience="welcome"] .device-controls {
+    width: min(100%, 68rem);
+    margin-block: 0 .75rem;
+  }
 
-  .demo-device {
+  :root[data-device="web"] body[data-experience="welcome"] .demo-device {
+    --demo-screen-height: calc(100svh - 4.6rem);
+  }
+
+  :root:is([data-device="iphone"], [data-device="android"]),
+  :root:is([data-device="iphone"], [data-device="android"]) body[data-experience] {
+    background: var(--experience-surround);
+  }
+
+  :root:is([data-device="iphone"], [data-device="android"]) body[data-experience] {
+    display: grid;
+    align-content: start;
+    justify-items: center;
+    gap: .75rem;
+    padding: 1rem;
+  }
+
+  :root:is([data-device="iphone"], [data-device="android"]) .device-controls {
+    width: min(100%, calc(var(--device-width) + 1.5rem));
+    margin: 0;
+  }
+
+  :root:is([data-device="iphone"], [data-device="android"]) .demo-device {
     --demo-screen-height: min(var(--device-height), max(19rem, calc(100svh - 7.25rem)));
     width: min(100%, var(--device-width));
     height: var(--demo-screen-height);
@@ -120,9 +125,14 @@ body[data-experience="welcome"] .demo-device { background: var(--experience-cove
     overscroll-behavior-y: contain;
     scroll-padding-block: 6.25rem 8rem;
     scrollbar-width: none;
+    background: var(--paper);
     border-radius: 1.75rem;
     outline: 1px solid var(--cover-badge-line);
     box-shadow: 0 0 0 .4rem var(--cover-badge-bg), 0 1.1rem 3rem rgb(9 4 14 / .28);
+  }
+
+  :root:is([data-device="iphone"], [data-device="android"]) body[data-experience="welcome"] .demo-device {
+    background: var(--experience-cover-sheet);
   }
 }
 

@@ -15,26 +15,27 @@
   <link rel="stylesheet" href="experience.css?v=b3e939e78572">
   <link rel="stylesheet" href="marea-cover.css?v=d647585878f0">
   <link rel="stylesheet" href="marea-booking.css?v=56ca18a10e1c">
-  <link rel="stylesheet" href="device-preview.css?v=244b6c55332e">
+  <link rel="stylesheet" href="device-preview.css?v=5de32667dcbd">
   <script src="businesses.js?v=4675c57497a2" defer></script>
   <script src="state.js?v=3625829a2717" defer></script>
   <script src="app.js?v=43542efc8287" defer></script>
   <script src="gallery.js?v=cc913564544b" defer></script>
-  <script src="experience.js?v=b21a75bb4c62" defer></script>
+  <script src="experience.js?v=d760b76b0e46" defer></script>
 </head>
 <body data-experience="welcome">
   <a class="skip" id="experience-skip" href="#contenido">Saltar al contenido</a>
   <div class="device-controls" id="device-controls" hidden>
     <div class="device-control-heading">
-      <span id="device-controls-title">Vista móvil</span>
-      <span id="device-width" aria-hidden="true">390 px</span>
+      <span id="device-controls-title">Vista de la demo</span>
+      <span id="device-width" aria-hidden="true" hidden></span>
     </div>
     <div class="device-options" role="group" aria-labelledby="device-controls-title">
-      <button type="button" data-device="iphone" aria-pressed="true" aria-controls="demo-device">iPhone</button>
+      <button type="button" data-device="web" aria-pressed="true" aria-controls="demo-device">Web</button>
+      <button type="button" data-device="iphone" aria-pressed="false" aria-controls="demo-device">iPhone</button>
       <button type="button" data-device="android" aria-pressed="false" aria-controls="demo-device">Android</button>
     </div>
   </div>
-  <div class="demo-device" id="demo-device" role="region" aria-label="Vista vertical de la aplicación">
+  <div class="demo-device" id="demo-device" role="region" aria-label="Demo del estudio">
   <header class="topbar" id="experience-topbar" hidden>
     <div class="topbar-inner frame">
       <a class="brand" id="business-brand" href="./" aria-label="Volver a la portada del estudio">

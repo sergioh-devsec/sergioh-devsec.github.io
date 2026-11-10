@@ -36,7 +36,9 @@
   const footer = byId('experience-footer');
   const device = byId('demo-device');
   const deviceControls = byId('device-controls');
+  const deviceWidth = byId('device-width');
   const deviceButtons = [...deviceControls.querySelectorAll('[data-device]')];
+  const phoneWidths = new Map([['iphone', '390 px'], ['android', '412 px']]);
   const desktopPreview = window.matchMedia('(min-width: 38rem)');
   const views = {
     home: { hash: '', heading: byId('experience-title') },
@@ -67,21 +69,23 @@
 
   function renderDevice() {
     const view = new URLSearchParams(location.search).get('vista');
-    const preset = view === 'android' ? 'android' : 'iphone';
+    const preset = phoneWidths.has(view) ? view : 'web';
     root.dataset.device = preset;
-    byId('device-width').textContent = preset === 'android' ? '412 px' : '390 px';
+    deviceWidth.textContent = phoneWidths.get(preset) ?? '';
+    deviceWidth.hidden = preset === 'web';
     for (const button of deviceButtons) {
       button.setAttribute('aria-pressed', String(button.dataset.device === preset));
     }
     for (const [link, url] of previewLinks) {
-      if (view === preset) url.searchParams.set('vista', preset);
+      if (preset !== 'web') url.searchParams.set('vista', preset);
       else url.searchParams.delete('vista');
       link.href = `${url.pathname}${url.search}${url.hash}`;
     }
+    setScrollTarget();
   }
 
   function setScrollTarget() {
-    if (desktopPreview.matches) device.tabIndex = 0;
+    if (desktopPreview.matches && root.dataset.device !== 'web') device.tabIndex = 0;
     else device.removeAttribute('tabindex');
   }
 
@@ -150,7 +154,9 @@
   for (const button of deviceButtons) {
     button.addEventListener('click', () => {
       const url = new URL(location.href);
-      url.searchParams.set('vista', button.dataset.device);
+      const preset = button.dataset.device;
+      if (preset === 'web') url.searchParams.delete('vista');
+      else url.searchParams.set('vista', preset);
       history.replaceState(history.state, '', url);
       renderDevice();
     });
@@ -165,7 +171,6 @@
   });
   navigation.observe(views.booking.panel, { attributes: true, attributeFilter: ['hidden'] });
 
-  setScrollTarget();
   renderDevice();
   renderRoute();
   deviceControls.hidden = false;
