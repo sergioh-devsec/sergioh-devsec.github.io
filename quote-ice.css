@@ -38,28 +38,122 @@
 
 .quote-page main { padding-top: clamp(1.55rem, 4vw, 3.15rem); }
 .quote-page .heading-aside { color: var(--muted); }
-.quote-page .quote-layout { gap: 1.15rem clamp(1rem, 3.2vw, 2.25rem); }
-.quote-page .quote-config { min-width: 0; }
-
 .quote-page :is(.quote-guide, .quote-result, .quote-review) {
   border-color: #b2d6e5;
   background: linear-gradient(145deg, #fff, #edf9fd 76%, #e0f2f8);
   box-shadow: 0 .65rem 1.65rem #27587512;
 }
 
-.quote-page .quote-guide-steps button {
-  color: var(--ink);
-  background: #fff;
-  border-color: var(--line);
+.quote-page #quote-guide {
+  gap: clamp(.65rem, 2vw, 1.2rem);
+  margin-block: 0 clamp(1rem, 2.4vw, 1.5rem);
+  padding: clamp(.85rem, 2.25vw, 1.45rem);
+  border-radius: 1rem;
+  scroll-margin-block-start: 4.9rem;
 }
 
-.quote-page .quote-guide-steps button[aria-pressed="true"] {
+.quote-page #quote-guide > img {
+  width: clamp(3.75rem, 7vw, 5.5rem);
+  height: auto;
+}
+
+.quote-page #quote-guide > div { flex: 1; }
+.quote-page #quote-guide-intro { color: var(--muted); }
+.quote-page #quote-guide .quote-step-position {
+  margin-block: .55rem 0;
+  color: var(--action);
+  font-size: .82rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.quote-page #quote-guide .quote-guide-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .25rem;
+  margin-block: .7rem;
+  padding: .25rem;
+  border: 1px solid #b8dbe9;
+  border-radius: .85rem;
+  background: #e4f4fa;
+}
+
+.quote-page #quote-guide .quote-guide-steps button {
+  min-width: 0;
+  min-height: 44px;
+  padding: .45rem clamp(.2rem, 1.4vw, .8rem);
+  border: 1px solid transparent;
+  border-radius: .6rem;
   color: var(--ink);
+  background: transparent;
+  font: inherit;
+  font-size: clamp(.8rem, 2.3vw, .92rem);
+  font-weight: 650;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.quote-page #quote-guide .quote-guide-steps button:has(~ button[aria-current="step"]) {
+  color: #064e70;
   background: #d2edf7;
+}
+
+.quote-page #quote-guide .quote-guide-steps :is(button[aria-current="step"], button[aria-pressed="true"]) {
+  color: #fff;
   border-color: var(--action);
+  background: var(--action);
+}
+
+.quote-page #quote-guide-line {
+  max-width: 72ch;
+  min-height: 0;
+  margin-block: .55rem .25rem;
 }
 
 .quote-page .quote-guide #quote-guide-status { color: var(--muted); }
+
+.quote-page .quote-step[hidden],
+.quote-page .quote-step-actions[hidden],
+.quote-page .quote-step-actions button[hidden] { display: none; }
+
+.quote-page .quote-step { min-width: 0; }
+.quote-page .quote-step-heading {
+  margin: 0 0 .75rem;
+  color: var(--ink);
+  font-size: clamp(1.32rem, 3vw, 1.85rem);
+  line-height: 1.18;
+}
+
+.quote-page .quote-step-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: .5rem;
+  margin-block: 1.15rem 1.35rem;
+  padding-block-start: .9rem;
+  border-block-start: 1px solid #b2d6e5;
+}
+
+.quote-page .quote-step-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: .58rem .85rem;
+  white-space: normal;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.quote-page #quote-step-back { grid-column: 1; justify-self: start; }
+.quote-page #quote-step-next { grid-column: 2; justify-self: end; }
+
+@media (hover: hover) and (pointer: fine) {
+  .quote-page #quote-guide .quote-guide-steps button:hover:not([aria-current="step"], [aria-pressed="true"]) {
+    background: #f6fcff;
+    border-color: #8abdd3;
+  }
+}
 
 .quote-page .quote-progress {
   position: sticky;
@@ -173,24 +267,58 @@
 }
 .quote-page .button.primary { color: #fff; background: var(--action); }
 .quote-page .button.secondary { color: var(--action); border-color: #9ac0d1; background: var(--surface); }
-.quote-page :is(.quote-progress, .quote-config, .quote-result, .quote-contact) :focus-visible {
+.quote-page :is(.quote-progress, .quote-guide, .quote-step, .quote-step-actions) :focus-visible {
   outline: 2px solid var(--action);
   outline-offset: 3px;
 }
-.quote-page :is(#quote-options-title, .quote-option input, #quote-breakdown) { scroll-margin-block-start: .4rem; }
+.quote-page :is(.quote-step-heading, .quote-option input, #quote-breakdown, #preparar-consulta) {
+  scroll-margin-block-start: .4rem;
+}
 
 @media (max-width: 760px) {
-  .quote-page .quote-layout { grid-template-columns: minmax(0, 1fr); }
   .quote-page .quote-progress { padding-block: .45rem; }
   .quote-page .quote-package { gap: .28rem; }
 }
 
+@media (max-width: 640px) {
+  .quote-page #quote-guide {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: .4rem .65rem;
+    align-items: center;
+  }
+  .quote-page #quote-guide > div { display: contents; }
+  .quote-page #quote-guide > :is(img, .axiom-portrait-slot) {
+    grid-area: 1 / 1;
+    width: 2.75rem;
+    height: auto;
+    float: none;
+    margin: 0;
+  }
+  .quote-page #quote-guide-title {
+    grid-area: 1 / 2;
+    margin: 0;
+  }
+  .quote-page #quote-guide-intro { display: none; }
+  .quote-page #quote-guide :is(.quote-step-position, .quote-guide-steps, #quote-guide-status) {
+    grid-column: 1 / -1;
+    margin-block: 0;
+  }
+  .quote-page #quote-guide-voice { grid-area: 4 / 1; align-self: start; }
+  .quote-page #quote-guide-line { grid-area: 4 / 2; margin-block: 0; }
+}
+
 @media (max-width: 420px) {
   .quote-page .quote-breakdown-link { max-width: 8rem; padding-inline: .54rem; line-height: 1.2; }
+  .quote-page .quote-step-actions button { padding-inline: .65rem; }
   .quote-page .quote-option label { min-width: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quote-page .quote-step-actions button { transition: none; }
 }
 
 @media print {
   .quote-page .quote-progress { position: static; box-shadow: none; }
-  .quote-page .quote-breakdown-link { display: none; }
+  .quote-page :is(.quote-breakdown-link, .quote-step-actions) { display: none; }
 }

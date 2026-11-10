@@ -237,7 +237,33 @@
     renderDelivery();
     renderExamples();
     renderContactContext();
-    const choices=$('quote-packages');choices.replaceChildren();Object.entries(packages).forEach(([id,p])=>{const b=S.el('button','quote-package');b.type='button';b.dataset.quoteKind=id;b.setAttribute('aria-pressed',String(id===kind));b.append(S.el('strong','',label(p.label)),S.el('small','quote-help',label(explanations[id])),S.el('span','',tx('Desde ','From ')+money(p.price)),S.el('small','quote-help',schedules[id][0]+'–'+schedules[id][1]+tx(' días hábiles orientativos',' estimated business days')));b.addEventListener('click',()=>{kind=id;selected={};offerContext=true;render();$('quote-options-title').focus({preventScroll:true});});choices.append(b);});
+    const choices = $('quote-packages');
+    choices.replaceChildren();
+    for (const [id, pack] of Object.entries(packages)) {
+      const button = S.el('button', 'quote-package');
+      button.type = 'button';
+      button.dataset.quoteKind = id;
+      button.setAttribute('aria-pressed', String(id === kind));
+      button.append(
+        S.el('strong', '', label(pack.label)),
+        S.el('small', 'quote-help', label(explanations[id])),
+        S.el('span', '', tx('Desde ', 'From ') + money(pack.price)),
+        S.el('small', 'quote-help', schedules[id][0] + '–' + schedules[id][1] + tx(' días hábiles orientativos', ' estimated business days')),
+      );
+      button.addEventListener('click', () => {
+        offerContext = true;
+        if (kind === id) {
+          renderContactContext();
+          if (!$('quote-download').disabled) update();
+          return;
+        }
+        kind = id;
+        selected = {};
+        render();
+        choices.querySelector('[aria-pressed="true"]').focus({ preventScroll: true });
+      });
+      choices.append(button);
+    }
     $('quote-scope').textContent=label(packages[kind].scope);const options=$('quote-options');options.replaceChildren();
     for(const [id,[price,max,names]] of Object.entries(packages[kind].options)){
       const row=S.el('div','quote-option'),input=S.el('input'),lab=S.el('label');input.id='quote-'+id;input.name=id;lab.htmlFor=input.id;
