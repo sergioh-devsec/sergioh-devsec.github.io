@@ -59,9 +59,9 @@
     brand: 'Línea Negra',
     businessName: 'Línea Negra Tattoo',
     title: 'Línea Negra · App de reservas | CyberSerch',
-    description: 'Prueba la agenda de un estudio de tatuajes con artistas, sesiones personalizadas y un panel de citas.',
+    description: 'Prueba la agenda de un estudio de tatuajes con proyectos personalizados, bordado, gran formato y blackout.',
     bookingTitle: 'Tu próxima sesión',
-    intro: 'Elige el tipo de sesión, encuentra a tu artista y reserva tiempo para tu próximo tatuaje.',
+    intro: 'Elige un estilo, conoce su presupuesto y simula una cita con tu artista.',
     studioTitle: 'Agenda de Línea Negra',
     theme: 'tinta',
     photo: {
@@ -81,7 +81,10 @@
     services: [
       { id: 'flash', name: 'Flash del estudio', description: 'Elige una pieza del catálogo de diseños', minutes: 60, price: 1100 },
       { id: 'fine-line', name: 'Tatuaje de línea fina', description: 'Trazos delicados para una pieza pequeña', minutes: 90, price: 1600 },
-      { id: 'custom', name: 'Sesión personalizada', description: 'Adapta una idea propia con tu artista', minutes: 120, price: 2450 },
+      { id: 'custom', name: 'Proyecto personalizado', description: 'Diseño a medida y definición del tamaño', minutes: 120, price: 2450, projectEstimate: [8500, 20000] },
+      { id: 'embroidery', name: 'Tatuaje bordado', description: 'Efecto de hilos, puntadas y relieve en tinta', minutes: 90, price: 2100, projectEstimate: [5500, 12000] },
+      { id: 'large-scale', name: 'Gran formato', description: 'Espalda, torso o manga completa en varias sesiones', minutes: 120, price: 3200, projectEstimate: [24000, 60000] },
+      { id: 'blackout', name: 'Blackout', description: 'Negro sólido por zonas, con planificación de la cobertura', minutes: 90, price: 2900, projectEstimate: [18000, 38000] },
       { id: 'retouch', name: 'Retoque', description: 'Revisión y retoque de una pieza del estudio', minutes: 45, price: 650 },
     ],
     addons: [
@@ -90,8 +93,8 @@
     ],
     staff: [
       { id: 'noa', name: 'Noa', initials: 'N', role: 'Flash y línea fina', serviceIds: ['flash', 'fine-line'], shifts: [[660, 840], [900, 1140]] },
-      { id: 'vera', name: 'Vera', initials: 'V', role: 'Línea fina y diseños personalizados', serviceIds: ['fine-line', 'custom', 'retouch'], shifts: [[720, 960], [990, 1200]] },
-      { id: 'luz', name: 'Luz', initials: 'L', role: 'Flash, diseños personalizados y retoques', serviceIds: ['flash', 'custom', 'retouch'], shifts: [[690, 900], [960, 1170]] },
+      { id: 'vera', name: 'Vera', initials: 'V', role: 'Línea fina, bordado y diseño personalizado', serviceIds: ['fine-line', 'custom', 'retouch', 'embroidery'], shifts: [[720, 960], [990, 1200]] },
+      { id: 'luz', name: 'Luz', initials: 'L', role: 'Gran formato, blackout y diseño personalizado', serviceIds: ['flash', 'custom', 'retouch', 'large-scale', 'blackout'], shifts: [[690, 900], [960, 1170]] },
     ],
     aliases: ['Luna de prueba', 'Ariel de prueba', 'Teo de prueba', 'Eva de prueba'],
     seed: [

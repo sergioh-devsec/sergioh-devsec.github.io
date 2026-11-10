@@ -9,9 +9,9 @@
       { src: 'assets/gallery-marea-05.webp?v=552b91808aed', alt: 'Puntas pastel sobre seda marfil' },
     ],
     tinta: [
-      { src: 'assets/gallery-tinta-02.webp?v=8de61e51a1f9', alt: 'Tatuaje de helecho fino en un antebrazo' },
-      { src: 'assets/gallery-tinta-03.webp?v=78ae2bfd2bae', alt: 'Tatuaje de constelación geométrica en un brazo' },
-      { src: 'assets/gallery-tinta-04.webp?v=91a47c5a6f22', alt: 'Tatuaje de una ola pequeña en una muñeca' },
+      { src: 'assets/gallery-tinta-bordado-v58.webp?v=7739a58a8cc3', alt: 'Tatuaje bordado de flores rojas y violetas en un brazo' },
+      { src: 'assets/gallery-tinta-gran-formato-v58.webp?v=080c9a9cd616', alt: 'Tatuaje de gran formato con una grulla y olas que cubre la espalda' },
+      { src: 'assets/cover-tinta-v58.webp?v=2ff9a02f5709', alt: 'Manga de blackout con un helecho en espacio negativo' },
       { src: 'assets/gallery-tinta-05.webp?v=bfa671902ef8', alt: 'Tatuaje de media luna con una rama en un hombro' },
     ],
   };

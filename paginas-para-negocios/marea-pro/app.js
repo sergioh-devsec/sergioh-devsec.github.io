@@ -28,12 +28,18 @@
   const dayFormat = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', weekday: 'short' });
   const storageKey = model.STORAGE_KEY;
   const aliases = model.ALIASES;
+  const servicesById = new Map(profile.services.map((service) => [service.id, service]));
+  const hasProjects = profile.services.some(({ projectEstimate }) => projectEstimate);
   const transitions = {
     pending: ['confirmed', 'canceled'],
     confirmed: ['completed', 'canceled', 'noShow'],
   };
 
   const money = (value) => `${priceFormat.format(value)} ${currency}`;
+  const projectBudget = (service, extrasPrice = 0) => {
+    const [minimum, maximum] = service.projectEstimate;
+    return `${priceFormat.format(minimum + extrasPrice)}–${money(maximum + extrasPrice)}`;
+  };
   const formatDate = (date) => dayFormat.format(new Date(`${date}T12:00:00`));
   const emptyDraft = () => ({
     serviceId: '', addonIds: [], staffId: 'any', date: '', time: '', client: '', whatsapp: '', note: '',
@@ -68,7 +74,9 @@
     byId('booking-intro').textContent = profile.intro;
     byId('studio-title').textContent = profile.studioTitle;
     byId('studio-search').placeholder = `Ej. ${aliases[0]} o ${profile.folioPrefix}-101`;
-    if (currency !== 'MXN') byId('booking-currency').textContent = `Precios ilustrativos en ${currency}.`;
+    if (hasProjects) {
+      byId('booking-currency').textContent = `Presupuestos ilustrativos en ${currency}. En los proyectos eliges el horario de la cita inicial.`;
+    } else if (currency !== 'MXN') byId('booking-currency').textContent = `Precios ilustrativos en ${currency}.`;
 
     const links = byId('business-links');
     links.replaceChildren(...catalog.profiles.map(({ id, label }) => {
@@ -102,7 +110,7 @@
     fieldset.replaceChildren(fieldset.querySelector('legend'), ...choices);
   }
 
-  function choose(type, name, value, title, subtitle, selected, price) {
+  function choose(type, name, value, title, subtitle, selected, price, priceLabel) {
     const label = element('label', price === undefined ? 'pick' : 'choice');
     const input = element('input');
     input.type = type;
@@ -113,12 +121,20 @@
     copy.append(element('strong', '', title));
     if (subtitle) copy.append(element('small', '', subtitle));
     label.append(input, copy);
-    if (price !== undefined) label.append(element('span', 'choice-price', price));
+    if (price !== undefined) {
+      const amount = element('span', 'choice-price', price);
+      if (priceLabel) {
+        label.classList.add('choice-project');
+        amount.classList.add('choice-price-range');
+        amount.prepend(element('small', 'choice-price-label', priceLabel), ' ');
+      }
+      label.append(amount);
+    }
     return label;
   }
 
-  function radio(name, value, title, subtitle = '', price) {
-    return choose('radio', name, value, title, subtitle, value === draft[name], price);
+  function radio(name, value, title, subtitle = '', price, priceLabel) {
+    return choose('radio', name, value, title, subtitle, value === draft[name], price, priceLabel);
   }
 
   function descriptionList(list, rows) {
@@ -190,9 +206,12 @@
   }
 
   function renderServices() {
-    replaceChoices(byId('services'), model.SERVICES.map((service) =>
-      radio('serviceId', service.id, service.name, `${service.minutes} min · ${service.description}`, money(service.price))
-    ));
+    replaceChoices(byId('services'), profile.services.map((service) => {
+      const appointment = service.projectEstimate ? ' · cita inicial' : '';
+      const detail = `${service.minutes} min${appointment} · ${service.description}`;
+      const price = service.projectEstimate ? projectBudget(service) : money(service.price);
+      return radio('serviceId', service.id, service.name, detail, price, service.projectEstimate ? 'Proyecto estimado' : undefined);
+    }));
     byId('booking-addons').hidden = model.ADDONS.length === 0;
     replaceChoices(byId('addons'), model.ADDONS.map((addon) =>
       choose('checkbox', 'addonIds', addon.id, addon.name, `+${addon.minutes} min · ${addon.description}`,
@@ -229,8 +248,8 @@
     replaceChoices(byId('booking-slots'), hours);
   }
 
-  function summaryRows(item) {
-    const service = model.SERVICES.find(({ id }) => id === item.serviceId);
+  function summaryRows(item, contact = []) {
+    const service = servicesById.get(item.serviceId);
     if (!service) return [];
     const totals = model.getTotals(item.serviceId, item.addonIds);
     const assigned = item.staffId === 'any' && item.time
@@ -242,7 +261,17 @@
     if (staff) rows.push(['Especialista', staff.name]);
     if (item.date && item.time) rows.push(['Cuándo', `${formatDate(item.date)} · ${item.time}`]);
     if (item.client) rows.push(['Nombre de prueba', item.client]);
-    rows.push(['Duración', `${totals.minutes} min`], ['Total estimado', money(totals.price), 'total']);
+    rows.push(...contact);
+    if (service.projectEstimate) {
+      const extrasPrice = totals.price - service.price;
+      rows.push(
+        ['Duración inicial', `${totals.minutes} min`],
+        [extras.length ? 'Cita inicial con extras' : 'Cita inicial estimada', money(totals.price)],
+        [extras.length ? 'Proyecto con extras' : 'Proyecto estimado', projectBudget(service, extrasPrice), 'total'],
+      );
+    } else {
+      rows.push(['Duración', `${totals.minutes} min`], ['Total estimado', money(totals.price), 'total']);
+    }
     return rows;
   }
 
@@ -250,9 +279,11 @@
     const container = byId('selection-content');
     const selection = lastBooking || draft;
     const totals = model.getTotals(selection.serviceId, selection.addonIds);
+    const service = servicesById.get(selection.serviceId);
     const actionTotal = byId('booking-action-total');
     actionTotal.hidden = !totals;
-    actionTotal.textContent = totals ? `${money(totals.price)} · ${totals.minutes} min` : '';
+    const label = service?.projectEstimate ? 'Cita inicial · ' : '';
+    actionTotal.textContent = totals ? `${label}${money(totals.price)} · ${totals.minutes} min` : '';
     const rows = summaryRows(selection);
     if (!rows.length) {
       container.replaceChildren(element('p', 'quiet', 'Elige un servicio para calcular el total y la duración.'));
@@ -264,11 +295,9 @@
   }
 
   function renderReview() {
-    const rows = summaryRows(draft);
     const contact = [['WhatsApp de prueba', byId('sample-whatsapp').selectedOptions[0].textContent]];
     if (draft.note) contact.push(['Nota', byId('sample-note').selectedOptions[0].textContent]);
-    rows.splice(-2, 0, ...contact);
-    descriptionList(byId('review-data'), rows);
+    descriptionList(byId('review-data'), summaryRows(draft, contact));
   }
 
   function completeBooking(appointment) {
@@ -372,7 +401,8 @@
     dateInput.value = dates.includes(dateFilter) ? dateFilter : '';
     const period = appointments.filter(({ date }) => !dateInput.value || date === dateInput.value);
     const { confirmed, pending, completed, revenue } = model.summarize(period);
-    descriptionList(byId('studio-metrics'), [['Por atender', confirmed + pending], ['Completadas', completed], ['Valor de citas', money(revenue)]]);
+    const revenueLabel = hasProjects ? 'Valor de citas agendadas' : 'Valor de citas';
+    descriptionList(byId('studio-metrics'), [['Por atender', confirmed + pending], ['Completadas', completed], [revenueLabel, money(revenue)]]);
     const query = byId('studio-search').value.trim().toLocaleLowerCase(locale);
     const status = byId('studio-status').value;
     const filtered = period.filter((item) =>

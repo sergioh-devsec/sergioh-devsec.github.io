@@ -12,16 +12,18 @@
   <link rel="icon" href="../assets/mark.svg" type="image/svg+xml">
   <link rel="stylesheet" href="app.css?v=a3d2818b6fd9">
   <link rel="stylesheet" href="gallery.css?v=8ad9cfd45a7d">
-  <script src="businesses.js?v=6d14389b0793" defer></script>
+  <link rel="stylesheet" href="experience.css?v=c512e09d4ef9">
+  <script src="businesses.js?v=4675c57497a2" defer></script>
   <script src="state.js?v=3625829a2717" defer></script>
-  <script src="app.js?v=92684750f469" defer></script>
-  <script src="gallery.js?v=6ce3eed86774" defer></script>
+  <script src="app.js?v=43542efc8287" defer></script>
+  <script src="gallery.js?v=cc913564544b" defer></script>
+  <script src="experience.js?v=e46b4591b568" defer></script>
 </head>
-<body>
-  <a class="skip" href="#contenido">Saltar al contenido</a>
-  <header class="topbar">
+<body data-experience="welcome">
+  <a class="skip" id="experience-skip" href="#contenido">Saltar al contenido</a>
+  <header class="topbar" id="experience-topbar" hidden>
     <div class="topbar-inner frame">
-      <a class="brand" id="business-brand" href="./">
+      <a class="brand" id="business-brand" href="./" aria-label="Volver a la portada del estudio">
         <svg class="brand-mark mark-marea" aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4">
           <circle cx="16" cy="16" r="13"/><path d="M6 16c4 0 5-5 10-5s6 5 10 5M6 21c4 0 5-5 10-5s6 5 10 5" stroke-linecap="round"/>
         </svg>
@@ -37,7 +39,31 @@
       <a class="gallery-link" href="https://cyberserch.com/paginas-para-negocios/">Ver más ejemplos <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 12 4M6 4h6v6"/></svg></a>
     </div>
   </header>
-  <main class="frame" id="contenido">
+  <main id="contenido">
+    <section class="experience-welcome" id="experience-welcome" aria-labelledby="experience-title">
+      <img class="experience-cover" id="experience-cover" alt="" aria-hidden="true" fetchpriority="high">
+      <div class="experience-brandline">
+        <p id="experience-name">Marea Nail Studio</p>
+        <span class="experience-demo">Demo · Citas ficticias</span>
+      </div>
+      <div class="experience-content">
+        <h1 id="experience-title" tabindex="-1">Detalles que se sienten tuyos.</h1>
+        <p id="experience-description">Descubre tu próximo acabado y prueba cómo sería reservarlo.</p>
+        <a class="experience-start" id="experience-start" href="#reserva">
+          Simular reserva
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
+        </a>
+        <div class="experience-links">
+          <nav class="experience-profiles" aria-label="Negocio de ejemplo">
+            <a id="experience-profile-marea" href="./">Marea</a>
+            <a id="experience-profile-tinta" href="?negocio=tatuajes">Línea Negra</a>
+          </nav>
+          <a class="experience-panel" id="experience-panel" href="#estudio">Panel de muestra</a>
+        </div>
+      </div>
+    </section>
+    <noscript><p class="frame experience-noscript">Activa JavaScript para probar la reserva y el panel del estudio.</p></noscript>
+    <div class="experience-app frame" id="experience-app" hidden>
     <div class="demo-bar">
       <p class="demo-notice"><strong>Demo de reservas.</strong> <span id="demo-notice-copy">Las citas son ficticias y se guardan solo en este navegador.</span></p>
       <nav class="business-switch" aria-label="Negocio de ejemplo" hidden>
@@ -45,7 +71,6 @@
         <div class="business-links" id="business-links"></div>
       </nav>
     </div>
-    <noscript><p>Activa JavaScript para probar la reserva y el panel del estudio.</p></noscript>
     <section class="booking-view" id="booking-view" aria-labelledby="booking-title" hidden>
       <div class="booking-layout">
         <header class="page-intro booking-intro">
@@ -53,13 +78,16 @@
           <p id="booking-intro">Elige tu manicura, personalízala y encuentra espacio con tu especialista.</p>
         </header>
         <div class="booking-media">
-          <figure class="studio-photo" id="business-photo" hidden>
-            <figcaption><strong id="business-photo-caption"></strong><span id="business-photo-label"></span></figcaption>
-          </figure>
-          <div class="studio-art" id="business-art" aria-hidden="true" hidden>
-            <strong id="business-art-title"></strong>
-            <span id="business-art-caption"></span>
-          </div>
+          <details class="experience-gallery" id="experience-gallery">
+            <summary><span>Galería del estudio</span><span class="experience-gallery-count">5 fotos <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+            <figure class="studio-photo" id="business-photo" hidden>
+              <figcaption><strong id="business-photo-caption"></strong><span id="business-photo-label"></span></figcaption>
+            </figure>
+            <div class="studio-art" id="business-art" aria-hidden="true" hidden>
+              <strong id="business-art-title"></strong>
+              <span id="business-art-caption"></span>
+            </div>
+          </details>
         </div>
         <div class="booking-main">
           <ol class="stepper" id="booking-progress" aria-label="Progreso de reserva">
@@ -165,8 +193,9 @@
         <button type="button" class="button secondary" id="reset-demo">Restaurar datos de muestra</button>
       </details>
     </section>
+    </div>
   </main>
-  <footer class="footer frame">
+  <footer class="footer frame" id="experience-footer" hidden>
     <span>Una app de muestra de CyberSerch</span>
     <a href="https://cyberserch.com/cotizador?tipo=custom">Cotizar una app para mi negocio</a>
   </footer>

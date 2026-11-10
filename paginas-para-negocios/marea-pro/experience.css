@@ -1,0 +1,305 @@
+:root {
+  --experience-rgb: 33 16 28;
+  --experience-surround: #130b12;
+  --experience-accent: #efd1b6;
+  --experience-button: #fff4e9;
+  --experience-button-ink: #4b2136;
+  --experience-text: #fff9f4;
+  --experience-muted: #f4e2e5;
+  --experience-app-header: #321c2c;
+}
+
+:root[data-theme="tinta"] {
+  --experience-rgb: 15 25 25;
+  --experience-surround: #0d1515;
+  --experience-accent: #e3c9a5;
+  --experience-button: #f3e5cd;
+  --experience-button-ink: #192321;
+  --experience-text: #fff9ee;
+  --experience-muted: #f1e7d8;
+  --experience-app-header: #1b2927;
+}
+
+:root:has(body[data-experience="welcome"]), body[data-experience="welcome"] {
+  background: var(--experience-surround);
+}
+
+body[data-experience="welcome"] {
+  padding: max(.65rem, env(safe-area-inset-top)) max(.65rem, env(safe-area-inset-right))
+    max(.65rem, env(safe-area-inset-bottom)) max(.65rem, env(safe-area-inset-left));
+}
+
+.experience-welcome {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(8rem, 27svh, 15rem);
+  width: min(100%, 82rem);
+  min-height: calc(100svh - 1.3rem);
+  margin-inline: auto;
+  padding: clamp(1rem, 4.8vw, 4.3rem);
+  overflow: clip;
+  border: 1px solid rgb(255 255 255 / .15);
+  border-radius: clamp(1.35rem, 2.7vw, 2.25rem);
+  background: rgb(var(--experience-rgb));
+  color: var(--experience-text);
+}
+
+.experience-cover {
+  position: absolute;
+  z-index: -2;
+  inset: 0 0 0 auto;
+  width: 79%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center 46%;
+}
+
+.experience-welcome::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(var(--experience-rgb)) 14%, rgb(var(--experience-rgb) / .96) 24%, rgb(var(--experience-rgb) / .72) 44%, transparent 75%),
+    linear-gradient(0deg, rgb(var(--experience-rgb) / .94), transparent 47%, rgb(0 0 0 / .34));
+  content: '';
+}
+
+.experience-brandline {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: .45rem .7rem;
+}
+
+.experience-brandline p {
+  font-size: clamp(.8rem, 1.45vw, 1.12rem);
+  font-weight: 780;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 10px #000;
+}
+
+.experience-demo {
+  display: inline-flex;
+  align-items: center;
+  gap: .38rem;
+  padding: .31rem .58rem;
+  border: 1px solid rgb(255 255 255 / .32);
+  border-radius: 1rem;
+  background: rgb(var(--experience-rgb) / .84);
+  color: var(--experience-text);
+  font-size: .71rem;
+  font-weight: 710;
+  white-space: nowrap;
+}
+
+.experience-demo::before {
+  inline-size: .38rem;
+  block-size: .38rem;
+  border-radius: 50%;
+  background: var(--experience-accent);
+  content: '';
+}
+
+.experience-content { max-width: min(39rem, 65%); }
+
+.experience-content h1 {
+  max-width: 12ch;
+  font: 400 clamp(3rem, 7vw, 6rem)/.99 var(--display);
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+
+:root[data-theme="tinta"] .experience-content h1 { max-width: 10ch; }
+
+.experience-content > p {
+  margin-block-start: .88rem;
+  max-width: 33ch;
+  color: var(--experience-muted);
+  font-size: clamp(.97rem, 1.6vw, 1.2rem);
+  line-height: 1.5;
+}
+
+.experience-start {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .85rem;
+  min-height: 3.38rem;
+  width: min(100%, 19rem);
+  margin-block-start: clamp(1.2rem, 2.9vw, 2rem);
+  padding: .64rem 1.05rem .64rem 1.2rem;
+  border-radius: .87rem;
+  background: var(--experience-button);
+  color: var(--experience-button-ink);
+  font-size: .98rem;
+  font-weight: 775;
+  text-decoration: none;
+}
+
+.experience-start svg { flex: none; width: 1.32rem; height: 1.32rem; }
+
+.experience-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .1rem 1.1rem;
+  margin-block-start: .56rem;
+}
+
+.experience-profiles { display: flex; align-items: center; gap: .12rem; }
+
+.experience-profiles a, .experience-panel {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--experience-muted);
+  font-size: .82rem;
+  font-weight: 700;
+  text-underline-offset: .25em;
+}
+
+.experience-profiles a { padding-inline: .55rem; }
+
+.experience-profiles a[aria-current="page"] {
+  color: var(--experience-text);
+  background: rgb(255 255 255 / .14);
+  border-radius: .55rem;
+  text-decoration: none;
+}
+
+.experience-welcome :focus-visible { outline-color: var(--experience-accent); }
+.skip#experience-skip { z-index: 6; }
+.experience-noscript { padding: 1rem; color: var(--experience-text); }
+
+#experience-topbar {
+  position: sticky;
+  z-index: 5;
+  top: 0;
+  border-color: rgb(255 255 255 / .13);
+  background: var(--experience-app-header);
+}
+
+#experience-topbar :is(.brand, .gallery-link, .mode-switch button) { color: var(--experience-text); }
+#experience-topbar :is(.brand-mark, .brand small) { color: var(--experience-accent); }
+#experience-topbar .mode-switch [aria-pressed="true"] {
+  border-color: transparent;
+  background: var(--experience-button);
+  color: var(--experience-button-ink);
+}
+#experience-topbar :focus-visible { outline-color: var(--experience-accent); }
+
+.experience-app .booking-intro h1 { font-size: clamp(2.65rem, 5vw, 4.25rem); }
+[data-theme="tinta"] .experience-app .booking-intro h1 { font-size: clamp(2.55rem, 4.7vw, 3.95rem); }
+.experience-app :is(#booking-title, #studio-title, .step-panel h2, #receipt-title) { scroll-margin-top: 8rem; }
+.experience-app .step-panel { border-radius: .95rem; }
+.experience-app .stepper {
+  gap: .26rem;
+  padding: .25rem;
+  border: 1px solid var(--line);
+  border-radius: .85rem;
+  background: var(--surface);
+}
+.experience-app .stepper li {
+  min-height: 2.45rem;
+  padding: .34rem .4rem;
+  border: 0;
+  border-radius: .58rem;
+}
+.experience-app .stepper [aria-current="step"] { background: var(--blush); }
+.experience-app .stepper .complete span { background: var(--green-bg); color: var(--green); }
+.experience-app #services .choice { min-height: 4rem; padding-block: .75rem; }
+.experience-app #services .choice:has(:checked) { border-color: var(--rose); }
+.experience-gallery > summary { display: none; }
+
+.experience-app .choice-project .choice-price { max-width: 45%; text-align: end; white-space: normal; }
+.experience-app .choice-price-label {
+  display: block;
+  margin-block-end: .1rem;
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 700;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .experience-start:hover { background: #fff; }
+  .experience-profiles a:hover, .experience-panel:hover { color: #fff; }
+  #experience-topbar .mode-switch button:not([aria-pressed="true"]):hover { background: rgb(255 255 255 / .12); }
+}
+
+@media (max-width: 50rem) {
+  .experience-welcome { gap: clamp(9rem, 31svh, 17rem); }
+  .experience-cover { width: 100%; object-position: center 39%; }
+  .experience-welcome::before {
+    background: linear-gradient(180deg, rgb(var(--experience-rgb) / .77), transparent 24%, transparent 41%, rgb(var(--experience-rgb) / .38) 59%, rgb(var(--experience-rgb)) 92%);
+  }
+  .experience-content { position: relative; isolation: isolate; max-width: 100%; }
+  .experience-content::before {
+    position: absolute;
+    z-index: -1;
+    inset: -3rem -1.25rem -1.4rem;
+    background: linear-gradient(180deg, transparent, rgb(var(--experience-rgb) / .86) 29%, rgb(var(--experience-rgb)) 87%);
+    content: '';
+  }
+  .experience-content h1 { font-size: clamp(2.65rem, 8.6vw, 4.5rem); }
+  .experience-start { width: 100%; }
+  .experience-panel { margin-inline-start: auto; }
+
+  .experience-app .booking-intro { padding-block: .18rem .02rem; }
+  .experience-app .booking-intro h1,
+  [data-theme="tinta"] .experience-app .booking-intro h1 { font-size: clamp(1.8rem, 5.7vw, 2.5rem); }
+  .experience-app .booking-intro p { margin-block-start: .3rem; }
+  .experience-gallery > summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .5rem;
+    min-height: 2.75rem;
+    padding-inline: .68rem;
+    border: 1px solid var(--line);
+    border-radius: .64rem;
+    background: var(--surface);
+    font-size: .84rem;
+    font-weight: 760;
+    list-style: none;
+  }
+  .experience-gallery > summary::-webkit-details-marker { display: none; }
+  .experience-gallery[open] > summary { margin-block-end: .55rem; }
+  .experience-gallery-count { display: inline-flex; align-items: center; gap: .35rem; color: var(--muted); }
+  .experience-gallery-count svg { width: 1rem; height: 1rem; }
+  .experience-gallery[open] .experience-gallery-count svg { rotate: 180deg; }
+  .experience-app #booking-form .form-actions {
+    position: sticky;
+    z-index: 2;
+    bottom: 0;
+    padding: .6rem .55rem max(.6rem, env(safe-area-inset-bottom));
+    border: 1px solid var(--line);
+    border-radius: .75rem;
+    background: var(--surface);
+  }
+}
+
+@media (max-width: 37rem) {
+  .experience-app #services .choice-project { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: .65rem; row-gap: .24rem; }
+  .experience-app #services .choice-project input { grid-row: 1 / span 2; }
+  .experience-app #services .choice-project .choice-price { grid-column: 2; max-width: none; text-align: start; }
+  .experience-app .choice-price-label { display: inline; margin-inline-end: .38rem; }
+}
+
+@media (max-width: 34rem) {
+  #experience-topbar .topbar-inner { padding-block: .25rem .35rem; }
+  #experience-topbar .mode-switch button { font-size: .84rem; }
+  .experience-app .demo-bar { margin-block: .24rem .4rem; }
+  .experience-app .business-links a { min-height: 2.75rem; }
+  .experience-app .booking-layout { gap: .62rem; }
+  .experience-app .stepper li { justify-items: center; text-align: center; }
+}
+
+@media (forced-colors: active) {
+  .experience-welcome, .experience-start, .experience-demo, .experience-profiles a[aria-current="page"] { border: 1px solid CanvasText; }
+}
