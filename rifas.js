@@ -5,7 +5,12 @@ const copy = {
   settings: 'Set up your rehearsal', eventName: 'Raffle name (optional)', prize: 'Prize name', participants: 'Number of tickets', image: 'Reference image (optional)',
   imageHelp: 'JPG, PNG or WebP, up to 4 MB. The image stays on your device.', remove: 'Remove image', style: 'Rehearsal format',
   one: 'One spin · one winner', three: 'Three spins · the third wins', start: 'Spin the wheel', plan: 'Basic plan',
-  planDescription: 'One random draw, a prize photo and up to 500 tickets. Purchases are not yet available.', perDraw: 'per event · proposed', back: 'Back to CyberSerch', reconfigure: 'Back to settings',
+  planDescription: 'One random draw, a prize photo and up to 500 tickets. A confirmed MXN 99 payment will unlock one event.',
+  checkoutStatus: 'Payments are being prepared · free rehearsal available', perDraw: 'per event', back: 'Back to CyberSerch', reconfigure: 'Back to settings',
+  guideLink: 'See instructions', instructions: 'How to use the wheel', stepOne: 'Set up the prize',
+  stepOneDetail: 'Name the prize, optionally add a photo, and choose how many tickets to try.',
+  stepTwo: 'Choose a format', stepTwoDetail: 'With three spins, the first two are for show. The third reveals the winning ticket.',
+  stepThree: 'Spin and check the result', stepThreeDetail: 'Select Spin the wheel. The rehearsal picks a random ticket from your fictional list.',
 };
 const local = (es, en) => english ? en : es;
 const byId = id => document.getElementById(id);

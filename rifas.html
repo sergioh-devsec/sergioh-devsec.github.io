@@ -9,8 +9,8 @@
   <meta name="description" content="Personaliza una ruleta y ensaya un sorteo al azar con folios ficticios. Una demo gratuita de CyberSerch.">
   <link rel="canonical" href="https://cyberserch.com/rifas">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="rifas.css?v=c717763a8a55">
-  <script type="module" src="rifas.js?v=5487a8964bb6"></script>
+  <link rel="stylesheet" href="rifas.css?v=c18ca9a71e08">
+  <script type="module" src="rifas.js?v=5906d5228276"></script>
 </head>
 <body>
   <a class="skip" href="#configurar" data-copy="skip">Ir al simulador</a>
@@ -23,6 +23,7 @@
       <div>
         <h1 id="title">Prueba tu Suerte<span>.</span></h1>
         <p data-copy="lead">Personaliza el premio, mira girar la ruleta y descubre qué folio sale al azar.</p>
+        <a class="intro-guide" href="#instrucciones" data-copy="guideLink">Ver instrucciones</a>
       </div>
       <p class="demo-note" data-copy="demo">Ensayo gratuito con folios ficticios. Sin ventas, inscripciones ni premios reales.</p>
     </section>
@@ -34,8 +35,29 @@
           <span id="spin-step" class="spin-step" aria-hidden="true">01</span>
         </div>
         <div class="wheel-wrap" aria-hidden="true">
-          <div id="wheel-disc" class="wheel-disc"></div>
-          <span class="wheel-hub"></span><span class="wheel-pointer"></span>
+          <div class="wheel-face">
+            <div id="wheel-disc" class="wheel-disc">
+              <svg class="wheel-rivets" viewBox="0 0 400 400" focusable="false">
+                <defs>
+                  <radialGradient id="rivet" cx="35%" cy="25%" r="80%">
+                    <stop offset="0" stop-color="#fffbdc"/>
+                    <stop offset=".48" stop-color="#f5d398"/>
+                    <stop offset="1" stop-color="#70422d"/>
+                  </radialGradient>
+                </defs>
+                <g fill="url(#rivet)">
+                  <circle cx="200" cy="10" r="4.5"/><circle cx="295" cy="35.5" r="4.5"/>
+                  <circle cx="364.5" cy="105" r="4.5"/><circle cx="390" cy="200" r="4.5"/>
+                  <circle cx="364.5" cy="295" r="4.5"/><circle cx="295" cy="364.5" r="4.5"/>
+                  <circle cx="200" cy="390" r="4.5"/><circle cx="105" cy="364.5" r="4.5"/>
+                  <circle cx="35.5" cy="295" r="4.5"/><circle cx="10" cy="200" r="4.5"/>
+                  <circle cx="35.5" cy="105" r="4.5"/><circle cx="105" cy="35.5" r="4.5"/>
+                </g>
+              </svg>
+            </div>
+            <span class="wheel-hub">✦</span>
+          </div>
+          <span class="wheel-pointer"></span>
         </div>
         <p id="result" class="result" role="status" data-copy="ready">Lista para girar.</p>
         <a class="mobile-config" href="#configurar" data-copy="reconfigure">Volver a la configuración</a>
@@ -58,9 +80,21 @@
         </form>
       </section>
     </div>
+    <section class="instructions" id="instrucciones" aria-labelledby="instructions-title">
+      <h2 id="instructions-title" data-copy="instructions">Cómo usar la ruleta</h2>
+      <ol>
+        <li><strong data-copy="stepOne">Prepara el premio</strong><span data-copy="stepOneDetail">Escribe su nombre, sube una foto opcional y elige cuántos folios quieres probar.</span></li>
+        <li><strong data-copy="stepTwo">Elige el formato</strong><span data-copy="stepTwoDetail">Con tres giros, los dos primeros son de exhibición. El tercero revela el folio ganador.</span></li>
+        <li><strong data-copy="stepThree">Gira y revisa el resultado</strong><span data-copy="stepThreeDetail">Pulsa Girar la ruleta. El ensayo elige un folio al azar de tu lista ficticia.</span></li>
+      </ol>
+    </section>
     <section class="plan" aria-labelledby="plan-title">
-      <div><h2 id="plan-title" data-copy="plan">Plan Básico</h2><p data-copy="planDescription">Una rifa al azar, una foto del premio y hasta 500 folios. La contratación todavía no está disponible.</p></div>
-      <p class="price"><strong>$99 MXN</strong><span data-copy="perDraw">por evento · propuesta</span></p>
+      <div>
+        <h2 id="plan-title" data-copy="plan">Plan Básico</h2>
+        <p data-copy="planDescription">Una rifa al azar, una foto del premio y hasta 500 folios. El pago confirmado de $99 MXN habilitará un evento.</p>
+        <p class="checkout-status" data-copy="checkoutStatus">Cobro en preparación · ensayo gratuito disponible</p>
+      </div>
+      <p class="price"><strong>$99 MXN</strong><span data-copy="perDraw">por evento</span></p>
     </section>
   </main>
   <footer class="shell"><a href="./" data-copy="back">Volver a CyberSerch</a></footer>
