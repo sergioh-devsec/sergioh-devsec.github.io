@@ -11,9 +11,11 @@
   <title>Marea Pro · App de reservas | CyberSerch</title>
   <link rel="icon" href="../assets/mark.svg" type="image/svg+xml">
   <link rel="stylesheet" href="app.css?v=a3d2818b6fd9">
+  <link rel="stylesheet" href="gallery.css?v=8ad9cfd45a7d">
   <script src="businesses.js?v=6d14389b0793" defer></script>
   <script src="state.js?v=3625829a2717" defer></script>
-  <script src="app.js?v=7e12358e1343" defer></script>
+  <script src="app.js?v=92684750f469" defer></script>
+  <script src="gallery.js?v=6ce3eed86774" defer></script>
 </head>
 <body>
   <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -63,7 +65,8 @@
           <ol class="stepper" id="booking-progress" aria-label="Progreso de reserva">
             <li aria-current="step"><span aria-hidden="true">1</span> Servicio</li>
             <li><span aria-hidden="true">2</span> Horario</li>
-            <li><span aria-hidden="true">3</span> Revisión</li>
+            <li><span aria-hidden="true">3</span> Datos</li>
+            <li><span aria-hidden="true">4</span> Revisión</li>
           </ol>
           <form id="booking-form" novalidate autocomplete="off">
             <section class="step-panel" data-step="0" aria-labelledby="service-title">
@@ -82,10 +85,38 @@
               <fieldset class="date-list" id="booking-dates"><legend>Fecha</legend></fieldset>
               <fieldset class="slot-list" id="booking-slots"><legend>Hora de inicio</legend></fieldset>
             </section>
-            <section class="step-panel" data-step="2" aria-labelledby="review-title" hidden>
+            <section class="step-panel" data-step="2" aria-labelledby="sample-contact-title" hidden>
+              <h2 id="sample-contact-title" tabindex="-1">Datos de prueba</h2>
+              <p class="quiet" id="sample-contact-hint">Elige un nombre y un WhatsApp ficticios para simular la reserva.</p>
+              <div class="sample-contact" aria-describedby="sample-contact-hint">
+                <label>
+                  <span>Nombre de prueba</span>
+                  <select id="sample-name" name="client" required>
+                    <option value="">Elige un nombre de ejemplo</option>
+                  </select>
+                </label>
+                <label>
+                  <span>WhatsApp de prueba</span>
+                  <select id="sample-whatsapp" name="whatsapp" required>
+                    <option value="">Elige un número de ejemplo</option>
+                    <option value="muestra-1">55 •••• 0101</option>
+                    <option value="muestra-2">55 •••• 0102</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Nota opcional</span>
+                  <select id="sample-note" name="note">
+                    <option value="">Sin nota</option>
+                    <option value="primera-visita">Es mi primera visita.</option>
+                    <option value="diseno">Quiero consultar opciones de diseño.</option>
+                    <option value="horario">Prefiero un horario temprano.</option>
+                  </select>
+                </label>
+              </div>
+            </section>
+            <section class="step-panel" data-step="3" aria-labelledby="review-title" hidden>
               <h2 id="review-title" tabindex="-1">Revisa tu cita</h2>
-              <p class="quiet">Elige un alias de muestra para ver cómo aparecerá la reserva en el panel.</p>
-              <fieldset class="alias-list" id="aliases"><legend>Alias de prueba</legend></fieldset>
+              <p class="quiet">Comprueba el servicio, el horario y los datos ficticios de la simulación.</p>
               <dl class="summary-data review-data" id="review-data"></dl>
             </section>
             <p class="error" id="booking-error" role="alert" hidden></p>

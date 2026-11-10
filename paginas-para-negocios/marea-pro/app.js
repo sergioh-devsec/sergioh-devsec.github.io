@@ -35,7 +35,9 @@
 
   const money = (value) => `${priceFormat.format(value)} ${currency}`;
   const formatDate = (date) => dayFormat.format(new Date(`${date}T12:00:00`));
-  const emptyDraft = () => ({ serviceId: '', addonIds: [], staffId: 'any', date: '', time: '', client: '' });
+  const emptyDraft = () => ({
+    serviceId: '', addonIds: [], staffId: 'any', date: '', time: '', client: '', whatsapp: '', note: '',
+  });
   let draft = emptyDraft();
   let step = 0;
   let selectedView = 'booking';
@@ -151,10 +153,10 @@
       item.classList.toggle('complete', number < index);
     });
     back.hidden = index === 0;
-    next.textContent = ['Elegir horario', 'Revisar cita', 'Simular cita'][index];
+    next.textContent = ['Elegir horario', 'Datos de prueba', 'Revisar cita', 'Simular cita'][index];
     showError();
     if (index === 1) renderSchedule();
-    if (index === 2) renderReview();
+    if (index === 3) renderReview();
     if (focus) panels[index].querySelector('h2').focus();
     renderSelection();
   }
@@ -165,7 +167,7 @@
     receipt.hidden = true;
     form.hidden = false;
     renderServices();
-    renderAliases();
+    renderSampleContact();
     selectView('booking', { focus: false });
     showStep(0);
   }
@@ -198,8 +200,12 @@
     ));
   }
 
-  function renderAliases() {
-    replaceChoices(byId('aliases'), aliases.map((alias) => radio('client', alias, alias)));
+  function renderSampleContact() {
+    const name = byId('sample-name');
+    name.replaceChildren(name.options[0], ...aliases.map((alias) => option(alias, alias)));
+    name.value = draft.client;
+    byId('sample-whatsapp').value = draft.whatsapp;
+    byId('sample-note').value = draft.note;
   }
 
   function renderSchedule() {
@@ -235,7 +241,7 @@
     if (extras.length) rows.push(['Extras', extras.join(', ')]);
     if (staff) rows.push(['Especialista', staff.name]);
     if (item.date && item.time) rows.push(['Cuándo', `${formatDate(item.date)} · ${item.time}`]);
-    if (item.client) rows.push(['Alias', item.client]);
+    if (item.client) rows.push(['Nombre de prueba', item.client]);
     rows.push(['Duración', `${totals.minutes} min`], ['Total estimado', money(totals.price), 'total']);
     return rows;
   }
@@ -258,8 +264,11 @@
   }
 
   function renderReview() {
-    renderAliases();
-    descriptionList(byId('review-data'), summaryRows(draft));
+    const rows = summaryRows(draft);
+    const contact = [['WhatsApp de prueba', byId('sample-whatsapp').selectedOptions[0].textContent]];
+    if (draft.note) contact.push(['Nota', byId('sample-note').selectedOptions[0].textContent]);
+    rows.splice(-2, 0, ...contact);
+    descriptionList(byId('review-data'), rows);
   }
 
   function completeBooking(appointment) {
@@ -291,7 +300,6 @@
       const replacement = form.querySelector(`input[name="${name}"]:checked`);
       replacement?.focus();
     }
-    if (step === 2) descriptionList(byId('review-data'), summaryRows(draft));
     renderSelection();
   }
 
@@ -303,13 +311,17 @@
     } else if (step === 1 && !draft.time) {
       showError('Elige una hora disponible para continuar.');
       byId('booking-slots').querySelector('input')?.focus();
-    } else if (step === 2 && !draft.client) {
-      showError('Elige un alias de prueba para continuar.');
-      byId('aliases').querySelector('input').focus();
-    } else if (step < 2) {
+    } else if (step === 2 && !aliases.includes(draft.client)) {
+      showError('Elige un nombre de ejemplo para continuar.');
+      byId('sample-name').focus();
+    } else if (step === 2 && !draft.whatsapp) {
+      showError('Elige un WhatsApp de ejemplo para continuar.');
+      byId('sample-whatsapp').focus();
+    } else if (step < 3) {
       showStep(step + 1);
     } else {
-      const result = model.createBooking(draft, appointments);
+      const { serviceId, addonIds, staffId, date, time, client } = draft;
+      const result = model.createBooking({ serviceId, addonIds, staffId, date, time, client }, appointments);
       if (!result.appointment) {
         showStep(1);
         showError('Ese horario ya no está disponible. Elige otro para continuar.');
@@ -410,7 +422,7 @@
     form.hidden = false;
     receipt.hidden = true;
     renderServices();
-    renderAliases();
+    renderSampleContact();
     showStep(0, false);
     for (const id of ['studio-search', 'studio-status', 'studio-date']) byId(id).value = '';
     renderStudio();
@@ -428,7 +440,7 @@
 
   configureBusiness();
   renderServices();
-  renderAliases();
+  renderSampleContact();
   showStep(0, false);
   selectView(location.hash === '#estudio' ? 'studio' : 'booking', { focus: false });
 })();
