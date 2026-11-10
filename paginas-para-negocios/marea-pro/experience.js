@@ -5,16 +5,24 @@
   const root = document.documentElement;
   const experience = {
     marea: {
-      src: 'assets/cover-marea-v58.webp?v=91e7e92c424c',
+      src: 'assets/cover-marea-v59.webp?v=5f7cf8044040',
       name: 'Marea Nail Studio',
-      title: 'Detalles que se sienten tuyos.',
-      description: 'Descubre tu próximo acabado y prueba cómo sería reservarlo.',
+      title: 'Color que',
+      tail: 'te sigue.',
+      description: 'Explora acabados, combina detalles y simula tu próxima cita.',
+      photoName: 'Puntas de color',
+      photoDetail: 'Cobalto y mandarina',
+      photoAlt: 'Una mano sobre vidrio translúcido y piedra al sol, con las puntas de las uñas pintadas en azul y naranja.',
     },
     tinta: {
-      src: 'assets/cover-tinta-v58.webp?v=2ff9a02f5709',
+      src: 'assets/cover-tinta-v59.webp?v=5f04b7e158a1',
       name: 'Línea Negra Tattoo',
-      title: 'Arte que se queda.',
-      description: 'Explora estilos y simula una sesión a tu medida.',
+      title: 'La piel es',
+      tail: 'territorio.',
+      description: 'Del primer trazo a la espalda completa. Explora el catálogo y simula tu sesión.',
+      photoName: 'Espalda completa',
+      photoDetail: 'Tinta negra · Gran formato',
+      photoAlt: 'Un tatuaje abstracto cubre la espalda con pinceladas negras y líneas topográficas, junto a una ventana del taller.',
     },
   };
   const theme = root.dataset.theme === 'tinta' ? 'tinta' : 'marea';
@@ -32,8 +40,12 @@
   const mobileLayout = window.matchMedia('(max-width: 50rem)');
 
   byId('experience-name').textContent = profile.name;
-  title.textContent = profile.title;
+  byId('experience-title-main').textContent = profile.title;
+  byId('experience-title-tail').textContent = profile.tail;
   byId('experience-description').textContent = profile.description;
+  byId('experience-photo-name').textContent = profile.photoName;
+  byId('experience-photo-detail').textContent = profile.photoDetail;
+  cover.alt = profile.photoAlt;
   byId(`experience-profile-${theme}`).setAttribute('aria-current', 'page');
   byId('business-brand').href = `${location.pathname}${location.search}`;
 
