@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#fff6f8">
+  <meta name="description" content="Prueba la experiencia de reservas y el panel de citas de Marea Pro, una app de muestra de CyberSerch para estudios de uñas.">
+  <link rel="canonical" href="https://cyberserch.com/paginas-para-negocios/marea-pro/">
+  <title>Marea Pro · App de reservas | CyberSerch</title>
+  <link rel="icon" href="../assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="app.css?v=36c846c71b96">
+  <script src="state.js?v=e3fe9f2d23b8" defer></script>
+  <script src="app.js?v=6f35cebbfaf6" defer></script>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="topbar">
+    <div class="topbar-inner frame">
+      <a class="brand" href="../luna-nail-studio/"><span>marea</span><small>PRO</small></a>
+      <nav class="mode-switch" aria-label="Vistas de la aplicación">
+        <button type="button" data-view="booking" aria-controls="booking-view" aria-pressed="true">Reservar cita</button>
+        <button type="button" data-view="studio" aria-controls="studio-view" aria-pressed="false">Panel del estudio</button>
+      </nav>
+      <a class="gallery-link" href="../">Ver más ejemplos</a>
+    </div>
+  </header>
+  <main class="frame" id="contenido">
+    <p class="demo-notice"><strong>Demo interactiva.</strong> Usa un alias inventado. Las citas y los cambios se guardan solo en este navegador.</p>
+    <noscript><p>Activa JavaScript para probar la reserva y el panel del estudio.</p></noscript>
+    <section class="booking-view" id="booking-view" aria-labelledby="booking-title" hidden>
+      <div class="booking-layout">
+        <div class="booking-main">
+          <header class="page-intro">
+            <h1 id="booking-title" tabindex="-1">Tu próxima cita</h1>
+            <p>Elige tu manicura, personalízala y encuentra espacio con tu especialista.</p>
+          </header>
+          <ol class="stepper" id="booking-progress" aria-label="Progreso de reserva">
+            <li aria-current="step"><span aria-hidden="true">1</span> Servicio</li>
+            <li><span aria-hidden="true">2</span> Horario</li>
+            <li><span aria-hidden="true">3</span> Revisión</li>
+          </ol>
+          <form id="booking-form" novalidate autocomplete="off">
+            <section class="step-panel" data-step="0" aria-labelledby="service-title">
+              <h2 id="service-title" tabindex="-1">Elige tu servicio</h2>
+              <p class="quiet">Precios ilustrativos en pesos mexicanos.</p>
+              <fieldset class="choice-list" id="services"><legend class="visually-hidden">Servicios</legend></fieldset>
+              <h3>Agrega un detalle</h3>
+              <fieldset class="choice-list addons" id="addons"><legend class="visually-hidden">Extras opcionales</legend></fieldset>
+            </section>
+            <section class="step-panel" data-step="1" aria-labelledby="schedule-title" hidden>
+              <h2 id="schedule-title" tabindex="-1">Encuentra tu horario</h2>
+              <p class="quiet">La duración de tu cita y las reservas de la demo determinan qué horarios aparecen.</p>
+              <fieldset class="staff-list" id="staff"><legend>Especialista</legend></fieldset>
+              <fieldset class="date-list" id="booking-dates"><legend>Fecha</legend></fieldset>
+              <fieldset class="slot-list" id="booking-slots"><legend>Hora de inicio</legend></fieldset>
+            </section>
+            <section class="step-panel" data-step="2" aria-labelledby="review-title" hidden>
+              <h2 id="review-title" tabindex="-1">Revisa tu cita</h2>
+              <p class="quiet">Elige un alias de muestra para ver cómo aparecerá la reserva en el panel.</p>
+              <fieldset class="alias-list" id="aliases"><legend>Alias de prueba</legend></fieldset>
+              <dl class="summary-data review-data" id="review-data"></dl>
+            </section>
+            <p class="error" id="booking-error" role="alert" hidden></p>
+            <div class="form-actions">
+              <button class="button secondary" id="booking-back" type="button" hidden>Volver</button>
+              <button class="button primary" id="booking-next" type="submit">Elegir horario</button>
+            </div>
+          </form>
+          <section class="receipt" id="booking-receipt" aria-labelledby="receipt-title" hidden>
+            <div class="receipt-mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h2 id="receipt-title" tabindex="-1">Tu cita de prueba está lista</h2>
+            <p id="receipt-folio"></p>
+            <dl class="summary-data" id="receipt-data"></dl>
+            <div class="form-actions receipt-actions">
+              <button class="button primary" id="show-in-studio" type="button">Ver en el panel</button>
+              <button class="button secondary" id="new-booking" type="button">Probar otra cita</button>
+            </div>
+          </section>
+        </div>
+        <aside class="booking-side" aria-labelledby="selection-title">
+          <figure class="studio-photo">
+            <img src="../luna-nail-studio/assets/marea-hero.jpg?v=d17be7c57edf" alt="Manicura rosa con puntas lila y una flor blanca sobre satén rosa" width="1254" height="1254">
+            <figcaption>Marea Nail Studio</figcaption>
+          </figure>
+          <section class="selection">
+            <h2 id="selection-title">Tu selección</h2>
+            <div id="selection-content" aria-live="polite"></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+    <section class="studio-view" id="studio-view" aria-labelledby="studio-title" hidden>
+      <header class="page-intro studio-intro">
+        <div><h2 id="studio-title" tabindex="-1">Agenda del estudio</h2><p>Las citas que haces en la demo aparecen aquí. Busca una reserva o actualiza su estado.</p></div>
+        <button type="button" class="button secondary" id="studio-new">Crear cita</button>
+      </header>
+      <dl class="metrics" id="studio-metrics" aria-label="Resumen de citas"></dl>
+      <div class="studio-controls">
+        <label>Buscar por alias o folio<input type="search" id="studio-search" placeholder="Ej. Renata o MP-101"></label>
+        <label>Fecha<select id="studio-date"></select></label>
+        <label>Estado<select id="studio-status"><option value="">Todos</option></select></label>
+      </div>
+      <p class="quiet" id="studio-count" role="status"></p>
+      <div class="appointments" id="appointments"></div>
+      <p class="quiet" id="studio-message" role="status"></p>
+      <details class="reset-area">
+        <summary>Restablecer demo</summary>
+        <p>Se restaurarán las citas de muestra de este navegador.</p>
+        <button type="button" class="button secondary" id="reset-demo">Restaurar datos de muestra</button>
+      </details>
+    </section>
+  </main>
+  <footer class="footer frame">
+    <span>Una app de muestra de CyberSerch</span>
+    <a href="/cotizador?tipo=custom">Cotizar una app para mi negocio</a>
+  </footer>
+</body>
+</html>
