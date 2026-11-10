@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; object-src 'none'; worker-src 'none'">
+  <meta name="theme-color" content="#231734">
+  <title>Prueba tu Suerte | Demo de rifas de CyberSerch</title>
+  <meta name="description" content="Personaliza una ruleta y ensaya un sorteo al azar con folios ficticios. Una demo gratuita de CyberSerch.">
+  <link rel="canonical" href="https://cyberserch.com/rifas">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="rifas.css?v=c717763a8a55">
+  <script type="module" src="rifas.js?v=5487a8964bb6"></script>
+</head>
+<body>
+  <a class="skip" href="#configurar" data-copy="skip">Ir al simulador</a>
+  <header class="site-bar shell">
+    <a class="brand" href="./"><img src="assets/favicon.svg" width="30" height="30" alt="">CyberSerch</a>
+    <nav aria-label="Idioma / Language"><a id="language-link" lang="en" hreflang="en" href="?idioma=en">English</a></nav>
+  </header>
+  <main class="shell">
+    <section class="intro" aria-labelledby="title">
+      <div>
+        <h1 id="title">Prueba tu Suerte<span>.</span></h1>
+        <p data-copy="lead">Personaliza el premio, mira girar la ruleta y descubre qué folio sale al azar.</p>
+      </div>
+      <p class="demo-note" data-copy="demo">Ensayo gratuito con folios ficticios. Sin ventas, inscripciones ni premios reales.</p>
+    </section>
+    <div class="studio">
+      <section class="stage" aria-labelledby="stage-title">
+        <div class="stage-head">
+          <div><h2 id="stage-title" data-copy="wheel">La ruleta</h2><p id="stage-prize">Premio sorpresa</p></div>
+          <img id="stage-photo" class="stage-photo" alt="" width="76" height="64" hidden>
+          <span id="spin-step" class="spin-step" aria-hidden="true">01</span>
+        </div>
+        <div class="wheel-wrap" aria-hidden="true">
+          <div id="wheel-disc" class="wheel-disc"></div>
+          <span class="wheel-hub"></span><span class="wheel-pointer"></span>
+        </div>
+        <p id="result" class="result" role="status" data-copy="ready">Lista para girar.</p>
+        <a class="mobile-config" href="#configurar" data-copy="reconfigure">Volver a la configuración</a>
+      </section>
+      <section class="settings" id="configurar" aria-labelledby="settings-title">
+        <h2 id="settings-title" data-copy="settings">Configura tu ensayo</h2>
+        <form id="raffle-form">
+          <label><span data-copy="eventName">Nombre de la rifa (opcional)</span><input id="event-name" type="text" maxlength="80"></label>
+          <label><span data-copy="prize">Nombre del premio</span><input id="prize" type="text" maxlength="80" value="Premio sorpresa" required></label>
+          <label><span data-copy="participants">Número de folios</span><input id="entries" type="number" min="2" max="5000" step="1" value="100" required></label>
+          <label><span data-copy="image">Imagen de referencia (opcional)</span><input id="image" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="image-note"></label>
+          <p id="image-note" class="help" data-copy="imageHelp">JPG, PNG o WebP, hasta 4 MB. La imagen se queda en tu dispositivo.</p>
+          <div id="photo-preview" class="photo-preview" hidden><img id="photo" alt="" width="96" height="72"><button type="button" id="remove-photo" class="plain" data-copy="remove">Quitar imagen</button></div>
+          <fieldset>
+            <legend data-copy="style">Formato del ensayo</legend>
+            <label class="choice"><input type="radio" name="spins" value="1" checked><span data-copy="one">Un giro · un ganador</span></label>
+            <label class="choice"><input type="radio" name="spins" value="3"><span data-copy="three">Tres giros · gana el tercero</span></label>
+          </fieldset>
+          <button id="spin" class="primary" type="submit" data-copy="start">Girar la ruleta</button>
+        </form>
+      </section>
+    </div>
+    <section class="plan" aria-labelledby="plan-title">
+      <div><h2 id="plan-title" data-copy="plan">Plan Básico</h2><p data-copy="planDescription">Una rifa al azar, una foto del premio y hasta 500 folios. La contratación todavía no está disponible.</p></div>
+      <p class="price"><strong>$99 MXN</strong><span data-copy="perDraw">por evento · propuesta</span></p>
+    </section>
+  </main>
+  <footer class="shell"><a href="./" data-copy="back">Volver a CyberSerch</a></footer>
+</body>
+</html>
