@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="app.css?v=a3d2818b6fd9">
   <script src="businesses.js?v=6d14389b0793" defer></script>
   <script src="state.js?v=3625829a2717" defer></script>
-  <script src="app.js?v=3a72c87dce7f" defer></script>
+  <script src="app.js?v=7e12358e1343" defer></script>
 </head>
 <body>
   <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -29,15 +29,15 @@
         <span id="business-brand-name">marea</span><small>PRO</small>
       </a>
       <nav class="mode-switch" aria-label="Vistas de la aplicación">
-        <button type="button" data-view="booking" aria-controls="booking-view" aria-pressed="true">Reservar cita</button>
-        <button type="button" data-view="studio" aria-controls="studio-view" aria-pressed="false">Panel del estudio</button>
+        <button type="button" data-view="booking" aria-controls="booking-view" aria-pressed="true">Simular reserva</button>
+        <button type="button" data-view="studio" aria-controls="studio-view" aria-pressed="false">Panel de muestra</button>
       </nav>
       <a class="gallery-link" href="https://cyberserch.com/paginas-para-negocios/">Ver más ejemplos <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 12 4M6 4h6v6"/></svg></a>
     </div>
   </header>
   <main class="frame" id="contenido">
     <div class="demo-bar">
-      <p class="demo-notice"><strong>Demo interactiva.</strong> <span id="demo-notice-copy">Usa un alias. Las citas se guardan solo en este navegador.</span></p>
+      <p class="demo-notice"><strong>Demo de reservas.</strong> <span id="demo-notice-copy">Las citas son ficticias y se guardan solo en este navegador.</span></p>
       <nav class="business-switch" aria-label="Negocio de ejemplo" hidden>
         <span>Negocio de ejemplo</span>
         <div class="business-links" id="business-links"></div>
@@ -97,12 +97,12 @@
           </form>
           <section class="receipt" id="booking-receipt" aria-labelledby="receipt-title" hidden>
             <div class="receipt-mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <h2 id="receipt-title" tabindex="-1">Tu cita de prueba está lista</h2>
+            <h2 id="receipt-title" tabindex="-1">Simulación completada</h2>
             <p id="receipt-folio"></p>
             <dl class="summary-data" id="receipt-data"></dl>
             <div class="form-actions receipt-actions">
-              <button class="button primary" id="show-in-studio" type="button">Ver en el panel</button>
-              <button class="button secondary" id="new-booking" type="button">Probar otra cita</button>
+              <button class="button primary" id="show-in-studio" type="button">Ver panel de muestra</button>
+              <button class="button secondary" id="new-booking" type="button">Simular otra cita</button>
             </div>
           </section>
         </div>
@@ -117,7 +117,7 @@
     <section class="studio-view" id="studio-view" aria-labelledby="studio-title" hidden>
       <header class="page-intro studio-intro">
         <div><h2 id="studio-title" tabindex="-1">Agenda del estudio</h2><p>Las citas que haces en la demo aparecen aquí. Busca una reserva o actualiza su estado.</p></div>
-        <button type="button" class="button secondary" id="studio-new">Crear cita</button>
+        <button type="button" class="button secondary" id="studio-new">Simular cita</button>
       </header>
       <dl class="metrics" id="studio-metrics" aria-label="Resumen de citas"></dl>
       <div class="studio-controls">

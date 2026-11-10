@@ -151,7 +151,7 @@
       item.classList.toggle('complete', number < index);
     });
     back.hidden = index === 0;
-    next.textContent = ['Elegir horario', 'Revisar cita', 'Confirmar cita de prueba'][index];
+    next.textContent = ['Elegir horario', 'Revisar cita', 'Simular cita'][index];
     showError();
     if (index === 1) renderSchedule();
     if (index === 2) renderReview();
@@ -270,7 +270,7 @@
       item.removeAttribute('aria-current');
       item.classList.add('complete');
     }
-    byId('receipt-folio').textContent = `Folio ${appointment.id}. Encuentra la cita en el panel de este navegador.`;
+    byId('receipt-folio').textContent = `Folio de prueba ${appointment.id}. La cita ficticia aparece en el panel de este navegador.`;
     descriptionList(byId('receipt-data'), summaryRows(appointment));
     renderSelection();
     byId('receipt-title').focus();
