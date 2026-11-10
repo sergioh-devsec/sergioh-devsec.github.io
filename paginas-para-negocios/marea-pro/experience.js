@@ -5,14 +5,14 @@
   const root = document.documentElement;
   const experience = {
     marea: {
-      src: 'assets/cover-marea-v59.webp?v=5f7cf8044040',
+      src: 'assets/cover-marea-v60.webp?v=279f0bd9fd1e',
       name: 'Marea Nail Studio',
-      title: 'Color que',
-      tail: 'te sigue.',
-      description: 'Explora acabados, combina detalles y simula tu próxima cita.',
-      photoName: 'Puntas de color',
-      photoDetail: 'Cobalto y mandarina',
-      photoAlt: 'Una mano sobre vidrio translúcido y piedra al sol, con las puntas de las uñas pintadas en azul y naranja.',
+      title: 'Brillo a',
+      tail: 'tu manera.',
+      description: 'Elige tu acabado, personaliza los detalles y prueba la agenda del estudio.',
+      photoName: 'Acabado cromado',
+      photoDetail: 'Lavanda y nácar',
+      photoAlt: 'Una mano con uñas cromadas en lavanda sostiene una concha nacarada sobre tela oscura.',
     },
     tinta: {
       src: 'assets/cover-tinta-v59.webp?v=5f04b7e158a1',
@@ -77,18 +77,30 @@
     }
   }
 
-  function routeLink(id, hash) {
+  function routeLink(id, hash, afterRoute) {
     byId(id).addEventListener('click', (event) => {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
       if (location.hash !== hash) history.pushState(null, '', `${location.pathname}${location.search}${hash}`);
       renderRoute(true);
+      afterRoute?.();
     });
   }
 
   routeLink('experience-start', '#reserva');
   routeLink('experience-panel', '#estudio');
   routeLink('business-brand', '');
+  if (theme === 'marea') {
+    byId('experience-gallery-link').hidden = false;
+    byId('experience-panel').after(byId('experience-profile-marea').parentElement);
+    routeLink('experience-gallery-link', '#reserva', () => {
+      gallery.open = true;
+      const summary = gallery.querySelector('summary');
+      const control = summary.getClientRects().length ? summary : gallery.querySelector('.photo-gallery-next');
+      control?.focus({ preventScroll: true });
+      gallery.scrollIntoView({ block: 'start' });
+    });
+  }
   byId('experience-skip').addEventListener('click', (event) => {
     event.preventDefault();
     const heading = app.hidden ? title : byId(booking.hidden ? 'studio-title' : 'booking-title');
