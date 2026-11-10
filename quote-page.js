@@ -15,6 +15,10 @@
       next: 'Qué pasa después',
       consult: 'Preparar una consulta gratuita',
       sample: 'Ver un ejemplo en otra pestaña',
+      examples: 'Ejemplos para este alcance',
+      currentEstimate: 'Estimación aproximada',
+      breakdown: 'Ver desglose',
+      newTab: 'Abre en otra pestaña.',
       creatorLabel: '¿En qué te gustaría enfocarte? (opcional)',
       creatorHint: 'La opción solo prepara un mensaje que puedes editar. El simulador se queda en tu navegador. Evita datos de terceros o enlaces privados.',
       goals: {
@@ -49,6 +53,10 @@
       next: 'What happens next',
       consult: 'Prepare a free enquiry',
       sample: 'View an example in a new tab',
+      examples: 'Examples for this scope',
+      currentEstimate: 'Approximate estimate',
+      breakdown: 'View breakdown',
+      newTab: 'Opens in a new tab.',
       creatorLabel: 'What would you like to focus on? (optional)',
       creatorHint: 'Your choice prepares a message you can edit. The simulator stays in your browser. Leave out private links and other people’s information.',
       goals: {

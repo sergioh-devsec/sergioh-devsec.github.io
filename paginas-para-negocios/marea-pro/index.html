@@ -13,13 +13,13 @@
   <link rel="stylesheet" href="app.css?v=a3d2818b6fd9">
   <link rel="stylesheet" href="gallery.css?v=8ad9cfd45a7d">
   <link rel="stylesheet" href="experience.css?v=536d31fb477d">
-  <link rel="stylesheet" href="marea-cover.css?v=2218a9136248">
-  <link rel="stylesheet" href="marea-booking.css?v=7405904d3e7f">
+  <link rel="stylesheet" href="marea-cover.css?v=5e8aa5d10377">
+  <link rel="stylesheet" href="marea-booking.css?v=5cf581aa27fd">
   <script src="businesses.js?v=4675c57497a2" defer></script>
   <script src="state.js?v=3625829a2717" defer></script>
   <script src="app.js?v=43542efc8287" defer></script>
   <script src="gallery.js?v=cc913564544b" defer></script>
-  <script src="experience.js?v=b67125a779ae" defer></script>
+  <script src="experience.js?v=f14eb8874d23" defer></script>
 </head>
 <body data-experience="welcome">
   <a class="skip" id="experience-skip" href="#contenido">Saltar al contenido</a>
@@ -35,8 +35,9 @@
         <span id="business-brand-name">marea</span><small>PRO</small>
       </a>
       <nav class="mode-switch" aria-label="Vistas de la aplicación">
-        <button type="button" data-view="booking" aria-controls="booking-view" aria-pressed="true">Simular reserva</button>
-        <button type="button" data-view="studio" aria-controls="studio-view" aria-pressed="false">Panel de muestra</button>
+        <button type="button" data-view="booking" aria-controls="booking-view" aria-pressed="true">Reserva</button>
+        <a id="experience-gallery-nav" href="#galeria">Galería</a>
+        <button type="button" data-view="studio" aria-controls="studio-view" aria-pressed="false">Panel</button>
       </nav>
       <a class="gallery-link" href="https://cyberserch.com/paginas-para-negocios/">Ver más ejemplos <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 12 4M6 4h6v6"/></svg></a>
     </div>
@@ -66,27 +67,27 @@
       <div class="experience-content">
         <p id="experience-description">Elige tu acabado, personaliza los detalles y prueba la agenda del estudio.</p>
         <a class="experience-start" id="experience-start" href="#reserva">
-          <svg class="marea-cover-icon marea-calendar" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3.5v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
+          <svg class="experience-cover-icon experience-calendar" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3.5v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
           Simular reserva
           <span class="experience-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></span>
         </a>
       </div>
       <div class="experience-links">
+        <a class="experience-gallery-link" id="experience-gallery-link" href="#galeria">
+          <svg class="experience-cover-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.2"/><path d="m4 16 4-4 3 3 4-5 5 5"/></svg>
+          Ver galería
+        </a>
+        <a class="experience-panel" id="experience-panel" href="#estudio">
+          <svg class="experience-cover-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 9h16M10 9v11"/></svg>
+          Panel de muestra
+        </a>
         <nav class="experience-profiles" aria-label="Negocio de ejemplo">
           <a id="experience-profile-marea" href="./">Marea</a>
           <a id="experience-profile-tinta" href="?negocio=tatuajes">Línea Negra</a>
         </nav>
-        <a class="marea-cover-gallery" id="experience-gallery-link" href="#reserva" hidden>
-          <svg class="marea-cover-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.2"/><path d="m4 16 4-4 3 3 4-5 5 5"/></svg>
-          Ver galería
-        </a>
-        <a class="experience-panel" id="experience-panel" href="#estudio">
-          <svg class="marea-cover-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 9h16M10 9v11"/></svg>
-          Panel de muestra
-        </a>
       </div>
     </section>
-    <noscript><p class="frame experience-noscript">Activa JavaScript para probar la reserva y el panel del estudio.</p></noscript>
+    <noscript><p class="frame experience-noscript">Activa JavaScript para explorar la galería, simular una reserva y abrir el panel del estudio.</p></noscript>
     <div class="experience-app frame" id="experience-app" hidden>
     <div class="demo-bar">
       <p class="demo-notice"><strong>Demo de reservas.</strong> <span id="demo-notice-copy">Las citas son ficticias y se guardan solo en este navegador.</span></p>
@@ -95,24 +96,26 @@
         <div class="business-links" id="business-links"></div>
       </nav>
     </div>
+    <section class="experience-gallery-view" id="gallery-view" aria-labelledby="gallery-title" hidden>
+      <header class="experience-gallery-intro">
+        <h1 id="gallery-title" tabindex="-1">Galería del estudio</h1>
+        <p id="gallery-intro"></p>
+      </header>
+      <figure class="studio-photo" id="business-photo" hidden>
+        <figcaption><strong id="business-photo-caption"></strong><span id="business-photo-label"></span></figcaption>
+      </figure>
+      <div class="studio-art" id="business-art" aria-hidden="true" hidden>
+        <strong id="business-art-title"></strong>
+        <span id="business-art-caption"></span>
+      </div>
+      <a class="button primary" id="gallery-booking-link" href="#reserva">Simular reserva</a>
+    </section>
     <section class="booking-view" id="booking-view" aria-labelledby="booking-title" hidden>
       <div class="booking-layout">
         <header class="page-intro booking-intro">
           <h1 id="booking-title" tabindex="-1">Tu próxima cita</h1>
           <p id="booking-intro">Elige tu manicura, personalízala y encuentra espacio con tu especialista.</p>
         </header>
-        <div class="booking-media">
-          <details class="experience-gallery" id="experience-gallery">
-            <summary><span>Galería del estudio</span><span class="experience-gallery-count">5 fotos <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 6 4 4 4-4"/></svg></span></summary>
-            <figure class="studio-photo" id="business-photo" hidden>
-              <figcaption><strong id="business-photo-caption"></strong><span id="business-photo-label"></span></figcaption>
-            </figure>
-            <div class="studio-art" id="business-art" aria-hidden="true" hidden>
-              <strong id="business-art-title"></strong>
-              <span id="business-art-caption"></span>
-            </div>
-          </details>
-        </div>
         <div class="booking-main">
           <ol class="stepper" id="booking-progress" aria-label="Progreso de reserva">
             <li aria-current="step"><span aria-hidden="true">1</span> Servicio</li>
@@ -194,6 +197,7 @@
             <h2 id="selection-title">Tu selección</h2>
             <div id="selection-content" aria-live="polite"></div>
           </section>
+          <a class="booking-gallery-link" id="booking-gallery-link" href="#galeria">Ver galería del estudio</a>
         </aside>
       </div>
     </section>

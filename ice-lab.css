@@ -1,0 +1,244 @@
+/* A light ice palette for the laboratory and a larger estimate entry in both rooms. */
+:root[data-mode="laboratorio"],
+:root:has(.lab-page) {
+  color-scheme: light;
+  --ice-field: #e9f6fb;
+  --ice-panel: #f6fcff;
+  --ice-mist: #d8eef6;
+  --ice-line: #8bb9ce;
+  --ice-ink: #12364a;
+  --ice-muted: #38596d;
+  --ice-action: #075c82;
+  --ice-glint: #b6e5f4;
+  --ice-facet: linear-gradient(128deg, #ffffffed 5%, #f5fcffe8 43%, #cbe9f4e8 100%);
+  --ice-shadow: 0 16px 36px -27px #1453747d;
+  --ink: var(--ice-ink);
+  --muted: var(--ice-muted);
+  --surface: var(--ice-panel);
+  --line: var(--ice-line);
+  --accent: var(--ice-action);
+  --accent-wash: var(--ice-mist);
+}
+
+:root[data-mode="laboratorio"] {
+  --page: var(--ice-field);
+  --surface-soft: var(--ice-mist);
+  --surface-raised: #fcfeff;
+  --quiet: #4b6878;
+  --line-strong: #689fb9;
+  --accent-bright: #074765;
+  --accent-ink: #fff;
+  --cabinet-blue: var(--ice-action);
+  --cabinet-blue-ink: #fff;
+  --gold: #725300;
+  --room-bg: #d5edf6;
+  --room-light: #87d0e5;
+  --shadow: var(--ice-shadow);
+}
+
+:root[data-mode="laboratorio"] body,
+body.lab-page {
+  background: radial-gradient(ellipse at 9% 0%, #fff 0%, transparent 48%),
+    radial-gradient(ellipse at 95% 18%, #c7eaf6, transparent 43%),
+    var(--ice-field);
+}
+
+:root[data-mode="laboratorio"] #water-surface {
+  mix-blend-mode: multiply;
+  opacity: .13;
+}
+
+:root[data-mode="laboratorio"] .cs-original-brand .cs-wordmark--light,
+.lab-page .cs-original-brand .cs-wordmark--light { display: block; }
+:root[data-mode="laboratorio"] .cs-original-brand .cs-wordmark--dark,
+.lab-page .cs-original-brand .cs-wordmark--dark { display: none; }
+
+:root[data-mode="laboratorio"] :is(.scene-shell, .cs-start-link, .axiom-access, .axiom-guide) {
+  border-color: var(--ice-line);
+  background: var(--ice-facet);
+  box-shadow: var(--ice-shadow), inset 0 1px 0 #fff;
+}
+
+:root[data-mode="laboratorio"] :is(.axiom-access, .axiom-guide) {
+  --accent: #255d82;
+  --accent-wash: #d9edf8;
+  --surface: var(--ice-panel);
+  --surface-soft: var(--ice-mist);
+  --cabinet-blue: var(--ice-action);
+  --cabinet-blue-ink: #fff;
+}
+
+:root[data-mode="laboratorio"] .cs-store-teaser {
+  --store-ink: var(--ice-ink);
+  --store-muted: var(--ice-muted);
+  --store-line: var(--ice-line);
+  --store-glass: var(--ice-facet);
+  --store-button: #cce8f5;
+}
+
+:root[data-mode="laboratorio"] .station-hitbox[data-station="coffee"] {
+  --accent: #725300;
+  --accent-wash: #fff0b9;
+  --line-strong: #927224;
+}
+
+:root[data-mode="laboratorio"] .field-error { color: #96304e !important; }
+
+:root[data-mode="laboratorio"] .pc-support {
+  --pc-accent: #725300;
+  --pc-emphasis: #725300;
+  --pc-fill-start: #8b6809;
+  --pc-fill-end: #c49a29;
+}
+
+:root[data-mode="laboratorio"] .pc-support .pc-support-actions > a {
+  --donate-icon: #155f84;
+  --donate-ink: var(--ice-ink);
+  --donate-soft: var(--ice-muted);
+  --donate-top: #f1faff;
+  --donate-bottom: #d3edf8;
+  --donate-price-ink: var(--ice-action);
+}
+
+:root[data-mode="laboratorio"] .pc-support .pc-lucky-clover { --clover-ink: var(--ice-action); }
+
+#cotizador-directo {
+  --estimate-ink: #09577d;
+  --estimate-border: #68a5bf;
+  --estimate-halo: #185a7a2b;
+  --estimate-button: #075c82;
+  --estimate-button-ink: #fff;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: clamp(1rem, 2vw, 2rem);
+  min-height: clamp(8.5rem, 13vw, 11.5rem);
+  padding: clamp(1.15rem, 2.4vw, 2.5rem);
+  border-radius: 25px;
+  background: linear-gradient(122deg, #fcfeff, #eaf8fd 54%, #d0edf7);
+  box-shadow: inset 0 1px 0 #fff, 0 12px 28px -21px #1055757d;
+}
+
+#cotizador-directo .estimate-entry-money {
+  display: grid;
+  place-items: center;
+  width: clamp(4.25rem, 8vw, 7.5rem);
+  aspect-ratio: 1;
+  padding-block-end: 4%;
+  background: url("assets/ice-prism.svg?v=b1db7c25457d") center / contain no-repeat;
+  color: #12455f;
+  font: 760 clamp(1.5rem, 3vw, 2.9rem)/1 var(--font, system-ui);
+}
+
+#cotizador-directo .estimate-entry-copy { gap: .42rem; }
+#cotizador-directo .estimate-entry-copy strong {
+  font-size: clamp(1.65rem, 3.45vw, 3.4rem);
+  line-height: 1.05;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+#cotizador-directo .estimate-entry-copy small { font-size: clamp(.87rem, 1.35vw, 1.12rem); }
+#cotizador-directo .estimate-entry-go {
+  gap: .9rem;
+  min-height: 3.25rem;
+  padding-inline: 1.25rem;
+  font-size: clamp(.9rem, 1.3vw, 1.08rem);
+}
+#cotizador-directo .estimate-entry-go::after {
+  content: "";
+  width: .5rem;
+  height: .5rem;
+  border: solid currentColor;
+  border-width: 2px 2px 0 0;
+  transform: rotate(45deg);
+}
+
+:root:has(.lab-page) {
+  --lab-bg: var(--ice-field);
+  --lab-panel: var(--ice-panel);
+  --lab-ink: var(--ice-ink);
+  --lab-muted: var(--ice-muted);
+  --lab-line: var(--ice-line);
+  --lab-cyan: var(--ice-action);
+  --lab-action: var(--ice-action);
+  --lab-purple: #57468c;
+  --lab-amber: #75511e;
+}
+
+.lab-page .lab-world {
+  border: 1px solid #a7cedf;
+  border-radius: 24px;
+  background: var(--ice-facet);
+  box-shadow: var(--ice-shadow), inset 0 1px 0 #fff;
+}
+
+.lab-page .lab-world::before {
+  content: "";
+  position: absolute;
+  inset: 5% 3% auto auto;
+  width: clamp(4rem, 10vw, 8rem);
+  aspect-ratio: 1;
+  pointer-events: none;
+  background: url("assets/ice-prism.svg?v=b1db7c25457d") center / contain no-repeat;
+  opacity: .72;
+}
+
+.lab-page :is(.lab-hotspot, .lab-toolbar button, .lab-toolbar a, .lab-language select,
+  .lab-voice-control, .lab-discoveries button, .mission-top > button, .dialog-close,
+  .mission-actions button, .mission-actions a, .reward-actions button, .reward-actions a) {
+  background: var(--ice-panel);
+  border-color: var(--ice-line);
+  color: var(--ice-ink);
+}
+
+.lab-page .lab-hotspot { background: var(--ice-facet); box-shadow: var(--ice-shadow); }
+.lab-page :is(.lab-hotspot:hover, .lab-hotspot:focus-visible, .lab-hotspot[aria-pressed="true"],
+  .lab-toolbar button:hover, .lab-toolbar a:hover, .station-shortcut:hover, .station-shortcut:focus-visible) {
+  background: var(--ice-mist);
+}
+.lab-page :is(.lab-world-caption, .lab-secret, .lab-tip, .lab-footer, .lab-footer a, .station-mark, .lab-discoveries li, .lab-badge) { color: var(--ice-muted); }
+.lab-page .lab-world-caption { bottom: .55rem; }
+.lab-page :is(.lab-progress progress, .lab-progress [role="progressbar"]) { background: #b9dbe9; }
+.lab-page .lab-progress progress::-webkit-progress-bar { background: #b9dbe9; }
+.lab-page :is(.lab-discoveries li, .lab-badge, .lab-help-dialog kbd) {
+  background: var(--ice-mist);
+  border-color: var(--ice-line);
+}
+.lab-page :is(.mission-dialog, .lab-help-dialog, .mission-top) {
+  background: var(--ice-panel);
+  border-color: var(--ice-line);
+}
+.lab-page .mission-top { box-shadow: 0 8px 0 var(--ice-panel); }
+.lab-page :is(.mission-dialog, .lab-help-dialog)::backdrop { background: #174e6773; }
+.lab-page :is(.mission-evidence, .mission-choice) {
+  background: var(--ice-field);
+  border: 1px solid var(--ice-line);
+  color: var(--ice-ink);
+}
+.lab-page :is(.mission-choice:hover:not(:disabled), .mission-choice[data-state="selected"]) { background: var(--ice-mist); }
+.lab-page :is(.mission-choice[data-state="correct"], .mission-choice.is-correct) {
+  background: #e0f3e8;
+  border-color: #6ca58b;
+  color: #22563f;
+}
+.lab-page :is(.mission-choice[data-state="wrong"], .mission-choice[data-state="incorrect"], .mission-choice.is-wrong) {
+  background: #f4edf9;
+  border-color: #ac91c5;
+  color: #543570;
+}
+.lab-page .mission-feedback { color: var(--ice-ink); border-left-width: 1px; }
+.lab-page :is(.mission-actions button:first-child, .reward-actions a:first-child, .lab-help-dialog .lab-button, .lab-skip) {
+  background: var(--ice-action);
+  border-color: var(--ice-action);
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  #cotizador-directo { grid-template-columns: auto minmax(0, 1fr); gap: .7rem .85rem; min-height: 0; }
+  #cotizador-directo .estimate-entry-go { grid-column: 1 / -1; }
+  .lab-page .lab-world::before { opacity: .42; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root[data-mode="laboratorio"], :root:has(.lab-page) { --ice-facet: #f6fcff; }
+  #cotizador-directo, :root[data-mode="laboratorio"] .cs-store-teaser { backdrop-filter: none; }
+}

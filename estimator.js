@@ -147,14 +147,55 @@
   function tax(){return C.taxMode==='included'?tx('Precios con impuestos incluidos.','Prices include taxes.'):C.taxMode==='excluded'?tx('Importes antes de IVA; se detallará en la propuesta final.','Amounts before VAT; itemized in the final proposal.'):tx('IVA: esta estimación todavía no añade impuestos. El tratamiento de IVA, la factura y el total final se confirmarán por escrito antes de contratar.','VAT: this estimate does not yet add taxes. Applicable VAT, invoicing and the final total will be confirmed in writing before purchase.');}
   function timing(){const t=timeEstimate(kind,selected);return tx('Plazo orientativo: ','Indicative timeline: ')+t.min+'–'+t.max+tx(' días hábiles. Referencia de planificación: ',' business days. Planning reference: ')+t.reference+tx(' días; no es un promedio histórico.',' days; not a historical average.');}
   function brief(includeIdea = true){const r=estimate(kind,selected);return ['CYBERSERCH · '+tx('Estimación orientativa','Indicative estimate'),label(packages[kind].label),label(packages[kind].scope),...(includeIdea ? [tx('Mi idea: ','My idea: ')+(($('quote-contact-form').hidden?$('local-goal'):$('contact-goal'))?.value.trim().slice(0,2000)||tx('Por definir','To be defined'))] : []),...r.lines.map(l=>`${l.id==='base'?tx('Base','Base'):label(packages[kind].options[l.id][2])}: ${l.quantity} × ${money(l.unit)} = ${money(l.total)}`),tx('Subtotal estimado: ','Estimated subtotal: ')+money(r.total),tx('Rango orientativo: ','Indicative range: ')+money(r.total)+' – '+money(r.upper),tax(),timing(),I.t('quoteAvailability'),I.t('quoteTimeNote'),I.t('quoteEvaluation'),I.t('quoteMargin'),...(selected.domain ? [label(explanations.domain)] : []),tx('No es una oferta final. Registro y renovación del dominio, hosting, licencias, consumo de APIs y recursos de voz/imagen se cotizan aparte. Alcance y plazo se confirman antes del pago.','Not a final offer. Domain registration and renewal, hosting, licenses, API usage and voice/image assets are separate. Scope and timeline confirmed before payment.')].join('\n');}
-  function update(){const r=estimate(kind,selected),lines=$('quote-lines');lines.replaceChildren();for(const l of r.lines){const li=S.el('li');li.append(S.el('span','',l.id==='base'?label(packages[kind].label):`${label(packages[kind].options[l.id][2])} × ${l.quantity}`),S.el('strong','',money(l.total)));lines.append(li);}$('quote-total').textContent=money(r.total);$('quote-range').textContent=tx('Rango orientativo: ','Indicative range: ')+money(r.total)+' – '+money(r.upper);$('quote-tax').textContent=tax();$('quote-time').textContent=timing();$('quote-summary').value=brief();$('quote-contact-summary').value=brief(false);}
+  function update() {
+    const result = estimate(kind, selected);
+    const lines = $('quote-lines');
+    lines.replaceChildren();
+    for (const line of result.lines) {
+      const item = S.el('li');
+      const name = line.id === 'base'
+        ? label(packages[kind].label)
+        : `${label(packages[kind].options[line.id][2])} × ${line.quantity}`;
+      item.append(S.el('span', '', name), S.el('strong', '', money(line.total)));
+      lines.append(item);
+    }
+    const total = $('quote-total');
+    const formattedTotal = money(result.total);
+    if (total.textContent !== formattedTotal) total.textContent = formattedTotal;
+    $('quote-range').textContent = tx('Rango orientativo: ', 'Indicative range: ') + formattedTotal + ' – ' + money(result.upper);
+    $('quote-tax').textContent = tax();
+    $('quote-time').textContent = timing();
+    $('quote-summary').value = brief();
+    $('quote-contact-summary').value = brief(false);
+  }
   const sampleLinks = {
-    landing: 'muestras/plantillas/',
-    information: 'portafolio#cases',
-    custom: './#room-scene',
-    automation: 'herramientas#csv',
-    security: 'herramientas#logs',
+    landing: [['muestras/plantillas/', ['Plantillas de páginas para negocios', 'Business landing page templates']]],
+    information: [['paginas-para-negocios/dental/', ['Dental del Parque · sitio de muestra', 'Dental del Parque · demo website']]],
+    custom: [
+      ['paginas-para-negocios/marea-pro/', ['Marea · app de reservas', 'Marea · booking app']],
+      ['paginas-para-negocios/marea-pro/?negocio=tatuajes', ['Línea Negra · app de reservas', 'Línea Negra · booking app']],
+    ],
+    automation: [['herramientas#csv', ['Demo relacionada · organizador CSV', 'Related demo · CSV organizer']]],
+    security: [['herramientas#logs', ['Demo relacionada · analizador de accesos', 'Related demo · access log analyzer']]],
   };
+  function renderExamples() {
+    const content = S.quoteCopy(I.language);
+    $('quote-current-label').textContent = content.currentEstimate;
+    $('quote-breakdown-link').textContent = content.breakdown;
+    $('quote-examples-title').textContent = content.examples;
+    $('quote-new-tab').textContent = content.newTab;
+    const examples = sampleLinks[kind].map(([href, name]) => {
+      const link = S.el('a', 'quote-example-link', label(name));
+      link.href = href;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.setAttribute('aria-describedby', 'quote-new-tab');
+      const item = S.el('li');
+      item.append(link);
+      return item;
+    });
+    $('quote-example-links').replaceChildren(...examples);
+  }
   function renderDelivery() {
     const content = S.quoteCopy(I.language);
     const [materials] = content.offers[kind];
@@ -169,7 +210,7 @@
       'quote-delivery-contact': content.consult,
       'quote-delivery-sample': content.sample,
     })) $(id).textContent = value;
-    $('quote-delivery-sample').href = sampleLinks[kind];
+    $('quote-delivery-sample').href = sampleLinks[kind][0][0];
     $('quote-delivery').hidden = false;
   }
   function renderContactContext() {
@@ -194,6 +235,7 @@
   }
   function render(){
     renderDelivery();
+    renderExamples();
     renderContactContext();
     const choices=$('quote-packages');choices.replaceChildren();Object.entries(packages).forEach(([id,p])=>{const b=S.el('button','quote-package');b.type='button';b.dataset.quoteKind=id;b.setAttribute('aria-pressed',String(id===kind));b.append(S.el('strong','',label(p.label)),S.el('small','quote-help',label(explanations[id])),S.el('span','',tx('Desde ','From ')+money(p.price)),S.el('small','quote-help',schedules[id][0]+'–'+schedules[id][1]+tx(' días hábiles orientativos',' estimated business days')));b.addEventListener('click',()=>{kind=id;selected={};offerContext=true;render();$('quote-options-title').focus({preventScroll:true});});choices.append(b);});
     $('quote-scope').textContent=label(packages[kind].scope);const options=$('quote-options');options.replaceChildren();

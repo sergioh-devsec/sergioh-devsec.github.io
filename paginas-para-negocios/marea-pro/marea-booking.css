@@ -1,4 +1,4 @@
-:root[data-theme="marea"]:has(body[data-experience="app"]) {
+:root[data-theme]:has(body[data-experience="app"]) {
   --paper: #eeebf2;
   --surface: #fffcff;
   --ink: #2d2036;
@@ -15,155 +15,193 @@
   --experience-app-header: #2d2036;
   --experience-app-text: #fffbff;
   --experience-app-accent: #e9d8f4;
-  --marea-app-width: 68rem;
-  --marea-app-gutter: clamp(1rem, 3vw, 2.25rem);
+  --booking-option: #faf6fc;
+  --booking-option-selected: #eee4f4;
+  --booking-progress-bg: #f1ecf4;
+  --booking-progress-number: #e7ddeb;
+  --booking-summary-bg: #f1eaf5;
+  --booking-action-bg: #f2ebf6;
+  --booking-shadow: 45 32 54;
+  --booking-app-width: 68rem;
+  --booking-app-gutter: clamp(1rem, 3vw, 2.25rem);
   scroll-padding-block: calc(4.5rem + env(safe-area-inset-top)) 7rem;
 }
 
-[data-theme="marea"] #experience-topbar .frame,
-[data-theme="marea"] #experience-footer {
-  width: min(calc(100% - 2.5rem), var(--marea-app-width));
+:root[data-theme="tinta"]:has(body[data-experience="app"]) {
+  --paper: #eae5de;
+  --surface: #fdf9f4;
+  --ink: #292524;
+  --muted: #61534c;
+  --rose: #833126;
+  --rose-deep: #672218;
+  --blush: #eee0d8;
+  --lilac: #f1e7e1;
+  --line: #e1d4ca;
+  --control: #927366;
+  --accent-line: #d8b6a8;
+  --accent-active: #bc7868;
+  --subdued: #efe9e3;
+  --experience-app-header: #282220;
+  --experience-app-text: #fff5ed;
+  --experience-app-accent: #f4cabd;
+  --booking-option: #faf3ed;
+  --booking-option-selected: #f1e1d9;
+  --booking-progress-bg: #f2eae4;
+  --booking-progress-number: #e8dcd4;
+  --booking-summary-bg: #f3eae3;
+  --booking-action-bg: #f2e8df;
+  --booking-shadow: 50 31 26;
 }
 
-[data-theme="marea"] #experience-topbar {
-  border-color: rgb(255 255 255 / .1);
-  background: #2d2036;
+[data-theme] #experience-topbar .frame,
+[data-theme] #experience-footer {
+  width: min(calc(100% - 2.5rem), var(--booking-app-width));
 }
 
-[data-theme="marea"] #experience-topbar .topbar-inner { min-height: 4.15rem; }
-[data-theme="marea"] #experience-topbar .brand span { font-size: 1.9rem; }
-[data-theme="marea"] #experience-topbar .mode-switch {
+[data-theme] #experience-topbar .topbar-inner { min-height: 4.15rem; }
+[data-theme] #experience-topbar .brand span { font-size: 1.9rem; }
+[data-theme] #experience-topbar .mode-switch {
   padding: .22rem;
   border-radius: .85rem;
   background: rgb(255 255 255 / .09);
 }
-[data-theme="marea"] #experience-topbar .mode-switch button { border-radius: .64rem; }
-[data-theme="marea"] #experience-topbar .mode-switch [aria-pressed="true"] {
-  color: #2d2036;
-  background: #f1e6f7;
+[data-theme] #experience-topbar .mode-switch :is(button, a) { border-radius: .64rem; }
+[data-theme] #experience-topbar .mode-switch a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: .45rem .82rem;
+  color: var(--experience-app-text);
+  font-size: .89rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+[data-theme] #experience-topbar .mode-switch :is([aria-pressed="true"], [aria-current="page"]) {
+  color: var(--experience-app-header);
+  background: var(--experience-app-accent);
 }
 
-[data-theme="marea"] .experience-app {
-  width: min(calc(100% - 2.5rem), var(--marea-app-width));
+[data-theme] .experience-app {
+  width: min(calc(100% - 2.5rem), var(--booking-app-width));
   margin-block-start: 1.4rem;
-  padding: .55rem var(--marea-app-gutter) 1.4rem;
+  padding: .55rem var(--booking-app-gutter) 1.4rem;
   border-radius: 1.25rem;
   background: var(--surface);
-  box-shadow: 0 1rem 3rem rgb(45 32 54 / .08);
+  box-shadow: 0 1rem 3rem rgb(var(--booking-shadow) / .08);
 }
 
-[data-theme="marea"] .experience-app .demo-bar {
+[data-theme] .experience-app .demo-bar {
   margin-block: 0 1rem;
   padding-block: .1rem .2rem;
 }
 
-[data-theme="marea"] .experience-app .business-links a { border-radius: .5rem; }
+[data-theme] .experience-app .business-links a { border-radius: .5rem; }
 
-[data-theme="marea"] .experience-app .booking-layout {
+[data-theme] .experience-app .booking-layout {
   grid-template-columns: minmax(0, 1fr) minmax(16rem, .59fr);
-  grid-template-rows: auto auto 1fr;
-  grid-template-areas: "intro media" "flow media" "flow summary";
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "intro summary" "flow summary";
   gap: 1.05rem clamp(1.25rem, 4vw, 3rem);
 }
 
-[data-theme="marea"] .experience-app .booking-intro { padding-block: .25rem 0; }
-[data-theme="marea"] .experience-app .booking-intro h1 {
+[data-theme] .experience-app .booking-gallery-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  margin-block-start: .35rem;
+  font-size: .88rem;
+  font-weight: 700;
+}
+
+[data-theme] .experience-app .booking-intro { padding-block: .25rem 0; }
+[data-theme] .experience-app .booking-intro h1 {
   font-size: 2.75rem;
   line-height: 1.04;
   text-wrap: balance;
 }
-[data-theme="marea"] .experience-app .booking-intro p {
+[data-theme] .experience-app .booking-intro p {
   max-width: 37ch;
   margin-block-start: .46rem;
   font-size: .96rem;
 }
 
-[data-theme="marea"] .experience-app :is(#booking-title, #studio-title, .step-panel h2, #receipt-title, #experience-gallery) {
+[data-theme] .experience-app :is(#booking-title, #studio-title, #gallery-title, .step-panel h2, #receipt-title) {
   scroll-margin-block-start: .65rem;
 }
 
-[data-theme="marea"] .experience-app .stepper {
+[data-theme] .experience-app .stepper {
   gap: .26rem;
   margin-block-end: 1.15rem;
   padding: .28rem;
   border: 0;
   border-radius: .85rem;
-  background: #f1ecf4;
+  background: var(--booking-progress-bg);
 }
-[data-theme="marea"] .experience-app .stepper li {
+[data-theme] .experience-app .stepper li {
   position: relative;
   justify-content: center;
   min-block-size: 2.65rem;
   padding: .38rem .34rem;
   font-size: .83rem;
 }
-[data-theme="marea"] .experience-app .stepper span { background: #e7ddeb; }
-[data-theme="marea"] .experience-app .stepper [aria-current="step"] {
+[data-theme] .experience-app .stepper span { background: var(--booking-progress-number); }
+[data-theme] .experience-app .stepper [aria-current="step"] {
   background: var(--rose);
   color: #fff;
 }
-[data-theme="marea"] .experience-app .stepper [aria-current="step"] span {
-  background: #f0e6f5;
+[data-theme] .experience-app .stepper [aria-current="step"] span {
+  background: var(--blush);
   color: var(--rose-deep);
 }
-[data-theme="marea"] .experience-app .stepper .complete span {
+[data-theme] .experience-app .stepper .complete span {
   background: var(--green-bg);
   color: var(--green);
 }
 
-[data-theme="marea"] .experience-app .step-panel {
+[data-theme] .experience-app .step-panel {
   padding: 0;
   border: 0;
   background: transparent;
 }
-[data-theme="marea"] .experience-app .step-panel h2 { font-size: 1.35rem; }
-[data-theme="marea"] .experience-app .step-panel h3 { margin-block-start: 1.18rem; }
-[data-theme="marea"] .experience-app #services { gap: .5rem; border: 0; }
-[data-theme="marea"] .experience-app :is(#services, #addons) .choice {
+[data-theme] .experience-app .step-panel h2 { font-size: 1.35rem; }
+[data-theme] .experience-app .step-panel h3 { margin-block-start: 1.18rem; }
+[data-theme] .experience-app #services { gap: .5rem; border: 0; }
+[data-theme] .experience-app :is(#services, #addons) .choice {
   border: 1px solid var(--line);
   border-radius: .75rem;
-  background: #faf6fc;
+  background: var(--booking-option);
   transition: border-color 140ms ease, background-color 140ms ease;
 }
-[data-theme="marea"] .experience-app #services .choice {
+[data-theme] .experience-app #services .choice {
   min-block-size: 4.08rem;
   padding: .65rem .8rem;
 }
-[data-theme="marea"] .experience-app #addons .choice {
+[data-theme] .experience-app #addons .choice {
   align-items: center;
   min-block-size: 3.35rem;
   padding: .55rem .65rem;
 }
-[data-theme="marea"] .experience-app :is(#services, #addons) .choice:has(:checked) {
+[data-theme] .experience-app :is(#services, #addons) .choice:has(:checked) {
   border-color: var(--rose);
-  background: #eee4f4;
+  background: var(--booking-option-selected);
 }
-[data-theme="marea"] .experience-app :is(#services, #addons) .choice:has(:focus-visible) { outline-offset: 2px; }
-[data-theme="marea"] .experience-app .choice-copy { gap: .18rem; }
-[data-theme="marea"] .experience-app .choice-price { font-size: .86rem; }
-[data-theme="marea"] .experience-app .addons { grid-template-columns: minmax(0, 1fr); }
-[data-theme="marea"] .experience-app .pick { border-radius: .7rem; }
-[data-theme="marea"] .experience-app .sample-contact select { min-height: 3rem; }
+[data-theme] .experience-app :is(#services, #addons) .choice:has(:focus-visible) { outline-offset: 2px; }
+[data-theme] .experience-app .choice-copy { gap: .18rem; }
+[data-theme] .experience-app .choice-price { font-size: .86rem; }
+[data-theme] .experience-app .addons { grid-template-columns: minmax(0, 1fr); }
+[data-theme] .experience-app .pick { border-radius: .7rem; }
+[data-theme] .experience-app .sample-contact select { min-height: 3rem; }
 
-[data-theme="marea"] .experience-app .studio-photo .photo-gallery-frame img {
-  aspect-ratio: 4 / 3;
-  border-radius: .95rem;
-}
-[data-theme="marea"] .experience-app .studio-photo figcaption { padding-block: .32rem .55rem; }
-[data-theme="marea"] .experience-app .photo-gallery-bar {
-  min-height: 2.75rem;
-  padding-inline: .18rem;
-}
-[data-theme="marea"] .experience-app .photo-gallery-dot { border-radius: 50%; }
-[data-theme="marea"] .experience-app .selection {
+[data-theme] .experience-app .selection {
   padding: .95rem 1rem;
   border-radius: .85rem;
-  background: #f1eaf5;
+  background: var(--booking-summary-bg);
 }
-[data-theme="marea"] .experience-app .selection h2 { margin-block-end: .28rem; }
-[data-theme="marea"] .experience-app .summary-data > div:last-child { border-block-end: 0; }
+[data-theme] .experience-app .selection h2 { margin-block-end: .28rem; }
+[data-theme] .experience-app .summary-data > div:last-child { border-block-end: 0; }
 
-[data-theme="marea"] .experience-app #booking-form .form-actions {
+[data-theme] .experience-app #booking-form .form-actions {
   position: sticky;
   z-index: 2;
   inset-block-end: 0;
@@ -173,10 +211,10 @@
   padding: .6rem;
   border: 0;
   border-radius: .92rem;
-  background: #f2ebf6;
-  box-shadow: 0 -.4rem 1.25rem rgb(45 32 54 / .08);
+  background: var(--booking-action-bg);
+  box-shadow: 0 -.4rem 1.25rem rgb(var(--booking-shadow) / .08);
 }
-[data-theme="marea"] .experience-app #booking-action-total {
+[data-theme] .experience-app #booking-action-total {
   display: block;
   flex: 1 1 auto;
   margin: 0;
@@ -184,96 +222,150 @@
   color: var(--rose-deep);
   font-size: .86rem;
 }
-[data-theme="marea"] .experience-app .button { min-height: 2.85rem; border-radius: .7rem; }
-[data-theme="marea"] .experience-app #booking-next {
+[data-theme] .experience-app .button { min-height: 2.85rem; border-radius: .7rem; }
+[data-theme] .experience-app #booking-next {
   min-inline-size: 9rem;
   transition: background-color 140ms ease, transform 140ms ease;
 }
-[data-theme="marea"] .experience-app #booking-next:active { transform: scale(.985); }
-[data-theme="marea"] .experience-app #booking-error:not([hidden]) {
+[data-theme] .experience-app #booking-next:active { transform: scale(.985); }
+[data-theme] .experience-app #booking-error:not([hidden]) {
   padding: .55rem .65rem;
   border-radius: .5rem;
   background: #f7e9ef;
 }
-[data-theme="marea"] .experience-app .studio-intro { padding-block-start: .2rem; }
-[data-theme="marea"] .experience-app .studio-intro h2 { font-size: 2.1rem; }
-[data-theme="marea"] #experience-footer { margin-block-start: 1rem; }
+[data-theme] .experience-app .studio-intro { padding-block-start: .2rem; }
+[data-theme] .experience-app .studio-intro h2 { font-size: 2.1rem; }
+[data-theme] #experience-footer { margin-block-start: 1rem; }
+
+.experience-gallery-view {
+  display: grid;
+  grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr);
+  grid-template-rows: minmax(0, auto) 1fr;
+  grid-template-areas: "intro photo" "action photo";
+  gap: 1.25rem clamp(1.5rem, 4vw, 3.3rem);
+  align-items: start;
+  padding-block: .7rem .4rem;
+}
+
+.experience-gallery-intro { grid-area: intro; }
+.experience-gallery-intro h1 {
+  margin-block: .15rem .65rem;
+  font: 400 clamp(2rem, 5vw, 3.5rem)/1.04 var(--display);
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+.experience-gallery-intro p { max-width: 36ch; color: var(--muted); }
+.experience-gallery-view :is(.studio-photo, .studio-art) { grid-area: photo; min-width: 0; }
+.experience-gallery-view .photo-gallery-frame {
+  overflow: hidden;
+  border-radius: .9rem;
+  background: var(--booking-summary-bg);
+}
+.experience-gallery-view .studio-photo .photo-gallery-frame img {
+  display: block;
+  width: 100%;
+  height: clamp(18rem, 54svh, 33rem);
+  max-height: none;
+  border-radius: 0;
+  background: transparent;
+  object-fit: contain;
+  object-position: center;
+}
+.experience-gallery-view .photo-gallery-bar { min-height: 2.75rem; }
+.experience-gallery-view .photo-gallery-dot { border-radius: 50%; }
+.experience-gallery-view .studio-photo figcaption { padding-block: .32rem .55rem; }
+#gallery-booking-link { grid-area: action; justify-self: start; text-decoration: none; }
 
 @media (hover: hover) and (pointer: fine) {
-  [data-theme="marea"] .experience-app :is(#services, #addons) .choice:hover:not(:has(:checked)) {
+  [data-theme] #experience-topbar .mode-switch a:not([aria-current]):hover { background: rgb(255 255 255 / .12); }
+  [data-theme] .experience-app :is(#services, #addons) .choice:hover:not(:has(:checked)) {
     border-color: var(--control);
     background: var(--lilac);
   }
 }
 
 @media (min-width: 60rem) {
-  [data-theme="marea"] .experience-app .addons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-theme] .experience-app .addons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 50rem) {
-  [data-theme="marea"] .experience-app .booking-layout {
+  [data-theme] .experience-app .booking-layout {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto;
-    grid-template-areas: "intro" "media" "flow" "summary";
+    grid-template-areas: "intro" "flow" "summary";
     gap: .78rem;
   }
-  [data-theme="marea"] .experience-app .booking-intro h1 { font-size: 2.12rem; }
-  [data-theme="marea"] .experience-app .studio-photo .photo-gallery-frame img { aspect-ratio: 16 / 9; }
-  [data-theme="marea"] .experience-app .experience-gallery > summary { background: #f5eff8; }
-  [data-theme="marea"] .experience-app .demo-bar { margin-block-end: .68rem; }
+  [data-theme] .experience-app .booking-intro h1 { font-size: 2.12rem; }
+  [data-theme] .experience-app .demo-bar { margin-block-end: .68rem; }
+  .experience-gallery-view {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas: "intro" "photo" "action";
+    gap: .85rem;
+    padding-block-start: .2rem;
+  }
+  .experience-gallery-view .studio-photo .photo-gallery-frame img { height: min(100vw - 1.75rem, 53svh); }
+  #gallery-booking-link { justify-self: stretch; }
 }
 
 @media (max-width: 34rem) {
-  :root[data-theme="marea"]:has(body[data-experience="app"]) {
-    --marea-app-pad-left: max(.88rem, env(safe-area-inset-left));
-    --marea-app-pad-right: max(.88rem, env(safe-area-inset-right));
+  :root[data-theme]:has(body[data-experience="app"]) {
+    --booking-app-pad-left: max(.88rem, env(safe-area-inset-left));
+    --booking-app-pad-right: max(.88rem, env(safe-area-inset-right));
     scroll-padding-block: calc(6.25rem + env(safe-area-inset-top)) 8rem;
   }
-  [data-theme="marea"] #experience-topbar .frame,
-  [data-theme="marea"] #experience-footer {
-    width: calc(100% - var(--marea-app-pad-left) - var(--marea-app-pad-right));
+  [data-theme] #experience-topbar .frame,
+  [data-theme] #experience-footer {
+    width: calc(100% - var(--booking-app-pad-left) - var(--booking-app-pad-right));
   }
-  [data-theme="marea"] #experience-topbar .topbar-inner { gap: 0 .5rem; }
-  [data-theme="marea"] #experience-topbar .brand span { font-size: 1.57rem; }
-  [data-theme="marea"] #experience-topbar .mode-switch { padding: .16rem; }
-  [data-theme="marea"] #experience-topbar .mode-switch button { min-height: 2.75rem; }
-  [data-theme="marea"] .experience-app {
+  [data-theme] #experience-topbar .topbar-inner { gap: 0 .5rem; }
+  [data-theme] #experience-topbar .brand span { font-size: 1.57rem; }
+  [data-theme="tinta"] #experience-topbar .brand span { font-size: 1.27rem; }
+  [data-theme] #experience-topbar .mode-switch { padding: .16rem; }
+  [data-theme] #experience-topbar .mode-switch :is(button, a) {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 2.75rem;
+    padding-inline: .3rem;
+    font-size: .84rem;
+  }
+  [data-theme] .experience-app {
     width: 100%;
     margin: 0;
-    padding: .55rem var(--marea-app-pad-right) .95rem var(--marea-app-pad-left);
+    padding: .55rem var(--booking-app-pad-right) .95rem var(--booking-app-pad-left);
     border-radius: 0;
     box-shadow: none;
   }
-  [data-theme="marea"] .experience-app .demo-bar { gap: .05rem; }
-  [data-theme="marea"] .experience-app .demo-notice { line-height: 1.4; }
-  [data-theme="marea"] .experience-app .booking-intro h1 { font-size: 1.94rem; }
-  [data-theme="marea"] .experience-app .booking-intro p { font-size: .89rem; }
-  [data-theme="marea"] .experience-app .stepper { margin-block-end: .85rem; }
-  [data-theme="marea"] .experience-app .stepper li { font-size: .75rem; }
-  [data-theme="marea"] .experience-app #services .choice { min-block-size: 3.75rem; padding-inline: .58rem; }
-  [data-theme="marea"] .experience-app #booking-form .form-actions {
-    margin-inline: calc(-1 * var(--marea-app-pad-left)) calc(-1 * var(--marea-app-pad-right));
-    padding: .55rem var(--marea-app-pad-right) max(.55rem, env(safe-area-inset-bottom)) var(--marea-app-pad-left);
+  [data-theme] .experience-app .demo-bar { gap: .05rem; }
+  [data-theme] .experience-app .demo-notice { line-height: 1.4; }
+  [data-theme] .experience-app .booking-intro h1 { font-size: 1.94rem; }
+  [data-theme] .experience-app .booking-intro p { font-size: .89rem; }
+  [data-theme] .experience-app .stepper { margin-block-end: .85rem; }
+  [data-theme] .experience-app .stepper li { font-size: .75rem; }
+  [data-theme] .experience-app #services .choice { min-block-size: 3.75rem; padding-inline: .58rem; }
+  [data-theme] .experience-app #booking-form .form-actions {
+    margin-inline: calc(-1 * var(--booking-app-pad-left)) calc(-1 * var(--booking-app-pad-right));
+    padding: .55rem var(--booking-app-pad-right) max(.55rem, env(safe-area-inset-bottom)) var(--booking-app-pad-left);
     border-radius: .75rem .75rem 0 0;
   }
-  [data-theme="marea"] .experience-app #booking-action-total { flex-basis: auto; padding: 0; }
-  [data-theme="marea"] .experience-app #booking-next { min-inline-size: 8.2rem; }
-  [data-theme="marea"] .experience-app .studio-intro h2 { font-size: 1.85rem; }
+  [data-theme] .experience-app #booking-action-total { flex-basis: auto; padding: 0; }
+  [data-theme] .experience-app #booking-next { min-inline-size: 8.2rem; }
+  [data-theme] .experience-app .studio-intro h2 { font-size: 1.85rem; }
 }
 
 @media (max-width: 23rem) {
-  [data-theme="marea"] .experience-app .form-actions:has(#booking-back:not([hidden])) #booking-action-total {
+  [data-theme] .experience-app .form-actions:has(#booking-back:not([hidden])) #booking-action-total {
     flex-basis: 100%;
   }
-  [data-theme="marea"] .experience-app :is(#services, #addons) .choice { gap: .48rem; }
+  [data-theme] .experience-app :is(#services, #addons) .choice { gap: .48rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-theme="marea"] .experience-app :is(.choice, #booking-next) { transition: none; }
-  [data-theme="marea"] .experience-app #booking-next:active { transform: none; }
+  [data-theme] .experience-app :is(.choice, #booking-next) { transition: none; }
+  [data-theme] .experience-app #booking-next:active { transform: none; }
 }
 
 @media (forced-colors: active) {
-  [data-theme="marea"] .experience-app :is(.choice, .form-actions) { border: 1px solid CanvasText; }
-  [data-theme="marea"] .experience-app .stepper [aria-current="step"] { outline: 1px solid Highlight; }
+  [data-theme] .experience-app :is(.choice, .form-actions) { border: 1px solid CanvasText; }
+  [data-theme] .experience-app .stepper [aria-current="step"] { outline: 1px solid Highlight; }
 }

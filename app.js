@@ -182,7 +182,7 @@ function render() {
   const dictionary = copy(), isLab = manager.getMode() === 'laboratorio';
   document.title = text('Páginas web y automatización para negocios | CyberSerch', 'Websites and automation for businesses | CyberSerch');
   assistant.render();
-  document.querySelector('meta[name="theme-color"]').content = isLab ? '#091b27' : '#f3f1e8';
+  document.querySelector('meta[name="theme-color"]').content = isLab ? '#e9f6fb' : '#f3f1e8';
   $('mode-switch').checked = isLab;
   $('mode-switch').setAttribute('aria-label', isLab ? text('Volver a La Oficina', 'Switch to The Office') : text('Entrar a El Laboratorio', 'Switch to The Lab'));
   $('mode-office-label').textContent = text('La Oficina', 'The Office'); $('mode-lab-label').textContent = text('El Laboratorio', 'The Lab');

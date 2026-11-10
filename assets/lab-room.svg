@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 880" fill="none">
   <defs>
-    <linearGradient id="floor" x1="600" y1="165" x2="600" y2="760" gradientUnits="userSpaceOnUse"><stop stop-color="#173442"/><stop offset="1" stop-color="#0C1B29"/></linearGradient>
-    <linearGradient id="edge" x1="100" y1="450" x2="1100" y2="800" gradientUnits="userSpaceOnUse"><stop stop-color="#193946"/><stop offset=".5" stop-color="#091420"/><stop offset="1" stop-color="#142B3A"/></linearGradient>
-    <linearGradient id="wallL" x1="370" y1="100" x2="370" y2="465" gradientUnits="userSpaceOnUse"><stop stop-color="#203A4B" stop-opacity=".65"/><stop offset="1" stop-color="#13323E" stop-opacity=".12"/></linearGradient>
-    <linearGradient id="wallR" x1="800" y1="120" x2="820" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#2C2B4A" stop-opacity=".65"/><stop offset="1" stop-color="#142831" stop-opacity=".1"/></linearGradient>
+    <linearGradient id="floor" x1="600" y1="165" x2="600" y2="760" gradientUnits="userSpaceOnUse"><stop stop-color="#e3f5fb"/><stop offset="1" stop-color="#a8d4e6"/></linearGradient>
+    <linearGradient id="edge" x1="100" y1="450" x2="1100" y2="800" gradientUnits="userSpaceOnUse"><stop stop-color="#92c6dd"/><stop offset=".5" stop-color="#609cb9"/><stop offset="1" stop-color="#7fbed7"/></linearGradient>
+    <linearGradient id="wallL" x1="370" y1="100" x2="370" y2="465" gradientUnits="userSpaceOnUse"><stop stop-color="#c7e9f6" stop-opacity=".65"/><stop offset="1" stop-color="#b1dcea" stop-opacity=".12"/></linearGradient>
+    <linearGradient id="wallR" x1="800" y1="120" x2="820" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#d8e7f6" stop-opacity=".65"/><stop offset="1" stop-color="#b2d7ea" stop-opacity=".1"/></linearGradient>
     <linearGradient id="rack" x1="0" y1="0" x2="150" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="#244E5A"/><stop offset="1" stop-color="#101D2D"/></linearGradient>
     <linearGradient id="screen" x1="0" y1="0" x2="180" y2="100" gradientUnits="userSpaceOnUse"><stop stop-color="#183E49"/><stop offset="1" stop-color="#0B1729"/></linearGradient>
     <linearGradient id="screenViolet" x1="0" y1="0" x2="150" y2="100" gradientUnits="userSpaceOnUse"><stop stop-color="#352B5E"/><stop offset="1" stop-color="#171D35"/></linearGradient>
@@ -15,11 +15,11 @@
   </defs>
 
   <!-- Floating structural base and low glass walls keep the room readable on small screens. -->
-  <path d="m100 450 500 305 500-305v30L600 785 100 480Z" fill="url(#edge)" stroke="#274652"/>
-  <path d="m100 450 500-285 500 285-500 305Z" fill="url(#floor)" stroke="#42717B" stroke-width="1.5"/>
+  <path d="m100 450 500 305 500-305v30L600 785 100 480Z" fill="url(#edge)" stroke="#659ab3"/>
+  <path d="m100 450 500-285 500 285-500 305Z" fill="url(#floor)" stroke="#7cacc2" stroke-width="1.5"/>
   <path d="m100 450 500-285 500 285-500 305Z" fill="url(#floorGrid)"/>
-  <path d="M100 450V345L600 60v105Z" fill="url(#wallL)" stroke="#426775" stroke-opacity=".42"/>
-  <path d="M600 165V60l500 285v105Z" fill="url(#wallR)" stroke="#426775" stroke-opacity=".42"/>
+  <path d="M100 450V345L600 60v105Z" fill="url(#wallL)" stroke="#74a8bf" stroke-opacity=".42"/>
+  <path d="M600 165V60l500 285v105Z" fill="url(#wallR)" stroke="#74a8bf" stroke-opacity=".42"/>
   <path d="M126 437v-74L581 104M620 104l455 260v73" stroke="#6C9BA4" stroke-opacity=".28"/>
   <path d="M600 73v77M300 335v-80M900 335v-80" stroke="#5E8695" stroke-opacity=".24"/>
   <path d="m126 469 459 281M615 750l459-281" stroke="#71D1CF" stroke-opacity=".22"/>
@@ -31,18 +31,18 @@
     <ellipse cx="605" cy="315" rx="220" ry="120" fill="url(#violetPool)"/>
     <ellipse cx="865" cy="490" rx="210" ry="125" fill="url(#amberPool)"/>
     <!-- Routing channels connect the three physical workstations. -->
-    <path d="m345 489 255 150 260-150M600 639V430l-20-13v-75" stroke="#050E19" stroke-width="9" stroke-linejoin="round"/>
+    <path d="m345 489 255 150 260-150M600 639V430l-20-13v-75" stroke="#699ab7" stroke-width="9" stroke-linejoin="round"/>
     <path d="m345 489 255 150 260-150M600 639V430l-20-13v-75" stroke="#4F8C98" stroke-width="1.5" stroke-dasharray="9 8" stroke-linejoin="round" opacity=".65"/>
     <path d="m391 515 209 122 204-119" stroke="#55DACF" stroke-opacity=".34"/>
     <path d="m192 475 408 247 408-247M151 451l449 272 449-272" stroke="#477582" stroke-opacity=".2"/>
-    <ellipse cx="600" cy="620" rx="93" ry="49" fill="#0C202E" stroke="#62CDC9" stroke-opacity=".45"/>
+    <ellipse cx="600" cy="620" rx="93" ry="49" fill="#b7e5f1" stroke="#62CDC9" stroke-opacity=".45"/>
     <ellipse cx="600" cy="620" rx="79" ry="40" stroke="#68D7CC" stroke-opacity=".17" stroke-dasharray="3 8"/>
     <path d="m583 620 17-10 17 10-17 10Z" fill="#56DBCF" fill-opacity=".15" stroke="#4DBBB5" stroke-opacity=".4"/>
   </g>
 
   <!-- Security station: two equipment racks, recessed doors and physical indicators. -->
   <g transform="translate(239 285)">
-    <path d="m-16 180 90-53 110 64-89 53Z" fill="#06111C" fill-opacity=".7"/>
+    <path d="m-16 180 90-53 110 64-89 53Z" fill="#437e9c" fill-opacity=".7"/>
     <path d="m0 0 75-43 75 43-75 43Z" fill="#345A65" stroke="#5A8D96"/>
     <path d="m0 0 75 43v177L0 177Z" fill="url(#rack)" stroke="#47717F"/>
     <path d="m75 43 75-43v177l-75 43Z" fill="#0B1825" stroke="#3D6372"/>

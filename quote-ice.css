@@ -1,0 +1,196 @@
+.quote-page {
+  color-scheme: light;
+  --bg: #e9f6fb;
+  --text: #12364a;
+  --ink: var(--text);
+  --muted: #38596d;
+  --line: #8bb9ce;
+  --cyan: #075c82;
+  --accent: var(--cyan);
+  --action: var(--cyan);
+  --surface: #f6fcff;
+  --surface-soft: #dcf0f8;
+  --quote-reflection: #b6e5f4;
+  background:
+    radial-gradient(ellipse at 78% 0%, #fff 0%, transparent 33rem),
+    linear-gradient(152deg, var(--bg), #f6fcff 56%, #e5f4f9);
+}
+
+.quote-page .site-header {
+  position: relative;
+  background: #f6fcfff5;
+  border-color: #b8d6e3;
+}
+
+.quote-page :is(.cs-menu > summary, .header-tools select) {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+.quote-page .cs-menu nav {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+.quote-page .cs-menu nav a,
+.quote-page .brand small { color: var(--muted); }
+
+.quote-page main { padding-top: clamp(1.55rem, 4vw, 3.15rem); }
+.quote-page .heading-aside { color: var(--muted); }
+.quote-page .quote-layout { gap: 1.15rem clamp(1rem, 3.2vw, 2.25rem); }
+.quote-page .quote-config { min-width: 0; }
+
+.quote-page :is(.quote-guide, .quote-result, .quote-review) {
+  border-color: #b2d6e5;
+  background: linear-gradient(145deg, #fff, #edf9fd 76%, #e0f2f8);
+  box-shadow: 0 .65rem 1.65rem #27587512;
+}
+
+.quote-page .quote-guide-steps button {
+  color: var(--ink);
+  background: #fff;
+  border-color: var(--line);
+}
+
+.quote-page .quote-guide-steps button[aria-pressed="true"] {
+  color: var(--ink);
+  background: #d2edf7;
+  border-color: var(--action);
+}
+
+.quote-page .quote-guide #quote-guide-status { color: var(--muted); }
+
+.quote-page .quote-progress {
+  position: sticky;
+  inset-block-start: max(.4rem, env(safe-area-inset-top, 0px));
+  z-index: 21;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .55rem 1rem;
+  min-width: 0;
+  margin-block-end: 1.15rem;
+  padding: .58rem clamp(.75rem, 2vw, 1.25rem);
+  border: 1px solid #8abdd3;
+  border-radius: 1rem;
+  background:
+    linear-gradient(133deg, transparent 71%, #fff9 71.25% 71.75%, transparent 72%),
+    linear-gradient(137deg, #f9fdff 12%, #dbf2fa 78%, var(--quote-reflection));
+  box-shadow: 0 .5rem 1.3rem #164b6630, inset 0 1px 0 #fff;
+}
+
+.quote-page .quote-current-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: .79rem;
+  font-weight: 700;
+}
+
+.quote-page .quote-progress .quote-total {
+  color: var(--ink);
+  font-size: clamp(1.28rem, 4.5vw, 2rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.035em;
+  line-height: 1.22;
+}
+
+.quote-page .quote-breakdown-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: .3rem .72rem;
+  border: 1px solid #82b6ce;
+  border-radius: .7rem;
+  color: #064e70;
+  background: var(--surface);
+  font-size: .83rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.quote-page :is(.quote-progress, .quote-selected-scope) a:hover { text-decoration: underline; text-underline-offset: .18em; }
+.quote-page .quote-package {
+  color: var(--ink);
+  min-height: 0;
+  border-color: #a9cddd;
+  background: linear-gradient(135deg, #fff, #edf9fd);
+}
+.quote-page .quote-package strong { font-size: 1.06rem; }
+.quote-page .quote-package > span { color: var(--action); font-weight: 700; }
+.quote-page .quote-help { color: var(--muted) !important; }
+.quote-page .quote-package[aria-pressed="true"] {
+  color: var(--ink);
+  border-color: var(--action);
+  background: linear-gradient(141deg, #effbff, #d0ebf6);
+  box-shadow: inset 0 0 0 1px var(--action);
+}
+
+.quote-page .quote-selected-scope {
+  padding: .95rem 1rem;
+  margin-block: 1rem 1.4rem;
+  border: 1px solid #aacddc;
+  border-radius: .9rem;
+  background: #f6fcff;
+}
+.quote-page .quote-scope { min-height: 0; padding: 0; margin: 0 0 .65rem; color: var(--muted); }
+.quote-page .quote-examples-title { margin: 0; color: var(--ink); font-size: .93rem; font-weight: 700; }
+.quote-page #quote-example-links { display: flex; flex-wrap: wrap; gap: .3rem 1rem; margin: 0; padding: 0; list-style: none; }
+.quote-page .quote-example-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--action); font-weight: 650; text-decoration: underline; text-underline-offset: .18em; }
+
+.quote-page .quote-evaluation-note {
+  background: #f6fcff;
+  border: 1px solid #b2d6e5;
+  border-radius: .75rem;
+  color: var(--muted);
+}
+.quote-page .quote-option { gap: clamp(.65rem, 2vw, 1.5rem); border-color: #bad6e4; }
+.quote-page .quote-option small { color: var(--action); }
+.quote-page .quote-option input[type="number"] {
+  flex: 0 0 4rem;
+  width: 4rem;
+  min-width: 0;
+  color: var(--ink);
+  background: var(--surface);
+  border-color: #7aafc6;
+}
+.quote-page :is(.quote-option, .contact-consent) input[type="checkbox"] { accent-color: var(--action); }
+.quote-page :is(#quote-error, #quote-contact-result):empty { margin: 0; }
+.quote-page #quote-error:not(:empty) { color: #8b2430; }
+
+.quote-page .quote-result { position: static; padding: clamp(1rem, 2.2vw, 1.55rem); }
+.quote-page #quote-breakdown-title { margin-block-end: .6rem; }
+.quote-page #quote-range { color: var(--action); font-weight: 650; }
+.quote-page :is(.quote-result li, .quote-schedule, .quote-details) { border-color: #b7d5e3; }
+.quote-page .quote-schedule #quote-time { color: var(--ink); }
+.quote-page .quote-tax { background: #deeff7; border-color: #a6cddd; color: var(--muted); }
+.quote-page .quote-details summary { color: var(--ink); }
+.quote-page :is(.quote-details textarea, .quote-contact textarea, .quote-contact input:not([type="checkbox"]), .quote-creator-context select) {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: #8db9cd;
+}
+.quote-page .button.primary { color: #fff; background: var(--action); }
+.quote-page .button.secondary { color: var(--action); border-color: #9ac0d1; background: var(--surface); }
+.quote-page :is(.quote-progress, .quote-config, .quote-result, .quote-contact) :focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 3px;
+}
+.quote-page :is(#quote-options-title, .quote-option input, #quote-breakdown) { scroll-margin-block-start: .4rem; }
+
+@media (max-width: 760px) {
+  .quote-page .quote-layout { grid-template-columns: minmax(0, 1fr); }
+  .quote-page .quote-progress { padding-block: .45rem; }
+  .quote-page .quote-package { gap: .28rem; }
+}
+
+@media (max-width: 420px) {
+  .quote-page .quote-breakdown-link { max-width: 8rem; padding-inline: .54rem; line-height: 1.2; }
+  .quote-page .quote-option label { min-width: 0; }
+}
+
+@media print {
+  .quote-page .quote-progress { position: static; box-shadow: none; }
+  .quote-page .quote-breakdown-link { display: none; }
+}
