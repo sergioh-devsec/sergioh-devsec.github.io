@@ -104,14 +104,14 @@
   font-weight: 400;
 }
 
-@media (max-width: 50rem) {
+@container demo-phone (max-width: 50rem) {
   .studio-photo .photo-gallery-frame img {
     aspect-ratio: 16 / 9;
     max-height: 15rem;
   }
 }
 
-@media (max-width: 34rem) {
+@container demo-phone (max-width: 34rem) {
   .stepper { gap: .35rem; }
   .stepper li {
     display: grid;

@@ -34,6 +34,10 @@
   const app = byId('experience-app');
   const topbar = byId('experience-topbar');
   const footer = byId('experience-footer');
+  const device = byId('demo-device');
+  const deviceControls = byId('device-controls');
+  const deviceButtons = [...deviceControls.querySelectorAll('[data-device]')];
+  const desktopPreview = window.matchMedia('(min-width: 38rem)');
   const views = {
     home: { hash: '', heading: byId('experience-title') },
     booking: { hash: '#reserva', panel: byId('booking-view'), heading: byId('booking-title') },
@@ -55,6 +59,31 @@
   cover.alt = profile.photoAlt;
   byId(`experience-profile-${theme}`).setAttribute('aria-current', 'page');
   byId('business-brand').href = `${location.pathname}${location.search}`;
+
+  const routeLinks = ['experience-start', 'experience-panel', 'business-brand', 'experience-gallery-link',
+    'experience-gallery-nav', 'gallery-booking-link', 'booking-gallery-link'].map(byId);
+  const previewLinks = [...routeLinks, byId('experience-profile-marea'), byId('experience-profile-tinta'),
+    ...byId('business-links').querySelectorAll('a')].map((link) => [link, new URL(link.href)]);
+
+  function renderDevice() {
+    const view = new URLSearchParams(location.search).get('vista');
+    const preset = view === 'android' ? 'android' : 'iphone';
+    root.dataset.device = preset;
+    byId('device-width').textContent = preset === 'android' ? '412 px' : '390 px';
+    for (const button of deviceButtons) {
+      button.setAttribute('aria-pressed', String(button.dataset.device === preset));
+    }
+    for (const [link, url] of previewLinks) {
+      if (view === preset) url.searchParams.set('vista', preset);
+      else url.searchParams.delete('vista');
+      link.href = `${url.pathname}${url.search}${url.hash}`;
+    }
+  }
+
+  function setScrollTarget() {
+    if (desktopPreview.matches) device.tabIndex = 0;
+    else device.removeAttribute('tabindex');
+  }
 
   function renderRoute(focus = false) {
     const mode = Object.keys(views).find((name) => views[name].hash === location.hash) || 'home';
@@ -85,6 +114,7 @@
       button.setAttribute('aria-pressed', String(button.dataset.view === mode));
     }
     if (focus && changed) {
+      device.scrollTop = 0;
       window.scrollTo(0, 0);
       views[mode].heading.focus({ preventScroll: true });
     }
@@ -95,9 +125,7 @@
     renderRoute(focus);
   }
 
-  for (const id of ['experience-start', 'experience-panel', 'business-brand', 'experience-gallery-link',
-    'experience-gallery-nav', 'gallery-booking-link', 'booking-gallery-link']) {
-    const link = byId(id);
+  for (const link of routeLinks) {
     link.addEventListener('click', (event) => {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
@@ -115,7 +143,19 @@
     views[activeView].heading.focus();
   });
   window.addEventListener('hashchange', () => renderRoute(true));
-  window.addEventListener('popstate', () => renderRoute(true));
+  window.addEventListener('popstate', () => {
+    renderDevice();
+    renderRoute(true);
+  });
+  for (const button of deviceButtons) {
+    button.addEventListener('click', () => {
+      const url = new URL(location.href);
+      url.searchParams.set('vista', button.dataset.device);
+      history.replaceState(history.state, '', url);
+      renderDevice();
+    });
+  }
+  desktopPreview.addEventListener('change', setScrollTarget);
 
   // The existing booking controller also switches views from the receipt and studio.
   const navigation = new MutationObserver(() => {
@@ -125,5 +165,8 @@
   });
   navigation.observe(views.booking.panel, { attributes: true, attributeFilter: ['hidden'] });
 
+  setScrollTarget();
+  renderDevice();
   renderRoute();
+  deviceControls.hidden = false;
 })();

@@ -46,19 +46,19 @@ body[data-experience="welcome"] {
   grid-template-rows: auto 1fr auto auto;
   grid-template-areas: "brand brand" "title plate" "content plate" "links plate";
   align-content: center;
-  column-gap: clamp(2rem, 7vw, 7rem);
+  column-gap: clamp(2rem, 7cqw, 7rem);
   row-gap: .85rem;
   width: min(100%, 77rem);
-  min-height: 100svh;
+  min-height: var(--demo-screen-height, 100svh);
   margin-inline: auto;
-  padding-block: clamp(1rem, 3.25vw, 2.6rem) clamp(1rem, 4.8vw, 4rem);
+  padding-block: clamp(1rem, 3.25cqw, 2.6rem) clamp(1rem, 4.8cqw, 4rem);
   color: var(--experience-text);
 }
 
 [data-theme="tinta"] .experience-welcome {
   grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
   grid-template-areas: "brand brand" "plate title" "plate content" "plate links";
-  column-gap: clamp(2rem, 6vw, 6rem);
+  column-gap: clamp(2rem, 6cqw, 6rem);
 }
 
 .experience-brandline {
@@ -76,7 +76,7 @@ body[data-experience="welcome"] {
   display: inline-flex;
   align-items: center;
   gap: .48rem;
-  font-size: clamp(.75rem, 1.3vw, 1rem);
+  font-size: clamp(.75rem, 1.3cqw, 1rem);
   font-weight: 800;
   letter-spacing: .095em;
   line-height: 1.2;
@@ -107,7 +107,7 @@ body[data-experience="welcome"] {
   align-self: end;
   max-width: 100%;
   color: var(--experience-text);
-  font: 400 clamp(3.4rem, 7vw, 6rem)/.98 var(--display);
+  font: 400 clamp(3.4rem, 7cqw, 6rem)/.98 var(--display);
   letter-spacing: -.035em;
   text-wrap: balance;
 }
@@ -117,7 +117,7 @@ body[data-experience="welcome"] {
 [data-theme="tinta"] .experience-title {
   padding-block-start: .85rem;
   border-block-start: 1px solid var(--experience-line);
-  font: 400 clamp(3.15rem, 6.2vw, 5.55rem)/.98 Georgia, var(--display);
+  font: 400 clamp(3.15rem, 6.2cqw, 5.55rem)/.98 Georgia, var(--display);
 }
 [data-theme="tinta"] .experience-title span:last-child { color: inherit; font-style: normal; }
 
@@ -130,7 +130,7 @@ body[data-experience="welcome"] {
 
 .experience-cover {
   width: 100%;
-  height: clamp(23rem, 68svh, 35rem);
+  height: clamp(23rem, calc(var(--demo-screen-height, 100svh) * .68), 35rem);
   border-radius: 1.15rem 1.15rem .15rem .15rem;
   background: var(--experience-soft);
   object-fit: cover;
@@ -162,7 +162,7 @@ body[data-experience="welcome"] {
 .experience-content > p {
   max-width: 35ch;
   color: var(--experience-muted);
-  font-size: clamp(.98rem, 1.5vw, 1.15rem);
+  font-size: clamp(.98rem, 1.5cqw, 1.15rem);
   line-height: 1.45;
 }
 
@@ -173,7 +173,7 @@ body[data-experience="welcome"] {
   gap: .85rem;
   min-height: 3.4rem;
   width: min(100%, 19rem);
-  margin-block-start: clamp(.75rem, 2vw, 1.45rem);
+  margin-block-start: clamp(.75rem, 2cqw, 1.45rem);
   padding: .5rem .63rem .5rem 1.05rem;
   border: 1px solid transparent;
   border-radius: .82rem;
@@ -254,8 +254,8 @@ body[data-experience="welcome"] {
 }
 #experience-topbar :focus-visible { outline-color: var(--experience-app-accent); }
 
-.experience-app .booking-intro h1 { font-size: clamp(2.65rem, 5vw, 4.25rem); }
-[data-theme="tinta"] .experience-app .booking-intro h1 { font-size: clamp(2.55rem, 4.7vw, 3.95rem); }
+.experience-app .booking-intro h1 { font-size: clamp(2.65rem, 5cqw, 4.25rem); }
+[data-theme="tinta"] .experience-app .booking-intro h1 { font-size: clamp(2.55rem, 4.7cqw, 3.95rem); }
 .experience-app :is(#booking-title, #studio-title, .step-panel h2, #receipt-title) { scroll-margin-top: 8rem; }
 .experience-app .step-panel { border-radius: .95rem; }
 .experience-app .stepper {
@@ -298,7 +298,7 @@ body[data-experience="welcome"] {
   .experience-start:active, .experience-start:is(:hover, :focus-visible) svg { transform: none; }
 }
 
-@media (max-width: 50rem) {
+@container demo-phone (max-width: 50rem) {
   .experience-welcome, [data-theme="tinta"] .experience-welcome {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto;
@@ -309,17 +309,17 @@ body[data-experience="welcome"] {
     padding-block: .9rem 1rem;
   }
   [data-theme="tinta"] .experience-welcome { grid-template-areas: "brand" "plate" "title" "content" "links"; }
-  .experience-title, [data-theme="tinta"] .experience-title { font-size: clamp(2.48rem, 8.5vw, 4.5rem); }
+  .experience-title, [data-theme="tinta"] .experience-title { font-size: clamp(2.48rem, 8.5cqw, 4.5rem); }
   .experience-title { align-self: start; }
   [data-theme="tinta"] .experience-title { padding-block-start: .25rem; border: 0; }
   .experience-plate { width: 100%; }
-  .experience-cover { height: clamp(10.75rem, 31svh, 20rem); object-position: 50% 38%; }
-  [data-theme="tinta"] .experience-cover { height: clamp(11rem, 33svh, 21rem); }
+  .experience-cover { height: clamp(10.75rem, calc(var(--demo-screen-height, 100svh) * .31), 20rem); object-position: 50% 38%; }
+  [data-theme="tinta"] .experience-cover { height: clamp(11rem, calc(var(--demo-screen-height, 100svh) * .33), 21rem); }
   .experience-start { width: 100%; }
 
   .experience-app .booking-intro { padding-block: .18rem .02rem; }
   .experience-app .booking-intro h1,
-  [data-theme="tinta"] .experience-app .booking-intro h1 { font-size: clamp(1.8rem, 5.7vw, 2.5rem); }
+  [data-theme="tinta"] .experience-app .booking-intro h1 { font-size: clamp(1.8rem, 5.7cqw, 2.5rem); }
   .experience-app .booking-intro p { margin-block-start: .3rem; }
   .experience-gallery > summary {
     display: flex;
@@ -351,14 +351,14 @@ body[data-experience="welcome"] {
   }
 }
 
-@media (max-width: 37rem) {
+@container demo-phone (max-width: 37rem) {
   .experience-app #services .choice-project { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: .65rem; row-gap: .24rem; }
   .experience-app #services .choice-project input { grid-row: 1 / span 2; }
   .experience-app #services .choice-project .choice-price { grid-column: 2; max-width: none; text-align: start; }
   .experience-app .choice-price-label { display: inline; margin-inline-end: .38rem; }
 }
 
-@media (max-width: 34rem) {
+@container demo-phone (max-width: 34rem) {
   #experience-topbar .topbar-inner { padding-block: .25rem .35rem; }
   #experience-topbar .mode-switch button { font-size: .84rem; }
   .experience-app .demo-bar { margin-block: .24rem .4rem; }

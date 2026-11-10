@@ -10,19 +10,31 @@
   <link rel="canonical" href="https://cyberserch.com/paginas-para-negocios/marea-pro/">
   <title>Marea Pro · App de reservas | CyberSerch</title>
   <link rel="icon" href="../assets/mark.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="app.css?v=a3d2818b6fd9">
-  <link rel="stylesheet" href="gallery.css?v=8ad9cfd45a7d">
-  <link rel="stylesheet" href="experience.css?v=536d31fb477d">
-  <link rel="stylesheet" href="marea-cover.css?v=5e8aa5d10377">
-  <link rel="stylesheet" href="marea-booking.css?v=5cf581aa27fd">
+  <link rel="stylesheet" href="app.css?v=e8b2f6fe89a4">
+  <link rel="stylesheet" href="gallery.css?v=37bdec7f129b">
+  <link rel="stylesheet" href="experience.css?v=b3e939e78572">
+  <link rel="stylesheet" href="marea-cover.css?v=d647585878f0">
+  <link rel="stylesheet" href="marea-booking.css?v=56ca18a10e1c">
+  <link rel="stylesheet" href="device-preview.css?v=244b6c55332e">
   <script src="businesses.js?v=4675c57497a2" defer></script>
   <script src="state.js?v=3625829a2717" defer></script>
   <script src="app.js?v=43542efc8287" defer></script>
   <script src="gallery.js?v=cc913564544b" defer></script>
-  <script src="experience.js?v=f14eb8874d23" defer></script>
+  <script src="experience.js?v=b21a75bb4c62" defer></script>
 </head>
 <body data-experience="welcome">
   <a class="skip" id="experience-skip" href="#contenido">Saltar al contenido</a>
+  <div class="device-controls" id="device-controls" hidden>
+    <div class="device-control-heading">
+      <span id="device-controls-title">Vista móvil</span>
+      <span id="device-width" aria-hidden="true">390 px</span>
+    </div>
+    <div class="device-options" role="group" aria-labelledby="device-controls-title">
+      <button type="button" data-device="iphone" aria-pressed="true" aria-controls="demo-device">iPhone</button>
+      <button type="button" data-device="android" aria-pressed="false" aria-controls="demo-device">Android</button>
+    </div>
+  </div>
+  <div class="demo-device" id="demo-device" role="region" aria-label="Vista vertical de la aplicación">
   <header class="topbar" id="experience-topbar" hidden>
     <div class="topbar-inner frame">
       <a class="brand" id="business-brand" href="./" aria-label="Volver a la portada del estudio">
@@ -227,5 +239,6 @@
     <span>Una app de muestra de CyberSerch</span>
     <a href="https://cyberserch.com/cotizador?tipo=custom">Cotizar una app para mi negocio</a>
   </footer>
+  </div>
 </body>
 </html>

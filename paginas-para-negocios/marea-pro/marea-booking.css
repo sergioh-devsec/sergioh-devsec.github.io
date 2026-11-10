@@ -23,7 +23,7 @@
   --booking-action-bg: #f2ebf6;
   --booking-shadow: 45 32 54;
   --booking-app-width: 68rem;
-  --booking-app-gutter: clamp(1rem, 3vw, 2.25rem);
+  --booking-app-gutter: clamp(1rem, 3cqw, 2.25rem);
   scroll-padding-block: calc(4.5rem + env(safe-area-inset-top)) 7rem;
 }
 
@@ -102,7 +102,7 @@
   grid-template-columns: minmax(0, 1fr) minmax(16rem, .59fr);
   grid-template-rows: auto 1fr;
   grid-template-areas: "intro summary" "flow summary";
-  gap: 1.05rem clamp(1.25rem, 4vw, 3rem);
+  gap: 1.05rem clamp(1.25rem, 4cqw, 3rem);
 }
 
 [data-theme] .experience-app .booking-gallery-link {
@@ -242,7 +242,7 @@
   grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr);
   grid-template-rows: minmax(0, auto) 1fr;
   grid-template-areas: "intro photo" "action photo";
-  gap: 1.25rem clamp(1.5rem, 4vw, 3.3rem);
+  gap: 1.25rem clamp(1.5rem, 4cqw, 3.3rem);
   align-items: start;
   padding-block: .7rem .4rem;
 }
@@ -250,7 +250,7 @@
 .experience-gallery-intro { grid-area: intro; }
 .experience-gallery-intro h1 {
   margin-block: .15rem .65rem;
-  font: 400 clamp(2rem, 5vw, 3.5rem)/1.04 var(--display);
+  font: 400 clamp(2rem, 5cqw, 3.5rem)/1.04 var(--display);
   letter-spacing: -.035em;
   text-wrap: balance;
 }
@@ -264,7 +264,7 @@
 .experience-gallery-view .studio-photo .photo-gallery-frame img {
   display: block;
   width: 100%;
-  height: clamp(18rem, 54svh, 33rem);
+  height: clamp(18rem, calc(var(--demo-screen-height, 100svh) * .54), 33rem);
   max-height: none;
   border-radius: 0;
   background: transparent;
@@ -284,11 +284,11 @@
   }
 }
 
-@media (min-width: 60rem) {
+@container demo-phone (min-width: 60rem) {
   [data-theme] .experience-app .addons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-@media (max-width: 50rem) {
+@container demo-phone (max-width: 50rem) {
   [data-theme] .experience-app .booking-layout {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto;
@@ -304,15 +304,20 @@
     gap: .85rem;
     padding-block-start: .2rem;
   }
-  .experience-gallery-view .studio-photo .photo-gallery-frame img { height: min(100vw - 1.75rem, 53svh); }
+  .experience-gallery-view .studio-photo .photo-gallery-frame img { height: min(100cqw - 1.75rem, calc(var(--demo-screen-height, 100svh) * .53)); }
   #gallery-booking-link { justify-self: stretch; }
 }
 
 @media (max-width: 34rem) {
   :root[data-theme]:has(body[data-experience="app"]) {
+    scroll-padding-block: calc(6.25rem + env(safe-area-inset-top)) 8rem;
+  }
+}
+
+@container demo-phone (max-width: 34rem) {
+  [data-theme] :is(#experience-topbar, #experience-footer, .experience-app) {
     --booking-app-pad-left: max(.88rem, env(safe-area-inset-left));
     --booking-app-pad-right: max(.88rem, env(safe-area-inset-right));
-    scroll-padding-block: calc(6.25rem + env(safe-area-inset-top)) 8rem;
   }
   [data-theme] #experience-topbar .frame,
   [data-theme] #experience-footer {
@@ -353,7 +358,7 @@
   [data-theme] .experience-app .studio-intro h2 { font-size: 1.85rem; }
 }
 
-@media (max-width: 23rem) {
+@container demo-phone (max-width: 23rem) {
   [data-theme] .experience-app .form-actions:has(#booking-back:not([hidden])) #booking-action-total {
     flex-basis: 100%;
   }
