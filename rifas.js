@@ -3,6 +3,10 @@ const copy = {
   skip: 'Skip to settings', lead: 'Customize your wheel with tickets or prizes, then take each spin at your own pace.',
   freeLimit: 'Free for up to 10 participants',
   demo: 'Run the draw on your device, with no account or payment. This page does not sell tickets or collect entries.',
+  policyHeading: 'Responsible use and privacy',
+  policySummary: 'The wheel processes your information in this browser. If you organize a raffle, you are responsible for the rules, permits and prizes.',
+  policyLink: 'Terms of use and privacy',
+  policyNewTab: ' (opens in a new tab)',
   wheel: 'The wheel', ready: 'Ready to spin.',
   settings: 'Set up your draw', eventName: 'Raffle name (optional)', prize: 'Prize name', participants: 'Number of participants',
   wheelMode: 'What goes on the wheel', foliosMode: 'Participant tickets', optionsMode: 'Prizes and messages',
@@ -62,6 +66,7 @@ if (english) {
     if (Object.hasOwn(copy, element.dataset.copy)) element.textContent = copy[element.dataset.copy];
   }
   Object.assign(byId('language-link'), { textContent: 'Español', lang: 'es', hreflang: 'es', href: '?idioma=es' });
+  byId('policy-link').href = 'rifas-politicas#public-en';
   prize.value = defaultPrize;
   options.value = 'Surprise prize\nBetter luck next time\nSpecial prize\nBetter luck next time';
 }
