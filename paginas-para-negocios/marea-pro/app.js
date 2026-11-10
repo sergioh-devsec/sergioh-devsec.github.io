@@ -62,6 +62,7 @@
     document.querySelector('meta[name="theme-color"]').content = getComputedStyle(root).getPropertyValue('--paper').trim();
     byId('business-brand').href = profileLink(profile.id);
     byId('business-brand-name').textContent = profile.brand;
+    byId('booking-title').textContent = profile.bookingTitle ?? 'Tu próxima cita';
     byId('booking-intro').textContent = profile.intro;
     byId('studio-title').textContent = profile.studioTitle;
     byId('studio-search').placeholder = `Ej. ${aliases[0]} o ${profile.folioPrefix}-101`;
@@ -82,12 +83,13 @@
       photo.alt = alt;
       photo.width = width;
       photo.height = height;
+      photo.decoding = 'async';
       photo.src = src;
       byId('business-photo').prepend(photo);
       byId('business-photo-caption').textContent = profile.businessName;
+      byId('business-photo-label').textContent = profile.label;
       byId('business-photo').hidden = false;
     } else if (profile.artwork) {
-      byId('business-art-eyebrow').textContent = profile.artwork.eyebrow;
       byId('business-art-title').textContent = profile.artwork.title;
       byId('business-art-caption').textContent = profile.artwork.caption;
       byId('business-art').hidden = false;
@@ -240,7 +242,12 @@
 
   function renderSelection() {
     const container = byId('selection-content');
-    const rows = summaryRows(lastBooking || draft);
+    const selection = lastBooking || draft;
+    const totals = model.getTotals(selection.serviceId, selection.addonIds);
+    const actionTotal = byId('booking-action-total');
+    actionTotal.hidden = !totals;
+    actionTotal.textContent = totals ? `${money(totals.price)} · ${totals.minutes} min` : '';
+    const rows = summaryRows(selection);
     if (!rows.length) {
       container.replaceChildren(element('p', 'quiet', 'Elige un servicio para calcular el total y la duración.'));
       return;
