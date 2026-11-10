@@ -6,35 +6,42 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-src 'none'">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="theme-color" content="#fff6f8">
-  <meta name="description" content="Prueba la experiencia de reservas y el panel de citas de Marea Pro, una app de muestra de CyberSerch para estudios de uñas.">
+  <meta name="description" content="Prueba la plantilla de reservas de CyberSerch para negocios con citas, con ejemplos de estudios de uñas y tatuajes.">
   <link rel="canonical" href="https://cyberserch.com/paginas-para-negocios/marea-pro/">
   <title>Marea Pro · App de reservas | CyberSerch</title>
   <link rel="icon" href="../assets/mark.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="app.css?v=36c846c71b96">
-  <script src="state.js?v=e3fe9f2d23b8" defer></script>
-  <script src="app.js?v=6f35cebbfaf6" defer></script>
+  <link rel="stylesheet" href="app.css?v=9e6461466dcb">
+  <script src="businesses.js?v=162ef463ac5f" defer></script>
+  <script src="state.js?v=3625829a2717" defer></script>
+  <script src="app.js?v=95e0efdb8c5c" defer></script>
 </head>
 <body>
   <a class="skip" href="#contenido">Saltar al contenido</a>
   <header class="topbar">
     <div class="topbar-inner frame">
-      <a class="brand" href="../luna-nail-studio/"><span>marea</span><small>PRO</small></a>
+      <a class="brand" id="business-brand" href="./"><span id="business-brand-name">marea</span><small>PRO</small></a>
       <nav class="mode-switch" aria-label="Vistas de la aplicación">
         <button type="button" data-view="booking" aria-controls="booking-view" aria-pressed="true">Reservar cita</button>
         <button type="button" data-view="studio" aria-controls="studio-view" aria-pressed="false">Panel del estudio</button>
       </nav>
-      <a class="gallery-link" href="../">Ver más ejemplos</a>
+      <a class="gallery-link" href="https://cyberserch.com/paginas-para-negocios/">Ver más ejemplos</a>
     </div>
   </header>
   <main class="frame" id="contenido">
-    <p class="demo-notice"><strong>Demo interactiva.</strong> Usa un alias inventado. Las citas y los cambios se guardan solo en este navegador.</p>
+    <div class="demo-bar">
+      <p class="demo-notice"><strong>Demo interactiva.</strong> <span id="demo-notice-copy">Usa un alias inventado. Las citas y los cambios se guardan solo en este navegador.</span></p>
+      <nav class="business-switch" aria-label="Negocio de ejemplo" hidden>
+        <span>Negocio de ejemplo</span>
+        <div class="business-links" id="business-links"></div>
+      </nav>
+    </div>
     <noscript><p>Activa JavaScript para probar la reserva y el panel del estudio.</p></noscript>
     <section class="booking-view" id="booking-view" aria-labelledby="booking-title" hidden>
       <div class="booking-layout">
         <div class="booking-main">
           <header class="page-intro">
             <h1 id="booking-title" tabindex="-1">Tu próxima cita</h1>
-            <p>Elige tu manicura, personalízala y encuentra espacio con tu especialista.</p>
+            <p id="booking-intro">Elige tu manicura, personalízala y encuentra espacio con tu especialista.</p>
           </header>
           <ol class="stepper" id="booking-progress" aria-label="Progreso de reserva">
             <li aria-current="step"><span aria-hidden="true">1</span> Servicio</li>
@@ -44,10 +51,12 @@
           <form id="booking-form" novalidate autocomplete="off">
             <section class="step-panel" data-step="0" aria-labelledby="service-title">
               <h2 id="service-title" tabindex="-1">Elige tu servicio</h2>
-              <p class="quiet">Precios ilustrativos en pesos mexicanos.</p>
+              <p class="quiet" id="booking-currency">Precios ilustrativos en pesos mexicanos.</p>
               <fieldset class="choice-list" id="services"><legend class="visually-hidden">Servicios</legend></fieldset>
-              <h3>Agrega un detalle</h3>
-              <fieldset class="choice-list addons" id="addons"><legend class="visually-hidden">Extras opcionales</legend></fieldset>
+              <div id="booking-addons" hidden>
+                <h3>Agrega un detalle</h3>
+                <fieldset class="choice-list addons" id="addons"><legend class="visually-hidden">Extras opcionales</legend></fieldset>
+              </div>
             </section>
             <section class="step-panel" data-step="1" aria-labelledby="schedule-title" hidden>
               <h2 id="schedule-title" tabindex="-1">Encuentra tu horario</h2>
@@ -80,10 +89,14 @@
           </section>
         </div>
         <aside class="booking-side" aria-labelledby="selection-title">
-          <figure class="studio-photo">
-            <img src="../luna-nail-studio/assets/marea-hero.jpg?v=d17be7c57edf" alt="Manicura rosa con puntas lila y una flor blanca sobre satén rosa" width="1254" height="1254">
-            <figcaption>Marea Nail Studio</figcaption>
+          <figure class="studio-photo" id="business-photo" hidden>
+            <figcaption id="business-photo-caption"></figcaption>
           </figure>
+          <div class="studio-art" id="business-art" aria-hidden="true" hidden>
+            <span id="business-art-eyebrow"></span>
+            <strong id="business-art-title"></strong>
+            <span id="business-art-caption"></span>
+          </div>
           <section class="selection">
             <h2 id="selection-title">Tu selección</h2>
             <div id="selection-content" aria-live="polite"></div>
@@ -114,7 +127,7 @@
   </main>
   <footer class="footer frame">
     <span>Una app de muestra de CyberSerch</span>
-    <a href="/cotizador?tipo=custom">Cotizar una app para mi negocio</a>
+    <a href="https://cyberserch.com/cotizador?tipo=custom">Cotizar una app para mi negocio</a>
   </footer>
 </body>
 </html>

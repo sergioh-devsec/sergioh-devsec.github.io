@@ -1,12 +1,17 @@
 (() => {
   'use strict';
 
-  const model = globalThis.MareaProState;
+  const engine = globalThis.MareaProState;
+  const catalog = globalThis.BookingBusinesses;
   const byId = (id) => document.getElementById(id);
-  if (!model) {
-    document.querySelector('.demo-notice').textContent = 'La agenda no pudo cargarse. Recarga la página para volver a intentarlo.';
+  if (!engine || !catalog) {
+    byId('demo-notice-copy').textContent = 'La agenda no pudo cargarse. Recarga la página para volver a intentarlo.';
     return;
   }
+  const requestedId = new URLSearchParams(location.search).get('negocio');
+  const profile = catalog.profiles.find(({ id }) => id === requestedId)
+    ?? catalog.profiles.find(({ id }) => id === catalog.defaultId);
+  const model = engine.createBookingModel(profile);
   const booking = byId('booking-view');
   const studio = byId('studio-view');
   const form = byId('booking-form');
@@ -17,18 +22,19 @@
   const back = byId('booking-back');
   const next = byId('booking-next');
   const viewButtons = [...document.querySelectorAll('[data-view]')];
-  const priceFormat = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 });
-  const dayFormat = new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'short', weekday: 'short' });
-  const fullDayFormat = new Intl.DateTimeFormat('es-MX', { dateStyle: 'full' });
+  const locale = profile.locale ?? 'es-MX';
+  const currency = profile.currency ?? 'MXN';
+  const priceFormat = new Intl.NumberFormat(locale, { style: 'currency', currency, currencyDisplay: 'narrowSymbol', minimumFractionDigits: 0 });
+  const dayFormat = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', weekday: 'short' });
   const storageKey = model.STORAGE_KEY;
-  const aliases = ['Renata de prueba', 'Mía de prueba', 'Valeria de prueba'];
+  const aliases = model.ALIASES;
   const transitions = {
     pending: ['confirmed', 'canceled'],
     confirmed: ['completed', 'canceled', 'noShow'],
   };
 
-  const money = (value) => `${priceFormat.format(value)} MXN`;
-  const formatDate = (date, format = dayFormat) => format.format(new Date(`${date}T12:00:00`));
+  const money = (value) => `${priceFormat.format(value)} ${currency}`;
+  const formatDate = (date) => dayFormat.format(new Date(`${date}T12:00:00`));
   const emptyDraft = () => ({ serviceId: '', addonIds: [], staffId: 'any', date: '', time: '', client: '' });
   let draft = emptyDraft();
   let step = 0;
@@ -42,6 +48,50 @@
     if (className) node.className = className;
     if (content !== undefined) node.textContent = content;
     return node;
+  }
+
+  function profileLink(id) {
+    return id === catalog.defaultId ? './' : `?${new URLSearchParams({ negocio: id })}`;
+  }
+
+  function configureBusiness() {
+    const root = document.documentElement;
+    root.dataset.theme = profile.theme;
+    document.title = profile.title;
+    document.querySelector('meta[name="description"]').content = profile.description;
+    document.querySelector('meta[name="theme-color"]').content = getComputedStyle(root).getPropertyValue('--paper').trim();
+    byId('business-brand').href = profileLink(profile.id);
+    byId('business-brand-name').textContent = profile.brand;
+    byId('booking-intro').textContent = profile.intro;
+    byId('studio-title').textContent = profile.studioTitle;
+    byId('studio-search').placeholder = `Ej. ${aliases[0]} o ${profile.folioPrefix}-101`;
+    if (currency !== 'MXN') byId('booking-currency').textContent = `Precios ilustrativos en ${currency}.`;
+
+    const links = byId('business-links');
+    links.replaceChildren(...catalog.profiles.map(({ id, label }) => {
+      const link = element('a', '', label);
+      link.href = profileLink(id);
+      if (id === profile.id) link.setAttribute('aria-current', 'page');
+      return link;
+    }));
+    links.closest('nav').hidden = catalog.profiles.length < 2;
+
+    if (profile.photo) {
+      const { src, alt, width, height } = profile.photo;
+      const photo = element('img');
+      photo.alt = alt;
+      photo.width = width;
+      photo.height = height;
+      photo.src = src;
+      byId('business-photo').prepend(photo);
+      byId('business-photo-caption').textContent = profile.businessName;
+      byId('business-photo').hidden = false;
+    } else if (profile.artwork) {
+      byId('business-art-eyebrow').textContent = profile.artwork.eyebrow;
+      byId('business-art-title').textContent = profile.artwork.title;
+      byId('business-art-caption').textContent = profile.artwork.caption;
+      byId('business-art').hidden = false;
+    }
   }
 
   function replaceChoices(fieldset, choices) {
@@ -131,8 +181,7 @@
     try {
       localStorage.setItem(storageKey, JSON.stringify(updated));
     } catch {
-      const notice = document.querySelector('.demo-notice');
-      notice.textContent = 'Demo interactiva. Tu navegador limitó el almacenamiento. Los cambios durarán mientras esta página siga abierta.';
+      byId('demo-notice-copy').textContent = 'Tu navegador limitó el almacenamiento. Los cambios durarán mientras esta página siga abierta.';
     }
   }
 
@@ -140,8 +189,9 @@
     replaceChoices(byId('services'), model.SERVICES.map((service) =>
       radio('serviceId', service.id, service.name, `${service.minutes} min · ${service.description}`, money(service.price))
     ));
+    byId('booking-addons').hidden = model.ADDONS.length === 0;
     replaceChoices(byId('addons'), model.ADDONS.map((addon) =>
-      choose('checkbox', 'addonIds', addon.id, addon.name, `+${addon.minutes} min`,
+      choose('checkbox', 'addonIds', addon.id, addon.name, `+${addon.minutes} min · ${addon.description}`,
         draft.addonIds.includes(addon.id), `+${money(addon.price)}`)
     ));
   }
@@ -304,10 +354,10 @@
     const period = appointments.filter(({ date }) => !dateInput.value || date === dateInput.value);
     const { confirmed, pending, completed, revenue } = model.summarize(period);
     descriptionList(byId('studio-metrics'), [['Por atender', confirmed + pending], ['Completadas', completed], ['Valor de citas', money(revenue)]]);
-    const query = byId('studio-search').value.trim().toLocaleLowerCase('es-MX');
+    const query = byId('studio-search').value.trim().toLocaleLowerCase(locale);
     const status = byId('studio-status').value;
     const filtered = period.filter((item) =>
-      (!status || item.status === status) && `${item.client} ${item.id}`.toLocaleLowerCase('es-MX').includes(query)
+      (!status || item.status === status) && `${item.client} ${item.id}`.toLocaleLowerCase(locale).includes(query)
     ).sort((first, second) => `${first.date} ${first.time}`.localeCompare(`${second.date} ${second.time}`));
     byId('studio-count').textContent = `${filtered.length} ${filtered.length === 1 ? 'cita visible' : 'citas visibles'}`;
     byId('appointments').replaceChildren(...(filtered.length ? filtered.map(renderAppointment)
@@ -369,6 +419,7 @@
     }
   });
 
+  configureBusiness();
   renderServices();
   renderAliases();
   showStep(0, false);
