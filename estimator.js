@@ -169,32 +169,129 @@
     $('quote-contact-summary').value = brief(false);
   }
   const sampleLinks = {
-    landing: [['muestras/plantillas/', ['Plantillas de páginas para negocios', 'Business landing page templates']]],
-    information: [['paginas-para-negocios/dental/', ['Dental del Parque · sitio de muestra', 'Dental del Parque · demo website']]],
+    landing: [{
+      id: 'landing',
+      href: 'muestras/plantillas/',
+      image: 'muestras/plantillas/psicologia.jpg',
+      name: ['Plantillas para negocios', 'Business website templates'],
+      category: ['Página de presentación', 'Landing page'],
+      description: ['Recorre tres diseños para presentar tu negocio en línea.', 'Explore three designs for introducing your business online.'],
+    }],
+    information: [{
+      id: 'dental',
+      href: 'paginas-para-negocios/dental/',
+      image: 'muestras/plantillas/dental.jpg',
+      name: ['Dental del Parque', 'Dental del Parque'],
+      category: ['Sitio informativo', 'Informational website'],
+      description: ['Explora los servicios de una clínica, sus preguntas frecuentes y su agenda de muestra.', 'Explore a clinic’s services, FAQs and sample booking flow.'],
+    }],
     custom: [
-      ['paginas-para-negocios/marea-pro/', ['Marea · app de reservas', 'Marea · booking app']],
-      ['paginas-para-negocios/marea-pro/?negocio=tatuajes', ['Línea Negra · app de reservas', 'Línea Negra · booking app']],
+      {
+        id: 'marea',
+        href: 'paginas-para-negocios/marea-pro/',
+        image: 'paginas-para-negocios/marea-pro/assets/cover-marea-v60.webp?v=279f0bd9fd1e',
+        name: ['Marea Nail Studio', 'Marea Nail Studio'],
+        category: ['App de reservas', 'Booking app'],
+        description: ['Elige un servicio de uñas, añade extras y simula una cita.', 'Choose a nail service, add extras and try booking a visit.'],
+      },
+      {
+        id: 'tinta',
+        href: 'paginas-para-negocios/marea-pro/?negocio=tatuajes',
+        image: 'paginas-para-negocios/marea-pro/assets/cover-tinta-v59.webp?v=5f04b7e158a1',
+        name: ['Línea Negra Tattoo', 'Línea Negra Tattoo'],
+        category: ['App de reservas', 'Booking app'],
+        description: ['Explora el catálogo y simula una sesión con tu artista.', 'Browse the catalog and try booking a session with an artist.'],
+      },
     ],
-    automation: [['herramientas#csv', ['Demo relacionada · organizador CSV', 'Related demo · CSV organizer']]],
-    security: [['herramientas#logs', ['Demo relacionada · analizador de accesos', 'Related demo · access log analyzer']]],
+    automation: [{
+      id: 'csv',
+      href: 'herramientas#csv',
+      icon: 'M10 16h44v32H10zM10 26h44M10 36h44M24 16v32M38 16v32',
+      name: ['Organizador de tareas CSV', 'CSV task organizer'],
+      category: ['Automatización', 'Automation'],
+      description: ['Quita duplicados y ordena tareas por prioridad y fecha.', 'Remove duplicates and sort tasks by priority and date.'],
+    }],
+    security: [{
+      id: 'logs',
+      href: 'herramientas#logs',
+      icon: 'M32 9c7 5 14 7 21 8v14c0 12-8 20-21 25C19 51 11 43 11 31V17c7-1 14-3 21-8ZM24 32l5 5 11-11',
+      name: ['Analizador de accesos', 'Access log analyzer'],
+      category: ['Seguridad', 'Security'],
+      description: ['Prueba cómo se agrupan los intentos de acceso rechazados.', 'Try grouping denied access attempts for review.'],
+    }],
   };
+  const exampleObserver = typeof IntersectionObserver === 'function' ? new IntersectionObserver(entries => {
+    for (const { target, intersectionRatio } of entries) {
+      if (intersectionRatio < .15) continue;
+      target.classList.add('is-in-view');
+      exampleObserver.unobserve(target);
+    }
+  }, { threshold: .15 }) : null;
+
+  function exampleMedia({ image, icon }) {
+    const media = S.el('span', 'quote-example-media');
+    media.setAttribute('aria-hidden', 'true');
+    if (image) {
+      const photo = S.el('img');
+      photo.alt = '';
+      photo.loading = 'lazy';
+      photo.decoding = 'async';
+      photo.src = image;
+      media.append(photo);
+    } else {
+      const svgNamespace = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNamespace, 'svg');
+      svg.setAttribute('class', 'quote-example-icon');
+      svg.setAttribute('viewBox', '0 0 64 64');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '2');
+      svg.setAttribute('stroke-linecap', 'round');
+      svg.setAttribute('stroke-linejoin', 'round');
+      const path = document.createElementNS(svgNamespace, 'path');
+      path.setAttribute('d', icon);
+      svg.append(path);
+      media.append(svg);
+    }
+    return media;
+  }
+
   function renderExamples() {
     const content = S.quoteCopy(I.language);
     $('quote-current-label').textContent = content.currentEstimate;
     $('quote-breakdown-link').textContent = content.breakdown;
     $('quote-examples-title').textContent = content.examples;
     $('quote-new-tab').textContent = content.newTab;
-    const examples = sampleLinks[kind].map(([href, name]) => {
-      const link = S.el('a', 'quote-example-link', label(name));
-      link.href = href;
+    exampleObserver?.disconnect();
+    const examples = sampleLinks[kind].map(example => {
+      const link = S.el('a', 'quote-example-link');
+      link.href = example.href;
+      link.dataset.example = example.id;
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
-      link.setAttribute('aria-describedby', 'quote-new-tab');
+
+      const name = S.el('strong', 'quote-example-name', label(example.name));
+      name.id = `quote-example-name-${example.id}`;
+      const description = S.el('span', 'quote-example-description', label(example.description));
+      description.id = `quote-example-description-${example.id}`;
+      const action = S.el('span', 'quote-example-cta', tx('Explorar demo', 'Explore demo'));
+      action.id = `quote-example-action-${example.id}`;
+      const arrow = S.el('span', 'quote-example-arrow');
+      arrow.setAttribute('aria-hidden', 'true');
+      action.append(arrow);
+      link.setAttribute('aria-labelledby', `${name.id} ${action.id}`);
+      link.setAttribute('aria-describedby', `${description.id} quote-new-tab`);
+
+      const body = S.el('span', 'quote-example-body');
+      body.append(name, S.el('span', 'quote-example-kicker', label(example.category)), description, action);
+      link.append(exampleMedia(example), body);
       const item = S.el('li');
       item.append(link);
       return item;
     });
-    $('quote-example-links').replaceChildren(...examples);
+    const list = $('quote-example-links');
+    list.replaceChildren(...examples);
+    for (const item of examples) exampleObserver?.observe(item.firstElementChild);
   }
   function renderDelivery() {
     const content = S.quoteCopy(I.language);
@@ -210,7 +307,7 @@
       'quote-delivery-contact': content.consult,
       'quote-delivery-sample': content.sample,
     })) $(id).textContent = value;
-    $('quote-delivery-sample').href = sampleLinks[kind][0][0];
+    $('quote-delivery-sample').href = sampleLinks[kind][0].href;
     $('quote-delivery').hidden = false;
   }
   function renderContactContext() {

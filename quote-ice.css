@@ -204,7 +204,7 @@
   text-align: center;
 }
 
-.quote-page :is(.quote-progress, .quote-selected-scope) a:hover { text-decoration: underline; text-underline-offset: .18em; }
+.quote-page .quote-progress a:hover { text-decoration: underline; text-underline-offset: .18em; }
 .quote-page .quote-package {
   color: var(--ink);
   min-height: 0;
@@ -222,16 +222,192 @@
 }
 
 .quote-page .quote-selected-scope {
-  padding: .95rem 1rem;
-  margin-block: 1rem 1.4rem;
-  border: 1px solid #aacddc;
-  border-radius: .9rem;
-  background: #f6fcff;
+  margin-block: 1.25rem 1.4rem;
+  padding-block-start: 1rem;
+  border-block-start: 1px solid #aacddc;
 }
-.quote-page .quote-scope { min-height: 0; padding: 0; margin: 0 0 .65rem; color: var(--muted); }
-.quote-page .quote-examples-title { margin: 0; color: var(--ink); font-size: .93rem; font-weight: 700; }
-.quote-page #quote-example-links { display: flex; flex-wrap: wrap; gap: .3rem 1rem; margin: 0; padding: 0; list-style: none; }
-.quote-page .quote-example-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--action); font-weight: 650; text-decoration: underline; text-underline-offset: .18em; }
+.quote-page .quote-scope { min-height: 0; padding: 0; margin: 0 0 .9rem; color: var(--muted); }
+.quote-page .quote-examples-title { margin: 0 0 .65rem; color: var(--ink); font-size: 1.13rem; font-weight: 750; }
+.quote-page #quote-example-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quote-page #quote-example-links > :only-child { grid-column: 1 / -1; }
+
+.quote-page .quote-example-link {
+  --example-bg: #142e44;
+  --example-fg: #f2faff;
+  --example-accent: #abdef5;
+  --example-ink: #17243a;
+  --example-pan: -3%;
+  --example-ease: cubic-bezier(.16, 1, .3, 1);
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  min-height: 44px;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: var(--example-bg);
+  color: var(--example-fg);
+  scroll-margin-block-start: 6.25rem;
+  text-decoration: none;
+  touch-action: manipulation;
+}
+
+.quote-page #quote-example-links > :only-child .quote-example-link {
+  grid-template: auto / minmax(7rem, 30%) minmax(0, 1fr);
+}
+
+.quote-page .quote-example-link[data-example="marea"] {
+  --example-bg: #2a203e;
+  --example-fg: #fbf5ff;
+  --example-accent: #e5cbff;
+  --example-image-position: 50% 34%;
+}
+
+.quote-page .quote-example-link[data-example="tinta"] {
+  --example-bg: #322127;
+  --example-fg: #fff5f6;
+  --example-accent: #ffcbcc;
+  --example-image-position: 50% 41%;
+  --example-pan: 3%;
+}
+
+.quote-page .quote-example-link[data-example="dental"] {
+  --example-bg: #183d3f;
+  --example-accent: #beeee3;
+}
+
+.quote-page .quote-example-link[data-example="logs"] {
+  --example-bg: #242f4e;
+  --example-accent: #c3d3ff;
+}
+
+.quote-page .quote-example-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: clamp(7.4rem, 17vw, 10.75rem);
+  overflow: hidden;
+  background: radial-gradient(ellipse at 32% 28%, color-mix(in srgb, var(--example-accent) 27%, transparent), transparent 68%), var(--example-bg);
+  color: var(--example-accent);
+}
+
+.quote-page .quote-example-media img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--example-image-position, center);
+}
+
+.quote-page .quote-example-media svg {
+  width: clamp(2.65rem, 6vw, 4rem);
+  height: auto;
+}
+
+.quote-page .quote-example-body {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: .32rem;
+  min-width: 0;
+  padding: clamp(.75rem, 2vw, 1.15rem);
+}
+
+.quote-page .quote-example-name {
+  color: var(--example-fg);
+  font-size: clamp(1.08rem, 2.1vw, 1.42rem);
+  line-height: 1.15;
+  letter-spacing: -.025em;
+}
+
+.quote-page .quote-example-kicker {
+  color: var(--example-accent);
+  font-size: .8rem;
+  font-weight: 700;
+}
+
+.quote-page .quote-example-description {
+  color: var(--example-fg);
+  font-size: .87rem;
+  line-height: 1.42;
+}
+
+.quote-page .quote-example-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 2.25rem;
+  margin-block-start: .38rem;
+  padding: .18rem .3rem .18rem .66rem;
+  border-radius: .6rem;
+  background: var(--example-accent);
+  color: var(--example-ink);
+  font-size: .81rem;
+  font-weight: 800;
+}
+
+.quote-page .quote-example-arrow {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: .4rem;
+  background: rgb(255 255 255 / .38);
+}
+
+.quote-page .quote-example-arrow::before {
+  width: .55rem;
+  height: .55rem;
+  border-block-start: 1.5px solid currentColor;
+  border-inline-end: 1.5px solid currentColor;
+  transform: translate(.06rem, -.06rem);
+  content: '';
+}
+
+.quote-page .quote-example-arrow::after {
+  position: absolute;
+  width: .73rem;
+  border-block-start: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  content: '';
+}
+
+@media (max-width: 580px) {
+  .quote-page #quote-example-links { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .quote-page .quote-example-link { transition: transform 200ms var(--example-ease); }
+  .quote-page .quote-example-media img { transition: transform 340ms var(--example-ease); }
+  .quote-page .quote-example-arrow { transition: transform 200ms var(--example-ease); }
+
+  .quote-page .quote-example-link.is-in-view .quote-example-media :is(img, svg) {
+    animation: quote-example-reveal 780ms var(--example-ease);
+  }
+
+  .quote-page .quote-example-link[data-example="tinta"].is-in-view .quote-example-media img { animation-delay: 70ms; }
+  .quote-page .quote-example-link:active { transform: scale(.985); transition-duration: 120ms; }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .quote-page .quote-example-link:hover:not(:active) { transform: translateY(-3px); }
+  .quote-page .quote-example-link:hover .quote-example-media img { transform: scale(1.055); }
+  .quote-page .quote-example-link:hover .quote-example-arrow { transform: translate(2px, -2px); }
+}
+
+@keyframes quote-example-reveal {
+  from { transform: translateX(var(--example-pan)) scale(1.15); }
+  to { transform: translateX(0) scale(1); }
+}
 
 .quote-page .quote-evaluation-note {
   background: #f6fcff;
