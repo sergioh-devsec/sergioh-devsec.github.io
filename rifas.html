@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; object-src 'none'; worker-src 'none'">
   <meta name="theme-color" content="#231734">
-  <title>Prueba tu Suerte | Demo de rifas de CyberSerch</title>
-  <meta name="description" content="Personaliza una ruleta y ensaya un sorteo al azar con folios ficticios. Una demo gratuita de CyberSerch.">
+  <title>Prueba tu Suerte | Ruleta gratis hasta 10 participantes</title>
+  <meta name="description" content="Organiza un sorteo gratis de hasta 10 participantes. Personaliza los sectores de la ruleta 3D y elige uno o tres tiros.">
   <link rel="canonical" href="https://cyberserch.com/rifas">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="rifas.css?v=c18ca9a71e08">
-  <script type="module" src="rifas.js?v=5906d5228276"></script>
+  <link rel="stylesheet" href="rifas.css?v=f9c15d4189f4">
+  <script type="module" src="rifas.js?v=f5914cb5cc83"></script>
 </head>
 <body>
-  <a class="skip" href="#configurar" data-copy="skip">Ir al simulador</a>
+  <a class="skip" href="#configurar" data-copy="skip">Ir a la configuración</a>
   <header class="site-bar shell">
     <a class="brand" href="./"><img src="assets/favicon.svg" width="30" height="30" alt="">CyberSerch</a>
     <nav aria-label="Idioma / Language"><a id="language-link" lang="en" hreflang="en" href="?idioma=en">English</a></nav>
@@ -22,21 +22,25 @@
     <section class="intro" aria-labelledby="title">
       <div>
         <h1 id="title">Prueba tu Suerte<span>.</span></h1>
-        <p data-copy="lead">Personaliza el premio, mira girar la ruleta y descubre qué folio sale al azar.</p>
-        <a class="intro-guide" href="#instrucciones" data-copy="guideLink">Ver instrucciones</a>
+        <p data-copy="lead">Personaliza tu ruleta con folios o premios y haz cada tiro a tu ritmo.</p>
+        <div class="intro-links">
+          <a class="intro-guide" href="#escenario" data-copy="wheelLink">Ver la ruleta</a>
+          <a class="intro-guide" href="#instrucciones" data-copy="guideLink">Ver instrucciones</a>
+        </div>
       </div>
-      <p class="demo-note" data-copy="demo">Ensayo gratuito con folios ficticios. Sin ventas, inscripciones ni premios reales.</p>
+      <div class="demo-note"><strong data-copy="freeLimit">Gratis hasta 10 participantes</strong><p data-copy="demo">Organiza el sorteo en tu dispositivo, sin cuenta ni pago. No se venden boletos ni se registran participantes en esta página.</p></div>
     </section>
     <div class="studio">
-      <section class="stage" aria-labelledby="stage-title">
+      <section class="stage" id="escenario" aria-labelledby="stage-title">
         <div class="stage-head">
           <div><h2 id="stage-title" data-copy="wheel">La ruleta</h2><p id="stage-prize">Premio sorpresa</p></div>
-          <img id="stage-photo" class="stage-photo" alt="" width="76" height="64" hidden>
           <span id="spin-step" class="spin-step" aria-hidden="true">01</span>
         </div>
+        <div id="stage-photos" class="stage-photos" hidden></div>
         <div class="wheel-wrap" aria-hidden="true">
           <div class="wheel-face">
             <div id="wheel-disc" class="wheel-disc">
+              <svg id="wheel-sectors" class="wheel-sectors" viewBox="0 0 400 400" focusable="false"></svg>
               <svg class="wheel-rivets" viewBox="0 0 400 400" focusable="false">
                 <defs>
                   <radialGradient id="rivet" cx="35%" cy="25%" r="80%">
@@ -60,19 +64,37 @@
           <span class="wheel-pointer"></span>
         </div>
         <p id="result" class="result" role="status" data-copy="ready">Lista para girar.</p>
+        <div class="wheel-actions">
+          <button id="wheel-spin" class="primary" type="submit" form="raffle-form" data-copy="start">Girar la ruleta</button>
+          <button id="reset-spin" class="wheel-reset" type="button" data-copy="reset" hidden>Reiniciar sorteo</button>
+        </div>
+        <details class="wheel-legend"><summary data-copy="legend">Ver sectores</summary><ul id="wheel-legend"></ul></details>
         <a class="mobile-config" href="#configurar" data-copy="reconfigure">Volver a la configuración</a>
       </section>
       <section class="settings" id="configurar" aria-labelledby="settings-title">
-        <h2 id="settings-title" data-copy="settings">Configura tu ensayo</h2>
+        <h2 id="settings-title" data-copy="settings">Configura tu sorteo</h2>
         <form id="raffle-form">
           <label><span data-copy="eventName">Nombre de la rifa (opcional)</span><input id="event-name" type="text" maxlength="80"></label>
           <label><span data-copy="prize">Nombre del premio</span><input id="prize" type="text" maxlength="80" value="Premio sorpresa" required></label>
-          <label><span data-copy="participants">Número de folios</span><input id="entries" type="number" min="2" max="5000" step="1" value="100" required></label>
-          <label><span data-copy="image">Imagen de referencia (opcional)</span><input id="image" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="image-note"></label>
-          <p id="image-note" class="help" data-copy="imageHelp">JPG, PNG o WebP, hasta 4 MB. La imagen se queda en tu dispositivo.</p>
-          <div id="photo-preview" class="photo-preview" hidden><img id="photo" alt="" width="96" height="72"><button type="button" id="remove-photo" class="plain" data-copy="remove">Quitar imagen</button></div>
           <fieldset>
-            <legend data-copy="style">Formato del ensayo</legend>
+            <legend data-copy="wheelMode">Qué aparece en los sectores</legend>
+            <label class="choice"><input type="radio" name="wheel-mode" value="folios" checked><span data-copy="foliosMode">Folios de participantes</span></label>
+            <label class="choice"><input type="radio" name="wheel-mode" value="options"><span data-copy="optionsMode">Premios y mensajes</span></label>
+          </fieldset>
+          <label id="entries-field"><span data-copy="participants">Número de participantes</span><input id="entries" type="number" min="2" max="10" step="1" value="10" required aria-describedby="entries-note"><span id="entries-note" class="help field-help" data-copy="entriesHelp">De 2 a 10 participantes, con un folio por persona.</span></label>
+          <div id="options-field" class="options-field" hidden>
+            <label><span data-copy="options">Escribe tus opciones</span><textarea id="options" rows="4" maxlength="720" aria-describedby="options-note" disabled>Premio sorpresa
+Suerte para la próxima
+Premio especial
+Suerte para la próxima</textarea></label>
+            <p id="options-note" class="help field-help" data-copy="optionsHelp">De 2 a 12 opciones. Escribe una por renglón. Cada renglón ocupa un sector.</p>
+          </div>
+          <label><span id="image-label" data-copy="image">Fotos de referencia (opcional)</span><input id="image" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="image-note" multiple></label>
+          <p id="image-note" class="help" data-copy="imageHelp">Hasta 4 fotos JPG, PNG o WebP de 4 MB cada una. Se quedan en tu dispositivo.</p>
+          <div id="photo-preview" class="photo-preview" aria-labelledby="image-label" hidden></div>
+          <p id="photo-status" class="help" role="status" hidden></p>
+          <fieldset>
+            <legend data-copy="style">Formato del sorteo</legend>
             <label class="choice"><input type="radio" name="spins" value="1" checked><span data-copy="one">Un giro · un ganador</span></label>
             <label class="choice"><input type="radio" name="spins" value="3"><span data-copy="three">Tres giros · gana el tercero</span></label>
           </fieldset>
@@ -83,18 +105,18 @@
     <section class="instructions" id="instrucciones" aria-labelledby="instructions-title">
       <h2 id="instructions-title" data-copy="instructions">Cómo usar la ruleta</h2>
       <ol>
-        <li><strong data-copy="stepOne">Prepara el premio</strong><span data-copy="stepOneDetail">Escribe su nombre, sube una foto opcional y elige cuántos folios quieres probar.</span></li>
-        <li><strong data-copy="stepTwo">Elige el formato</strong><span data-copy="stepTwoDetail">Con tres giros, los dos primeros son de exhibición. El tercero revela el folio ganador.</span></li>
-        <li><strong data-copy="stepThree">Gira y revisa el resultado</strong><span data-copy="stepThreeDetail">Pulsa Girar la ruleta. El ensayo elige un folio al azar de tu lista ficticia.</span></li>
+        <li><strong data-copy="stepOne">Arma la rueda</strong><span data-copy="stepOneDetail">Elige folios o escribe tus propios premios y mensajes. Puedes añadir hasta cuatro fotos.</span></li>
+        <li><strong data-copy="stepTwo">Da un clic por tiro</strong><span data-copy="stepTwoDetail">En modo de tres tiros, los dos primeros son de exhibición. Cada tiro espera tu clic.</span></li>
+        <li><strong data-copy="stepThree">Revisa el resultado</strong><span data-copy="stepThreeDetail">El tiro final muestra el folio o la opción al azar que señala el puntero.</span></li>
       </ol>
     </section>
     <section class="plan" aria-labelledby="plan-title">
       <div>
-        <h2 id="plan-title" data-copy="plan">Plan Básico</h2>
-        <p data-copy="planDescription">Una rifa al azar, una foto del premio y hasta 500 folios. El pago confirmado de $99 MXN habilitará un evento.</p>
-        <p class="checkout-status" data-copy="checkoutStatus">Cobro en preparación · ensayo gratuito disponible</p>
+        <h2 id="plan-title" data-copy="plan">Rifas de 11 a 500 folios</h2>
+        <p data-copy="planDescription">Un evento al azar con fotos del premio. La opción para rifas de más de 10 folios aún no está habilitada.</p>
+        <p class="checkout-status" data-copy="checkoutStatus">Próximamente · todavía no se cobra</p>
       </div>
-      <p class="price"><strong>$99 MXN</strong><span data-copy="perDraw">por evento</span></p>
+      <p class="price"><strong>$99 MXN</strong><span data-copy="perDraw">precio previsto por evento</span></p>
     </section>
   </main>
   <footer class="shell"><a href="./" data-copy="back">Volver a CyberSerch</a></footer>
