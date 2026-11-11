@@ -166,7 +166,9 @@
     $('quote-tax').textContent = tax();
     $('quote-time').textContent = timing();
     $('quote-summary').value = brief();
-    $('quote-contact-summary').value = brief(false);
+    $('quote-contact-summary').value = contactBusy || contactSession?.locked
+      ? contactSession.snapshot.quoteSummary
+      : brief(false);
   }
   const sampleLinks = {
     landing: [{
@@ -326,6 +328,7 @@
       : enquiryContext(location.search, I.language, kind) || (offerContext ? content.offers[kind][1] : '');
     for (const id of ['local-goal', 'contact-goal']) {
       const field = $(id);
+      if (id === 'contact-goal' && (contactBusy || contactSession?.locked)) continue;
       if (field.value === previousSuggestion) field.value = suggestion;
     }
     previousSuggestion = suggestion;
@@ -379,36 +382,118 @@
     renderContactContext();
     if (!$('quote-download').disabled) update();
   });
+  const contactForm = $('quote-contact-form');
+  const contactConfig = window.CONTACT_CONFIG;
+  const contactClient = window.ContactClient;
+  const workerReady = contactClient?.workerReady(contactConfig) === true;
+  const contactSession = workerReady ? contactClient.requestSession() : null;
+  const verificationRetry = $('contact-verification-retry');
+  const contactButton = $('quote-contact-submit');
+  const contactFields = ['contact-name', 'contact-email', 'contact-goal', 'contact-consent', 'quote-attach-summary'].map($);
+  let contactBusy = false;
+  let verificationState = 'idle';
+  let resultState = '';
+
   function syncSummaryAttachment() {
     const checked = $('quote-attach-summary').checked;
     $('quote-contact-attachment').hidden = !checked;
-    $('quote-contact-summary').disabled = !checked;
+    $('quote-contact-summary').disabled = !checked || contactBusy || Boolean(contactSession?.locked);
   }
+
+  function renderContactFeedback() {
+    const copy = S.quoteCopy(I.language).contact;
+    contactButton.textContent = contactSession?.locked ? copy.retry : copy.submit;
+    contactButton.disabled = contactBusy || !verification?.token;
+    $('contact-verification-status').textContent = copy.verification[verificationState];
+    verificationRetry.textContent = copy.verifyAgain;
+    verificationRetry.hidden = !['expired', 'error'].includes(verificationState);
+    const fallback = $('quote-contact-email-fallback');
+    fallback.hidden = workerReady && verificationState !== 'error' && resultState !== 'unavailable';
+    $('quote-contact-result').textContent = copy.result[resultState] || '';
+  }
+
+  const verification = workerReady ? contactClient.turnstileController({
+    config: contactConfig,
+    container: $('contact-turnstile'),
+    language: () => I.language,
+    onState(state) {
+      verificationState = state;
+      renderContactFeedback();
+    },
+  }) : null;
+
+  function configureContact() {
+    const copy = S.quoteCopy(I.language).contact;
+    contactForm.hidden = !workerReady;
+    $('local-enquiry').hidden = workerReady;
+    $('quote-contact-ready').hidden = !workerReady;
+    $('quote-contact-pending').hidden = workerReady;
+    $('quote-contact-pending').textContent = copy.fallback;
+    $('quote-contact-email-fallback').textContent = copy.email;
+    $('quote-contact-consent-label').textContent = copy.consent;
+    $('quote-contact-policy').textContent = copy.policy;
+    renderContactFeedback();
+  }
+
   $('quote-attach-summary').addEventListener('change', syncSummaryAttachment);
   syncSummaryAttachment();
-  let contactBusy=false;
-  function configureContact(){const active=Boolean(web3formsKey(C.web3formsAccessKey)),form=$('quote-contact-form');form.hidden=!active;$('local-enquiry').hidden=active;$('quote-contact-pending').hidden=active;form.removeAttribute('action');$('quote-contact-ready').hidden=!active;}
-  $('quote-contact-form').addEventListener('submit',async event=>{
-    event.preventDefault();const form=event.currentTarget,key=web3formsKey(C.web3formsAccessKey),status=$('quote-contact-result'),button=form.querySelector('[type=submit]');
-    if(contactBusy||!key)return;
+  contactForm.addEventListener('focusin', () => {
+    if (verificationState === 'idle') verification?.start();
+  });
+  verificationRetry.addEventListener('click', () => verification?.start());
+  contactForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!workerReady || contactBusy || $('contact-website').value || $('contact-botcheck').checked || !contactForm.reportValidity()) return;
     const attach = $('quote-attach-summary').checked;
-    if(attach&&$('quote-download').disabled){status.textContent=tx('Revisa las cantidades o desmarca la estimación antes de enviar.','Check the estimate quantities or uncheck the estimate before sending.');return;}
-    if($('contact-website').value||$('contact-botcheck').checked||!form.reportValidity())return;
-    const fields={name:$('contact-name').value.trim(),email:$('contact-email').value.trim(),message:$('contact-goal').value.trim(),consent:$('contact-consent').checked?'yes':'no',botcheck:false};
-    if (attach) fields.estimate = brief(false);
-    contactBusy=true;button.disabled=true;form.setAttribute('aria-busy','true');status.textContent=tx('Enviando tu consulta…','Sending your enquiry…');
-    const result=await sendEnquiry(key,fields);
-    contactBusy=false;button.disabled=false;form.removeAttribute('aria-busy');
-    if(result==='accepted'){
-      document.dispatchEvent(new CustomEvent('portfolio:measurement',{detail:'enquiry_accepted'}));
-      form.reset();
-      syncSummaryAttachment();
-      update();
-      status.textContent = S.quoteCopy(I.language).accepted;
-    }else{
-      const message=result==='timeout'?tx('La conexión tardó demasiado; no podemos confirmar el envío.','The connection timed out; we cannot confirm the submission.'):result==='limit'?tx('El proveedor ha limitado temporalmente los envíos.','The provider has temporarily limited submissions.'):result==='invalid'?tx('Revisa el nombre, correo y descripción de tu proyecto.','Check your name, email and project description.'):tx('No pudimos confirmar el envío.','We could not confirm the submission.');
-      status.textContent=message+' '+tx('Tus datos siguen en el formulario. Puedes descargar el resumen o volver a intentarlo más tarde.','Your entries remain in the form. Download the summary or try again later.');
+    if (!contactSession.locked && attach && $('quote-download').disabled) {
+      resultState = 'estimate';
+      renderContactFeedback();
+      return;
     }
+    if (!verification.token) {
+      resultState = 'verify';
+      renderContactFeedback();
+      verification.start();
+      return;
+    }
+
+    const fields = contactSession.submission({
+      name: $('contact-name').value.trim(),
+      email: $('contact-email').value.trim(),
+      message: $('contact-goal').value.trim(),
+      service: kind,
+      quoteSummary: attach ? brief(false) : '',
+      consent: $('contact-consent').checked,
+      locale: en() ? 'en' : 'es',
+    }, verification.token);
+    contactBusy = true;
+    contactFields.forEach(field => { field.disabled = true; });
+    syncSummaryAttachment();
+    contactForm.setAttribute('aria-busy', 'true');
+    resultState = 'sending';
+    renderContactFeedback();
+    const result = await contactClient.sendContact(contactConfig, fields);
+    contactBusy = false;
+    contactForm.removeAttribute('aria-busy');
+
+    if (result.ok) {
+      contactSession.clear();
+      contactForm.reset();
+      resultState = 'accepted';
+      document.dispatchEvent(new CustomEvent('portfolio:measurement', {detail: 'enquiry_accepted'}));
+      update();
+    } else {
+      if (contactClient.isUncertainResult(result)) contactSession.markUncertain();
+      const states = {
+        invalid_payload: 'invalid', payload_too_large: 'invalid', bot_rejected: 'rejected', rate_limited: 'limited',
+        verification_unavailable: 'unavailable', origin_denied: 'unavailable', unavailable: 'unavailable',
+      };
+      resultState = states[result.code] || 'uncertain';
+    }
+    contactFields.forEach(field => { field.disabled = contactSession.locked; });
+    syncSummaryAttachment();
+    verification.reset();
+    renderContactFeedback();
   });
   document.addEventListener('portfolio:language',render);render();
 })();

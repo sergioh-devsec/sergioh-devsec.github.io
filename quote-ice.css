@@ -76,29 +76,31 @@
   border: 1px solid #b8dbe9;
   border-radius: .85rem;
   background: #e4f4fa;
+  list-style: none;
 }
 
-.quote-page #quote-guide .quote-guide-steps button {
+.quote-page #quote-guide .quote-guide-steps li {
+  display: grid;
+  place-items: center;
   min-width: 0;
   min-height: 44px;
   padding: .45rem clamp(.2rem, 1.4vw, .8rem);
   border: 1px solid transparent;
   border-radius: .6rem;
   color: var(--ink);
-  background: transparent;
-  font: inherit;
   font-size: clamp(.8rem, 2.3vw, .92rem);
   font-weight: 650;
   line-height: 1.2;
+  text-align: center;
   overflow-wrap: anywhere;
 }
 
-.quote-page #quote-guide .quote-guide-steps button:has(~ button[aria-current="step"]) {
+.quote-page #quote-guide .quote-guide-steps li:has(~ li[aria-current="step"]) {
   color: #064e70;
   background: #d2edf7;
 }
 
-.quote-page #quote-guide .quote-guide-steps :is(button[aria-current="step"], button[aria-pressed="true"]) {
+.quote-page #quote-guide .quote-guide-steps li[aria-current="step"] {
   color: #fff;
   border-color: var(--action);
   background: var(--action);
@@ -147,12 +149,11 @@
 
 .quote-page #quote-step-back { grid-column: 1; justify-self: start; }
 .quote-page #quote-step-next { grid-column: 2; justify-self: end; }
-
-@media (hover: hover) and (pointer: fine) {
-  .quote-page #quote-guide .quote-guide-steps button:hover:not([aria-current="step"], [aria-pressed="true"]) {
-    background: #f6fcff;
-    border-color: #8abdd3;
-  }
+.quote-page .quote-step-requirement {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--muted);
+  font-size: .9rem;
 }
 
 .quote-page .quote-progress {

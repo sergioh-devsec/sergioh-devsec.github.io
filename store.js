@@ -2,6 +2,38 @@ import { resolveLanguage, resolveMode } from './modeManager.js';
 import { mountPageVoice } from './page-voice.js?v=voice-36';
 
 export const STORE_HOST = 'cyberserch.gumroad.com';
+const BANXICO_FIX = { mxnPerUsd: 18.6678, date: '2026-11-10' };
+const BANXICO_RATE_URL = 'https://www.banxico.org.mx/SieInternet/consultarDirectorioInternetAction.do?accion=consultarCuadro&idCuadro=CF102&locale=es&sector=19';
+
+function mxnEstimate(cents, language) {
+  const amount = new Intl.NumberFormat(language === 'en' ? 'en-US' : 'es-MX', {
+    maximumFractionDigits: 0,
+  }).format(cents * BANXICO_FIX.mxnPerUsd / 100);
+  return `≈ $${amount} MXN`;
+}
+
+function createExchangeNote(doc, after) {
+  if (!after) return null;
+  const note = doc.createElement('p');
+  note.className = 'shop-note shop-exchange-note';
+  const link = doc.createElement('a');
+  link.href = BANXICO_RATE_URL;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  note.append(link);
+  after.after(note);
+  return link;
+}
+
+function updateExchangeNote(link, I) {
+  if (!link) return;
+  const date = new Intl.DateTimeFormat(I.language === 'en' ? 'en-US' : 'es-MX', {
+    dateStyle: 'medium',
+    timeZone: 'UTC',
+  }).format(new Date(BANXICO_FIX.date));
+  link.textContent = I.t('shopMxnReference', { date });
+}
+
 export function purchaseUrl(value, source = 'tienda') {
   try {
     const u = new URL(value);
@@ -88,6 +120,7 @@ function mountCart({ document: doc, catalogue, I, origin }) {
   const list = doc.getElementById('shop-cart-items'), empty = doc.getElementById('shop-cart-empty');
   const count = doc.getElementById('shop-cart-count'), total = doc.getElementById('shop-cart-total');
   const clear = doc.getElementById('shop-cart-clear'), announcement = doc.getElementById('shop-cart-announcement');
+  const exchangeNote = createExchangeNote(doc, total.closest('.shop-cart-total'));
   let lines = [], opener = null;
   const money = cents => new Intl.NumberFormat(I.language === 'en' ? 'en-US' : 'es-MX', { style: 'currency', currency: 'USD', currencyDisplay: 'code' }).format(cents / 100);
   const node = (tag, className, value) => {
@@ -100,11 +133,14 @@ function mountCart({ document: doc, catalogue, I, origin }) {
     const summary = cartSummary(lines, catalogue); lines = summary.lines.map(({ id, quantity }) => ({ id, quantity }));
     count.textContent = String(summary.count); trigger.setAttribute('aria-label', I.t('shopCartOpen', { n: summary.count }));
     total.textContent = money(summary.totalCents); empty.hidden = summary.count !== 0; clear.hidden = summary.count === 0;
+    if (summary.count) total.append(node('small', 'shop-mxn-estimate', mxnEstimate(summary.totalCents, I.language)));
+    updateExchangeNote(exchangeNote, I);
     const fragment = doc.createDocumentFragment();
     for (const line of summary.lines) {
       const product = catalogue.find(p => p.id === line.id), name = product.name[I.language];
       const item = node('li', 'shop-cart-item');
-      const heading = node('h3', '', name), detail = node('p', 'shop-cart-unit', I.t('shopCartUnitPrice', { price: money(line.unitCents) }));
+      const linePrice = `${money(line.unitCents)} · ${mxnEstimate(line.unitCents, I.language)}`;
+      const heading = node('h3', '', name), detail = node('p', 'shop-cart-unit', I.t('shopCartUnitPrice', { price: linePrice }));
       const remove = node('button', 'shop-cart-remove', I.t('shopCartRemove')); remove.type = 'button';
       remove.setAttribute('aria-label', I.t('shopCartRemoveNamed', { name }));
       remove.addEventListener('click', () => { lines = setCartQuantity(lines, line.id, 0, catalogue); render(); announce('shopCartRemoved', { name }); dialog.querySelector('[data-cart-close]').focus(); });
@@ -157,6 +193,7 @@ function start() {
   I.setLanguage(resolveLanguage(location.search,read('cyberserch-language'),navigator.language),false);
   const origin = interviewOrigin(location.search);
   const cart = mountCart({ document, catalogue, I, origin });
+  const exchangeNote = createExchangeNote(document, document.querySelector('.shop-inventory-controls, .shop-detail [data-i18n="shopTaxNote"]'));
   let selected='all';
   function renderContextLinks() {
     const currentMode = document.documentElement.dataset.mode;
@@ -178,6 +215,17 @@ function start() {
       const lead=row.querySelector('[data-product-lead]');if(lead)lead.textContent=product.lead[lang];
       const buy=row.querySelector('[data-product-buy]');
       const status=row.querySelector('[data-product-status]');
+      const usdPrice = row.querySelector('.shop-price-row strong');
+      const cents = unitPriceCents(product);
+      if (usdPrice && cents !== null) {
+        let estimate = usdPrice.parentElement.querySelector('.shop-mxn-estimate');
+        if (!estimate) {
+          estimate = document.createElement('small');
+          estimate.className = 'shop-mxn-estimate';
+          usdPrice.after(estimate);
+        }
+        estimate.textContent = mxnEstimate(cents, lang);
+      }
       const active=canPurchase(product);
       if(status) status.textContent=I.t(active?'shopStatusReady':product.status==='validation'?'shopStatusValidation':'shopStatusPreview');
       if(buy) {
@@ -191,6 +239,11 @@ function start() {
       const base=name==='pro'?'https://cyberserch.gumroad.com/l/cv-profesional-axiom':'https://cyberserch.gumroad.com/l/cv-multi-vacante-axiom';
       link.href=purchaseUrl(base,'cv-tienda');
     }
+    const cvPrices = document.querySelector('[data-i18n="shopCVPrices"]');
+    if (cvPrices) cvPrices.textContent = I.t('shopCVPricesWithMxn', {
+      pro: mxnEstimate(500, lang), plus: mxnEstimate(900, lang),
+    });
+    updateExchangeNote(exchangeNote, I);
     filter(selected);
     cart.render();
     renderContextLinks();
